@@ -1,0 +1,136 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>edu.mayo.cts2.framework</groupId>
+		<artifactId>base-service-plugin</artifactId>
+		<version>0.4.1</version>
+	</parent>
+
+	<artifactId>bioportal-rdf-service</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+
+	<developers>
+		<developer>
+			<id>kevin</id>
+			<name>Kevin Peterson</name>
+			<email>kevin.peterson@mayo.edu</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<organization>Mayo Clinic</organization>
+			<timezone>-5</timezone>
+		</developer>
+	</developers>
+
+	<scm>
+		<developerConnection>scm:git:git@github.com:cts2/bioportal-rdf-service.git</developerConnection>
+	</scm>
+
+	<distributionManagement>
+		<site>
+			<id>site-upload-server</id>
+			<url>scp://informatics.mayo.edu:/home/informatics/homes/cts2framework/public_html/sites/${project.artifactId}</url>
+		</site>
+	</distributionManagement>
+
+	<properties>
+		<develpment.framework.version>0.4.1</develpment.framework.version>
+		<service.provider.class>edu.mayo.cts2.framework.plugin.service.exist.profile.ExistServiceProvider</service.provider.class>
+	</properties>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>informatics-releases</id>
+			<url>http://informatics.mayo.edu/maven/content/repositories/releases</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>informatics-snapshots</id>
+			<url>http://informatics.mayo.edu/maven/content/repositories/snapshots</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+
+
+
+
+		<dependency>
+			<groupId>edu.mayo.cts2.framework</groupId>
+			<artifactId>service</artifactId>
+			<version>${develpment.framework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>edu.mayo.cts2.framework</groupId>
+			<artifactId>core</artifactId>
+			<version>${develpment.framework.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.hp.hpl.jena</groupId>
+			<artifactId>arq</artifactId>
+			<version>2.8.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.0.4</version>
+			<scope>provided</scope>
+		</dependency>
+
+
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>edu.informatics.maven.snapshot</id>
+			<name>Informatics Maven Snapshot Repository</name>
+			<url>http://informatics.mayo.edu/maven/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>edu.informatics.maven.releases</id>
+			<name>Informatics Maven Snapshot Repository</name>
+			<url>http://informatics.mayo.edu/maven/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+	</repositories>
+
+</project>
