@@ -5,11 +5,12 @@
 	<parent>
 		<groupId>edu.mayo.cts2.framework</groupId>
 		<artifactId>base-service-plugin</artifactId>
-		<version>0.4.1</version>
+		<version>0.4.9-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>bioportal-rdf-service</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
+	<packaging>bundle</packaging>
 
 	<developers>
 		<developer>
@@ -36,9 +37,42 @@
 	</distributionManagement>
 
 	<properties>
-		<develpment.framework.version>0.4.1</develpment.framework.version>
 		<service.provider.class>edu.mayo.cts2.framework.plugin.service.exist.profile.ExistServiceProvider</service.provider.class>
 	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.6</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Import-Package>
+							!sun.io,
+							!com.sun.msv*,
+							!com.sun.xml.fastinfoset*,
+							!org.jvnet*,
+							!org.apache.xml.resolver.*,
+							!joptsimple*,
+							!net.sf.cglib.*,
+							javax.xml.namespace,
+							edu.mayo.cts2.framework.core.plugin,
+							edu.mayo.cts2.framework.service.provider,
+							edu.mayo.cts2.framework.core.xml,
+							*
+						</Import-Package>
+						<Embed-Transitive>true</Embed-Transitive>
+						<Embed-Dependency>!groupId=org.springframework*,*;scope=compile|runtime;inline=false</Embed-Dependency>
+						<Spring-Context>*;timeout:=60</Spring-Context>
+						<_exportcontents>*</_exportcontents>
+						<_nouses>true</_nouses>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<pluginRepositories>
 		<pluginRepository>
@@ -53,13 +87,11 @@
 
 	<dependencies>
 
-
-
-
 		<dependency>
 			<groupId>edu.mayo.cts2.framework</groupId>
 			<artifactId>service</artifactId>
 			<version>${develpment.framework.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -78,6 +110,34 @@
 		</dependency>
 
 		<dependency>
+			<groupId>edu.mayo.cts2.framework</groupId>
+			<artifactId>plugin-util</artifactId>
+			<version>${develpment.framework.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>edu.mayo.cts2.framework</groupId>
+			<artifactId>service</artifactId>
+			<version>${develpment.framework.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>edu.mayo.cts2.framework</groupId>
+			<artifactId>core</artifactId>
+			<version>${develpment.framework.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>edu.mayo.cts2.framework</groupId>
+			<artifactId>model</artifactId>
+			<version>${develpment.framework.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
@@ -91,9 +151,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.2.4</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.0.1</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -103,34 +171,11 @@
 			<scope>provided</scope>
 		</dependency>
 
-
+		<dependency>
+			<groupId>edu.mayo</groupId>
+			<artifactId>sparqler</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>edu.informatics.maven.snapshot</id>
-			<name>Informatics Maven Snapshot Repository</name>
-			<url>http://informatics.mayo.edu/maven/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>edu.informatics.maven.releases</id>
-			<name>Informatics Maven Snapshot Repository</name>
-			<url>http://informatics.mayo.edu/maven/content/repositories/releases</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-	</repositories>
 
 </project>

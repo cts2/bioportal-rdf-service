@@ -16,41 +16,18 @@
  * 		http://www.eclipse.org/legal/epl-v10.html
  * 
  */
-package edu.mayo.cts2.framework.plugin.service.rdf.profile;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile;
 
-import java.util.Set;
+import org.springframework.stereotype.Component;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import edu.mayo.cts2.framework.core.config.option.Option;
-import edu.mayo.cts2.framework.service.provider.AbstractSpringServiceProvider;
+import edu.mayo.cts2.framework.util.spring.AbstractSpringServiceProvider;
 
 /**
  * The Class BioportalServiceProvider.
- *
+ * 
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
+@Component("bioportalRdfServiceProvider")
 public class BioportalRdfServiceProvider extends AbstractSpringServiceProvider {
-
-	/* (non-Javadoc)
-	 * @see org.cts2.rest.service.provider.AbstractSpringServiceProvider#getApplicationContext()
-	 */
-	@Override
-	protected ApplicationContext getApplicationContext(ApplicationContext parent) {
-		ClassPathXmlApplicationContext ctx = 
-				new ClassPathXmlApplicationContext(new String[]{"bioportal-rdf-context.xml"}, parent);
-
-		return ctx;
-	}
-
-	@Override
-	protected ApplicationContext getIntegrationTestApplicationContext(ApplicationContext parent) {
-		//same for now
-		return this.getApplicationContext(parent);
-	}
-
-	public Set<Option> getPluginOptions() {
-		return null;
-	}
+//
 }

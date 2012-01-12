@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMappings namespace="codeSystem"
+	xmlns="http:mayo.edu/sparqler" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	
+	<sparqlMap id="getCodeSystemCatalogSummaries">
+	<![CDATA[
+
+		SELECT * 
+		WHERE { 
+		  GRAPH ?graphURI { 
+		    ?s a <http://www.w3.org/2002/07/owl#Ontology> . 
+		    ?s <http://purl.bioontology.org/ontology/bioportal/abbreviation> ?abr . 
+		    OPTIONAL { ?s <http://purl.bioontology.org/ontology/bioportal/description> ?description . } 
+		    OPTIONAL { ?s <http://purl.bioontology.org/ontology/bioportal/format> ?format . } 
+		    OPTIONAL { ?s <http://purl.bioontology.org/ontology/bioportal/displayLabel> ?label . } 
+		    OPTIONAL { ?s <http://purl.bioontology.org/ontology/bioportal/uri> ?uri . } 
+		    OPTIONAL { ?s <http://purl.org/dc/elements/1.1/creator> ?creator . } 
+		    OPTIONAL { ?s <http://purl.org/dc/elements/1.1/contributor> ?contributor . } 
+		    OPTIONAL { ?s <http://www.w3.org/2002/07/owl#imports> ?imports . } 
+		    OPTIONAL { ?s <http://purl.org/dc/elements/1.1/title> ?title } 
+		  } 
+	   }
+	 
+	 ]]>
+	</sparqlMap>
+</sparqlMappings>
