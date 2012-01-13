@@ -20,7 +20,9 @@
 		    OPTIONAL { ?s <http://www.w3.org/2002/07/owl#imports> ?imports . } 
 		    OPTIONAL { ?s <http://purl.org/dc/elements/1.1/title> ?title } 
 		  } 
-	   }
+	    }
+	    LIMIT  #limit#
+	    OFFSET #offset#
 	 
 	 ]]>
 	</sparqlMap>

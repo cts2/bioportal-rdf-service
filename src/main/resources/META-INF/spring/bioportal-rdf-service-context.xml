@@ -12,8 +12,10 @@
 	<bean id="urlConstructor" name="urlConstructor" 
 		class="edu.mayo.cts2.framework.util.spring.UrlConstructorSpringFactory"/>
 		
-	<bean class="edu.mayo.sparqler.SparqlerContextFactory">
-		<property name="mappingFiles" value="classpath:sparqler/codeSystem.xml"/>
+	<bean class="edu.mayo.twinkql.context.TwinkqlContextFactory">
+			<property name="mappingFiles" value="classpath:twinkql/codeSystem.xml"/>
 	</bean>
+	
+	<bean class="edu.mayo.twinkql.template.TwinkqlTemplate"/>
 	
 </beans>

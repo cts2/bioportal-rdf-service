@@ -1,7 +1,9 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -30,6 +32,9 @@ public class BioportalRdfCodeSystemQueryService implements
 	private final static String CODESYSTEM_NAMESPACE = "codeSystem";
 	private final static String GET_CODESYSTEM_SUMMARIES = "getCodeSystemCatalogSummaries";
 	
+	private final static String LIMIT = "limit";
+	private final static String OFFSET = "offset";
+	
 	@Resource
 	private CodeSystemTransform codeSystemTransform;
 	
@@ -43,12 +48,21 @@ public class BioportalRdfCodeSystemQueryService implements
 			Page page) {
 		List<CodeSystemCatalogEntrySummary> resultList = new ArrayList<CodeSystemCatalogEntrySummary>();
 		
+		Map<String,Object> parameters = new HashMap<String,Object>();
+		parameters.put(LIMIT, page.getMaxToReturn());
+		parameters.put(OFFSET, page.getStart());
+		
 		ResultSet results;
 		try {
-			results = rdfDao.query(CODESYSTEM_NAMESPACE, GET_CODESYSTEM_SUMMARIES);
+			results = rdfDao.query(
+					CODESYSTEM_NAMESPACE, 
+					GET_CODESYSTEM_SUMMARIES,
+					parameters);
+			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
 		while(results.hasNext()){
 			resultList.add(this.codeSystemTransform.transform(results.next()));
 		}

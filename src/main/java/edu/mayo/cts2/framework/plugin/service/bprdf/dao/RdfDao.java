@@ -1,5 +1,7 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.dao;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,7 +18,7 @@ import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 import edu.mayo.cts2.framework.core.config.option.Option;
 import edu.mayo.cts2.framework.core.plugin.PluginConfigManager;
-import edu.mayo.sparqler.SparqlerContext;
+import edu.mayo.twinkql.template.TwinkqlTemplate;
 
 @Component
 public class RdfDao implements InitializingBean {
@@ -31,7 +33,7 @@ public class RdfDao implements InitializingBean {
 	private String apiKey;
 	
 	@Resource
-	private SparqlerContext sparqlerContext;
+	private TwinkqlTemplate twinkqlTemplate;
 	
 	@Resource
 	private PluginConfigManager pluginConfigManager;
@@ -41,8 +43,13 @@ public class RdfDao implements InitializingBean {
 		this.setApiKey();
 	}
 	
-	public ResultSet query(String queryNamespace, String queryId) throws Exception {
-		String query = this.sparqlerContext.getSparqlMap(queryNamespace, queryId).getString();
+	public ResultSet query(
+			String queryNamespace, 
+			String queryId, 
+			Map<String,Object> parameters) throws Exception {
+		String query = this.twinkqlTemplate.queryForString(queryNamespace, queryId, parameters);
+		
+		System.out.println(query);
 
 		return this.executeQuery(query);
 	}
