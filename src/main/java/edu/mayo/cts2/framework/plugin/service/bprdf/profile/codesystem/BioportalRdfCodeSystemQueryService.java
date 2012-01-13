@@ -49,7 +49,7 @@ public class BioportalRdfCodeSystemQueryService implements
 		List<CodeSystemCatalogEntrySummary> resultList = new ArrayList<CodeSystemCatalogEntrySummary>();
 		
 		Map<String,Object> parameters = new HashMap<String,Object>();
-		parameters.put(LIMIT, page.getMaxToReturn());
+		parameters.put(LIMIT, page.getMaxToReturn()+1);
 		parameters.put(OFFSET, page.getStart());
 		
 		ResultSet results;
@@ -63,11 +63,16 @@ public class BioportalRdfCodeSystemQueryService implements
 			throw new RuntimeException(e);
 		}
 		
-		while(results.hasNext()){
-			resultList.add(this.codeSystemTransform.transform(results.next()));
+		boolean moreResults = true;
+		for(int i=0;i<page.getMaxToReturn();i++){
+			if(!results.hasNext()){
+				moreResults = false;
+				break;
+			}
+			resultList.add(this.codeSystemTransform.transformSummary(results.next()));
 		}
 		
-		return new DirectoryResult<CodeSystemCatalogEntrySummary>(resultList,true,true);
+		return new DirectoryResult<CodeSystemCatalogEntrySummary>(resultList,!moreResults,false);
 	}
 
 	@Override

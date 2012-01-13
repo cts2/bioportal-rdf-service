@@ -46,15 +46,13 @@ public class RdfDao implements InitializingBean {
 	public ResultSet query(
 			String queryNamespace, 
 			String queryId, 
-			Map<String,Object> parameters) throws Exception {
+			Map<String,Object> parameters) {
 		String query = this.twinkqlTemplate.queryForString(queryNamespace, queryId, parameters);
 		
-		System.out.println(query);
-
 		return this.executeQuery(query);
 	}
 
-	public ResultSet executeQuery(String queryString) throws Exception {	
+	public ResultSet executeQuery(String queryString) {	
 		Query query = QueryFactory.create(queryString) ;
 	
 		QueryEngineHTTP qexec = QueryExecutionFactory.createServiceRequest(

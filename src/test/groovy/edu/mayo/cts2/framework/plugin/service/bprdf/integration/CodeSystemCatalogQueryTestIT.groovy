@@ -8,7 +8,7 @@ import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntryDirectory
 
 class CodeSystemCatalogQueryTestIT extends BaseServiceTestITBase {
 	
-	@Test void "Test get code systems"(){
+	@Test void TestGetCodeSystemsSmallMax(){
 		
 		CodeSystemCatalogEntryDirectory result = 
 			client.getCts2Resource(server + "codesystems?maxtoreturn=5", CodeSystemCatalogEntryDirectory.class);
@@ -16,5 +16,16 @@ class CodeSystemCatalogQueryTestIT extends BaseServiceTestITBase {
 		assertNotNull result
 		
 		assertEquals 5, result.getEntryCount()
+	}
+	
+	@Test void TestGetCodeSystemsLargeMax(){
+		
+		CodeSystemCatalogEntryDirectory result =
+			client.getCts2Resource(server + "codesystems?maxtoreturn=500", CodeSystemCatalogEntryDirectory.class);
+			
+		assertNotNull result
+		
+		//not sure how many there will actually be...
+		assertTrue result.getEntryCount() > 10
 	}
 }

@@ -54,6 +54,7 @@
 							!com.sun.msv*,
 							!com.sun.xml.fastinfoset*,
 							!org.jvnet*,
+							!org.relaxng*,
 							!org.apache.xml.resolver.*,
 							!joptsimple*,
 							!net.sf.cglib.*,

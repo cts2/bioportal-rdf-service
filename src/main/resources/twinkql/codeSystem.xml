@@ -21,8 +21,22 @@
 		    OPTIONAL { ?s <http://purl.org/dc/elements/1.1/title> ?title } 
 		  } 
 	    }
-	    LIMIT  #limit#
-	    OFFSET #offset#
+	    LIMIT  #{limit}
+	    OFFSET #{offset}
+	 
+	 ]]>
+	</sparqlMap>
+	
+	<sparqlMap id="getCodeSystemByUri">
+	<![CDATA[
+
+		SELECT ?p ?o
+		WHERE {
+ 			GRAPH <#{uri}> {
+   				?s a <http://www.w3.org/2002/07/owl#Ontology>;
+   				?p ?o
+   			}
+		}
 	 
 	 ]]>
 	</sparqlMap>
