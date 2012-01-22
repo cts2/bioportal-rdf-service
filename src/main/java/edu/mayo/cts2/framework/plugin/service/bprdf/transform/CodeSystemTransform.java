@@ -23,7 +23,7 @@ public class CodeSystemTransform {
 		while(resultSet.hasNext()){
 			QuerySolution querySolution = resultSet.next();
 			
-			String predicateUri = querySolution.get("predicate").toString();
+			String predicateUri = querySolution.get("p").toString();
 			
 			String localPart = this.getLocalNameFromUri(predicateUri);
 			

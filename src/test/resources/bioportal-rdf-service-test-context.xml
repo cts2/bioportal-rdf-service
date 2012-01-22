@@ -9,13 +9,39 @@
 
 	<context:component-scan base-package="edu.mayo.cts2.framework.plugin.service.bprdf"/>
 
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>file:target/testconfigdir/webapp-rest/bioportal-rdf-service.properties</value>
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="urlConstructor" name="urlConstructor" 
 		class="edu.mayo.cts2.framework.util.spring.UrlConstructorSpringFactory"/>
 		
-	<bean class="edu.mayo.twinkql.context.TwinkqlContextFactory">
-			<property name="mappingFiles" value="classpath:twinkql/codeSystem.xml"/>
+	<bean id="springTwinkqlContextFactory" class="edu.mayo.twinkql.context.SpringTwinkqlContextFactory">
+		<property name="mappingFiles" value="classpath:twinkql/codeSystem.xml"/>
+		<property name="queryExecutionProvider" ref="httpQueryExecutionProvider"/>
 	</bean>
 	
-	<bean class="edu.mayo.twinkql.template.TwinkqlTemplate"/>
+	<bean class="edu.mayo.twinkql.template.TwinkqlTemplate">
+		<property name="twinkqlContext" ref="springTwinkqlContextFactory"/>
+	</bean>
+	
+	<bean id="pluginConfigManager" class="edu.mayo.cts2.framework.core.plugin.DefaultPluginConfigManager"/>
+	
+	<bean id="configInitializer"
+		class="edu.mayo.cts2.framework.core.config.TestConfigInitializerSpringFactory" />
+		
+	<bean id="serviceConfigManager"
+		class="edu.mayo.cts2.framework.core.config.ServiceConfigManager" />
+		
+	<bean id="rdfDao" class="edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao"/>
+
+	<bean id="httpQueryExecutionProvider" class="edu.mayo.cts2.framework.plugin.service.bprdf.dao.HttpQueryExecutionProvider">
+		<property name="apiKey" value="${apiKey}" />
+	</bean>
 	
 </beans>

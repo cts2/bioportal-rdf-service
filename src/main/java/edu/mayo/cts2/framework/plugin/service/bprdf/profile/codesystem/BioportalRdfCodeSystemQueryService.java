@@ -46,33 +46,26 @@ public class BioportalRdfCodeSystemQueryService implements
 			ResourceQuery query, 
 			SortCriteria sortCriteria, 
 			Page page) {
-		List<CodeSystemCatalogEntrySummary> resultList = new ArrayList<CodeSystemCatalogEntrySummary>();
-		
+			
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put(LIMIT, page.getMaxToReturn()+1);
 		parameters.put(OFFSET, page.getStart());
 		
-		ResultSet results;
-		try {
-			results = rdfDao.query(
+		List<CodeSystemCatalogEntrySummary> results;
+		
+			results = rdfDao.selectForList(
 					CODESYSTEM_NAMESPACE, 
 					GET_CODESYSTEM_SUMMARIES,
-					parameters);
-			
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+					parameters,
+					CodeSystemCatalogEntrySummary.class);
+		
+		boolean moreResults = results.size() > page.getMaxToReturn();
+		
+		if(moreResults){
+			results.remove(results.size() - 1);
 		}
 		
-		boolean moreResults = true;
-		for(int i=0;i<page.getMaxToReturn();i++){
-			if(!results.hasNext()){
-				moreResults = false;
-				break;
-			}
-			resultList.add(this.codeSystemTransform.transformSummary(results.next()));
-		}
-		
-		return new DirectoryResult<CodeSystemCatalogEntrySummary>(resultList,!moreResults,false);
+		return new DirectoryResult<CodeSystemCatalogEntrySummary>(results,!moreResults,false);
 	}
 
 	@Override

@@ -12,10 +12,13 @@
 	<bean id="urlConstructor" name="urlConstructor" 
 		class="edu.mayo.cts2.framework.util.spring.UrlConstructorSpringFactory"/>
 		
-	<bean class="edu.mayo.twinkql.context.TwinkqlContextFactory">
-			<property name="mappingFiles" value="classpath:twinkql/codeSystem.xml"/>
+	<bean id="springTwinkqlContextFactory" class="edu.mayo.twinkql.context.SpringTwinkqlContextFactory">
+		<property name="mappingFiles" value="classpath:twinkql/codeSystem.xml"/>
+		<property name="queryExecutionProvider" ref="httpQueryExecutionProvider"/>
 	</bean>
 	
-	<bean class="edu.mayo.twinkql.template.TwinkqlTemplate"/>
+	<bean class="edu.mayo.twinkql.template.TwinkqlTemplate">
+		<property name="twinkqlContext" ref="springTwinkqlContextFactory"/>
+	</bean>
 	
 </beans>

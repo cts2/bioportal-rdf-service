@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sparqlMappings namespace="codeSystem"
-	xmlns="http:mayo.edu/sparqler" 
+<sparqlMap namespace="codeSystem"
+	xmlns="http:mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
-	<sparqlMap id="getCodeSystemCatalogSummaries">
+	<resultMap id="codeSystemCatalogResult" resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry">
+		<triplesMap>
+			<tripleMap objectPart="localName" predicateUri="asdf" beanProperty="test.bean.prop"/>
+		</triplesMap>	
+	</resultMap>
+	
+	<resultMap id="codeSystemCatalogSummaryResult" resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary">
+		<rowMap var="abr" varType="literalValue" beanProperty="resourceName"/>
+	</resultMap>
+	
+	
+	<select id="getCodeSystemCatalogSummaries" resultMap="codeSystemCatalogSummaryResult">
 	<![CDATA[
 
-		SELECT * 
+		SELECT ?abr ?description
 		WHERE { 
 		  GRAPH ?graphURI { 
 		    ?s a <http://www.w3.org/2002/07/owl#Ontology> . 
@@ -25,9 +36,9 @@
 	    OFFSET #{offset}
 	 
 	 ]]>
-	</sparqlMap>
+	</select>
 	
-	<sparqlMap id="getCodeSystemByUri">
+	<select id="getCodeSystemByUri">
 	<![CDATA[
 
 		SELECT ?p ?o
@@ -39,5 +50,5 @@
 		}
 	 
 	 ]]>
-	</sparqlMap>
-</sparqlMappings>
+	</select>
+</sparqlMap>

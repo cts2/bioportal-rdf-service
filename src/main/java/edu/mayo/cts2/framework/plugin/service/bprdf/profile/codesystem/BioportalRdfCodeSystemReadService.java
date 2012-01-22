@@ -34,6 +34,7 @@ public class BioportalRdfCodeSystemReadService implements CodeSystemReadService 
 	@Override
 	public CodeSystemCatalogEntry read(NameOrURI identifier,
 			ResolvedReadContext readContext) {
+		/*
 		ResultSet resultSet;
 		
 		if (StringUtils.isNotBlank(identifier.getName())) {
@@ -58,6 +59,8 @@ public class BioportalRdfCodeSystemReadService implements CodeSystemReadService 
 
 			return result;
 		}
+		*/
+		return null;
 	}
 
 	@Override
