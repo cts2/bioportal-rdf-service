@@ -11,13 +11,16 @@
 	
 	<resultMap id="codeSystemCatalogSummaryResult" resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary">
 		<rowMap var="abr" varType="literalValue" beanProperty="resourceName"/>
+		<rowMap var="abr" varType="literalValue" beanProperty="codeSystemName"/>
+		<rowMap var="description" varType="literalValue" beanProperty="resourceSynopsis.value.content"/>
+		<rowMap var="s" varType="uri" beanProperty="about"/>
 	</resultMap>
 	
 	
 	<select id="getCodeSystemCatalogSummaries" resultMap="codeSystemCatalogSummaryResult">
 	<![CDATA[
 
-		SELECT ?abr ?description
+		SELECT ?s ?abr ?description
 		WHERE { 
 		  GRAPH ?graphURI { 
 		    ?s a <http://www.w3.org/2002/07/owl#Ontology> . 

@@ -23,6 +23,7 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 		def dir = query.getResourceSummaries(null,null,new Page())
 		
 		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
 	}
 
 }
