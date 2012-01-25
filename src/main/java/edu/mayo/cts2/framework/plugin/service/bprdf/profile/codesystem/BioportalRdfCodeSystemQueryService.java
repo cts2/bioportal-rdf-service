@@ -1,6 +1,5 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +8,6 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
-
-import com.hp.hpl.jena.query.ResultSet;
 
 import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry;
 import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
@@ -21,7 +18,6 @@ import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
-import edu.mayo.cts2.framework.plugin.service.bprdf.transform.CodeSystemTransform;
 import edu.mayo.cts2.framework.service.profile.ResourceQuery;
 import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemQueryService;
 
@@ -34,9 +30,6 @@ public class BioportalRdfCodeSystemQueryService implements
 	
 	private final static String LIMIT = "limit";
 	private final static String OFFSET = "offset";
-	
-	@Resource
-	private CodeSystemTransform codeSystemTransform;
 	
 	@Resource
 	private RdfDao rdfDao;

@@ -12,8 +12,8 @@
 	<bean id="urlConstructor" name="urlConstructor" 
 		class="edu.mayo.cts2.framework.util.spring.UrlConstructorSpringFactory"/>
 		
-	<bean id="springTwinkqlContextFactory" class="edu.mayo.twinkql.context.SpringTwinkqlContextFactory">
-		<property name="mappingFiles" value="classpath:twinkql/codeSystem.xml"/>
+	<bean id="springTwinkqlContextFactory" class="edu.mayo.cts2.framework.plugin.service.bprdf.osgi.OsgiSpringTwinkqlContextFactory">
+		<property name="mappingFiles" value="classpath:twinkql/*.xml"/>
 		<property name="queryExecutionProvider" ref="httpQueryExecutionProvider"/>
 	</bean>
 	

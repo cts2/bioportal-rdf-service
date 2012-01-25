@@ -13,15 +13,11 @@ import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
-import edu.mayo.cts2.framework.plugin.service.bprdf.transform.CodeSystemVersionTransform;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQuery;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQueryService;
 
 public class BioportalRdfCodeSystemVersionQueryService implements
 		CodeSystemVersionQueryService {
-	
-	@Resource
-	private CodeSystemVersionTransform codeSystemVersionTransform;
 	
 	@Resource
 	private RdfDao RdfDao;

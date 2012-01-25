@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sparqlMap namespace="codeSystem"
-	xmlns="http:mayo.edu/twinkql" 
+	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
-	<resultMap id="codeSystemCatalogResult" resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry">
+	<resultMap id="codeSystemCatalogEntryResult"
+	 	extends="common:abstractResourceDescriptionResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry">
 		<triplesMap>
-			<tripleMap objectPart="localName" predicateUri="asdf" beanProperty="test.bean.prop"/>
+			<tripleMap objectPart="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/abbreviation" beanProperty="codeSystemName"/>
 		</triplesMap>	
 	</resultMap>
 	
-	<resultMap id="codeSystemCatalogSummaryResult" resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary">
+	<resultMap id="codeSystemCatalogEntrySummaryResult" resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary">
 		<rowMap var="abr" varType="literalValue" beanProperty="resourceName"/>
 		<rowMap var="abr" varType="literalValue" beanProperty="codeSystemName"/>
 		<rowMap var="description" varType="literalValue" beanProperty="resourceSynopsis.value.content"/>
 		<rowMap var="s" varType="uri" beanProperty="about"/>
 	</resultMap>
-	
-	
-	<select id="getCodeSystemCatalogSummaries" resultMap="codeSystemCatalogSummaryResult">
+
+	<select id="getCodeSystemCatalogSummaries" resultMap="codeSystemCatalogEntrySummaryResult">
 	<![CDATA[
 
 		SELECT ?s ?abr ?description
@@ -41,13 +42,14 @@
 	 ]]>
 	</select>
 	
-	<select id="getCodeSystemByUri">
+	<select id="getCodeSystemByName" resultMap="codeSystemCatalogEntryResult">
 	<![CDATA[
 
-		SELECT ?p ?o
+		SELECT ?s ?p ?o
 		WHERE {
- 			GRAPH <#{uri}> {
+ 			GRAPH ?graph {
    				?s a <http://www.w3.org/2002/07/owl#Ontology>;
+   				<http://purl.bioontology.org/ontology/bioportal/abbreviation> "#{name}";
    				?p ?o
    			}
 		}

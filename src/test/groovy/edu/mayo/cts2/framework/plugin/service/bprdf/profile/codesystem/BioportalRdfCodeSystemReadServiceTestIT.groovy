@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
 import edu.mayo.cts2.framework.model.util.ModelUtils
+import edu.mayo.twinkql.model.TriplesMap
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(value="classpath:/bioportal-rdf-service-test-context.xml")
@@ -19,8 +20,8 @@ class BioportalRdfCodeSystemReadServiceTestIT {
 	BioportalRdfCodeSystemReadService read
 	
 	@Test
-	void TestReadByUri(){
-		def cs = read.read(ModelUtils.nameOrUriFromUri("http://purl.bioontology.org/virtual/rdf/download/1125.rdf"), null);
+	void TestReadByName(){
+		def cs = read.read(ModelUtils.nameOrUriFromName("MA"), null);
 		
 		assertNotNull cs
 	}

@@ -47,13 +47,18 @@
 					<instructions>
 						<Import-Package>
 							!sun.io,
+							!sun.reflect,
 							!com.sun.msv*,
+							!com.sun.mail*,
+							!javax.mail*,
+							!netscape*,
 							!com.sun.xml.fastinfoset*,
 							!org.jvnet*,
 							!org.relaxng*,
 							!org.apache.xml.resolver.*,
 							!joptsimple*,
 							!net.sf.cglib.*,
+							!org.apache.oro.*,
 							javax.xml.namespace,
 							edu.mayo.cts2.framework.core.plugin,
 							edu.mayo.cts2.framework.service.provider,
@@ -172,7 +177,14 @@
 			<groupId>edu.mayo</groupId>
 			<artifactId>twinkql</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.codehaus.castor</groupId>
+					<artifactId>castor-codegen</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
 	</dependencies>
 
 </project>
