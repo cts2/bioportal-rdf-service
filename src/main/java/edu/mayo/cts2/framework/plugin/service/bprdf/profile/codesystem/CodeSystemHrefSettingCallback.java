@@ -21,39 +21,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.osgi;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
 
-import org.osgi.framework.BundleContext;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.osgi.context.BundleContextAware;
-import org.springframework.osgi.io.OsgiBundleResourcePatternResolver;
+import javax.annotation.Resource;
 
-import edu.mayo.twinkql.context.SpringTwinkqlContextFactory;
+import org.springframework.stereotype.Component;
+
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry;
+import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
- * A factory for creating OsgiSpringTwinkqlContext objects.
+ * The Class CodeSystemHrefSettingCallback.
+ *
+ * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public class OsgiSpringTwinkqlContextFactory 
-	extends SpringTwinkqlContextFactory implements BundleContextAware {
+@Component("codeSystemHrefCallback")
+public class CodeSystemHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntry> {
 
-	private BundleContext bundleContext;
+	@Resource
+	private UrlConstructor urlConstructor;
 	
 	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.context.TwinkqlContextFactory#createPathMatchingResourcePatternResolver()
+	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
-	protected PathMatchingResourcePatternResolver createPathMatchingResourcePatternResolver() {
-		if(this.bundleContext != null){
-			return new OsgiBundleResourcePatternResolver(this.bundleContext.getBundle());
-		} else {
-			return new PathMatchingResourcePatternResolver();
-		}
+	public CodeSystemCatalogEntry afterBinding(
+			CodeSystemCatalogEntry bindingResult) {
+		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
+		
+		return bindingResult;
 	}
 
-	@Override
-	public void setBundleContext(BundleContext bundleContext) {
-		this.bundleContext = bundleContext;
-	}
-
-	
 }

@@ -3,21 +3,21 @@
 	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
-	<resultMap id="codeSystemCatalogEntryResult"
-	 	extends="common:abstractResourceDescriptionResultMap" 
-		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry">
-		<triplesMap>
-			<tripleMap objectPart="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/abbreviation" beanProperty="codeSystemName"/>
-		</triplesMap>	
-	</resultMap>
-	
-	<resultMap id="codeSystemCatalogEntrySummaryResult" resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary">
+	<perRowResultMap id="codeSystemCatalogEntrySummaryResult" 
+		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary">
 		<rowMap var="abr" varType="literalValue" beanProperty="resourceName"/>
 		<rowMap var="abr" varType="literalValue" beanProperty="codeSystemName"/>
 		<rowMap var="description" varType="literalValue" beanProperty="resourceSynopsis.value.content"/>
 		<rowMap var="s" varType="uri" beanProperty="about"/>
-	</resultMap>
-
+	</perRowResultMap>
+	
+	<compositeResultMap id="codeSystemCatalogEntryResult"
+	 	extends="common:abstractResourceDescriptionResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry"
+		afterMap="spring:codeSystemHrefCallback">
+		<tripleMap var="o" varType="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/abbreviation" beanProperty="codeSystemName"/>
+	</compositeResultMap>
+	
 	<select id="getCodeSystemCatalogSummaries" resultMap="codeSystemCatalogEntrySummaryResult">
 	<![CDATA[
 

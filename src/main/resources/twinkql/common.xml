@@ -3,48 +3,41 @@
 	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
-	<resultMap id="resourceDescriptionResultMap" >
-		<triplesMap>
-			<tripleMap objectPart="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/uri" beanProperty="about"/>
-			<tripleMap objectPart="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/dispcription" beanProperty="resourceSynopsis.value.content"/>
-			<tripleMap objectPart="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/displayLabel" beanProperty="formalName"/>
-			<tripleMap resultMapping="common:propertyPropertyResultMap" 
-				predicateUri="http://www.w3.org/1999/02/22-rdf-syntax-ns#type" 
-				beanProperty="propertyAsReference[]"/>
-			<tripleMap resultMapping="common:literalPropertyResultMap" predicateUri="*" beanProperty="propertyAsReference[]"/>
-		</triplesMap>	
-	</resultMap>
+	<compositeResultMap id="resourceDescriptionResultMap" >
+		<tripleMap var="o" varType="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/uri" beanProperty="about"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/description" beanProperty="resourceSynopsis.value.content"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="http://purl.bioontology.org/ontology/bioportal/displayLabel" beanProperty="formalName"/>
+		<tripleMap resultMapping="common:propertyPropertyResultMap" 
+			predicateUri="http://www.w3.org/1999/02/22-rdf-syntax-ns#type" 
+			beanProperty="propertyAsReference[]"/>
+		<tripleMap resultMapping="common:literalPropertyResultMap" predicateUri="*" beanProperty="propertyAsReference[]"/>	
+	</compositeResultMap>
 	
-	<resultMap id="propertyPropertyResultMap" resultClass="edu.mayo.cts2.framework.model.core.Property">
-		<triplesMap>
-			<tripleMap predicateUri="*" predicatePart="uri" beanProperty="predicate.uri"/>
-			<tripleMap predicateUri="*" predicatePart="namespace" beanProperty="predicate.namespace"
-				modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
-			<tripleMap predicateUri="*" predicatePart="localName" beanProperty="predicate.name"/>
-			<tripleMap predicateUri="*" objectPart="uri" beanProperty="valueAsReference[0].entity.uri"/>
-			<tripleMap predicateUri="*" objectPart="namespace" beanProperty="valueAsReference[0].entity.namespace"
-				modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
-			<tripleMap predicateUri="*" objectPart="localName" beanProperty="valueAsReference[0].entity.name"/>
-		</triplesMap>	
-	</resultMap>
+	<compositeResultMap id="propertyPropertyResultMap" resultClass="edu.mayo.cts2.framework.model.core.Property">
+		<tripleMap predicateUri="*" var="p" varType="uri" beanProperty="predicate.uri"/>
+		<tripleMap predicateUri="*" var="p" varType="namespace" beanProperty="predicate.namespace"
+			modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
+		<tripleMap predicateUri="*" var="p" varType="localName" beanProperty="predicate.name"/>
+		<tripleMap predicateUri="*" var="o" varType="uri" beanProperty="valueAsReference[0].entity.uri"/>
+		<tripleMap predicateUri="*" var="o" varType="namespace" beanProperty="valueAsReference[0].entity.namespace"
+			modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
+		<tripleMap predicateUri="*" var="o" varType="localName" beanProperty="valueAsReference[0].entity.name"/>	
+	</compositeResultMap>
 	
-	<resultMap id="literalPropertyResultMap" resultClass="edu.mayo.cts2.framework.model.core.Property">
-		<triplesMap>
-			<tripleMap predicateUri="*" predicatePart="uri" beanProperty="predicate.uri"/>
-			<tripleMap predicateUri="*" predicatePart="namespace" beanProperty="predicate.namespace"
-				modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
-			<tripleMap predicateUri="*" predicatePart="localName" beanProperty="predicate.name"/>
-			<tripleMap predicateUri="*" objectPart="literalValue" beanProperty="valueAsReference[0].literal.value.content"/>
-		</triplesMap>	
-	</resultMap>
+	<compositeResultMap id="literalPropertyResultMap" resultClass="edu.mayo.cts2.framework.model.core.Property">
+		<tripleMap predicateUri="*" var="p" varType="uri" beanProperty="predicate.uri"/>
+		<tripleMap predicateUri="*" var="p" varType="namespace" beanProperty="predicate.namespace"
+			modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
+		<tripleMap predicateUri="*" var="p" varType="localName" beanProperty="predicate.name"/>
+		<tripleMap predicateUri="*" var="o" varType="literalValue" beanProperty="valueAsReference[0].literal.value.content"/>
+	</compositeResultMap>
 	
-	<resultMap id="abstractResourceDescriptionResultMap" extends="common:resourceDescriptionResultMap" >
-		<triplesMap>
-			<tripleMap 
-				objectPart="literalValue" 
-				predicateUri="http://purl.bioontology.org/ontology/bioportal/format" 
-				beanProperty="releaseFormatAsReference[].sourceAndNotationDescription"/>
-		</triplesMap>	
-	</resultMap>
+	<compositeResultMap id="abstractResourceDescriptionResultMap" extends="common:resourceDescriptionResultMap" >
+		<tripleMap 
+			var="o" 
+			varType="literalValue" 
+			predicateUri="http://purl.bioontology.org/ontology/bioportal/format" 
+			beanProperty="releaseFormatAsReference[].sourceAndNotationDescription"/>
+	</compositeResultMap>
 	
 </sparqlMap>
