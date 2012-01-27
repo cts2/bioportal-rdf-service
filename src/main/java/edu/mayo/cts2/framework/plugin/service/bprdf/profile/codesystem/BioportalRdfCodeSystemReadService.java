@@ -70,7 +70,14 @@ public class BioportalRdfCodeSystemReadService implements CodeSystemReadService 
 					parameters, 
 					CodeSystemCatalogEntry.class);
 		} else {
-			throw new UnsupportedOperationException();
+			Map<String,Object> parameters = new HashMap<String,Object>();
+			parameters.put("uri", identifier.getUri());
+
+			return this.rdfDao.selectForObject(
+					CODESYSTEM_NAMESPACE, 
+					GET_CODESYSTEM_BY_URI, 
+					parameters, 
+					CodeSystemCatalogEntry.class);
 		}
 	}
 

@@ -16,18 +16,18 @@
 	<compositeResultMap id="propertyPropertyResultMap" resultClass="edu.mayo.cts2.framework.model.core.Property">
 		<tripleMap predicateUri="*" var="p" varType="uri" beanProperty="predicate.uri"/>
 		<tripleMap predicateUri="*" var="p" varType="namespace" beanProperty="predicate.namespace"
-			modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
+			modifier="spring:namespaceModifier"/>
 		<tripleMap predicateUri="*" var="p" varType="localName" beanProperty="predicate.name"/>
 		<tripleMap predicateUri="*" var="o" varType="uri" beanProperty="valueAsReference[0].entity.uri"/>
 		<tripleMap predicateUri="*" var="o" varType="namespace" beanProperty="valueAsReference[0].entity.namespace"
-			modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
+			modifier="spring:namespaceModifier"/>
 		<tripleMap predicateUri="*" var="o" varType="localName" beanProperty="valueAsReference[0].entity.name"/>	
 	</compositeResultMap>
 	
 	<compositeResultMap id="literalPropertyResultMap" resultClass="edu.mayo.cts2.framework.model.core.Property">
 		<tripleMap predicateUri="*" var="p" varType="uri" beanProperty="predicate.uri"/>
 		<tripleMap predicateUri="*" var="p" varType="namespace" beanProperty="predicate.namespace"
-			modifier="edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier"/>
+			modifier="spring:namespaceModifier"/>
 		<tripleMap predicateUri="*" var="p" varType="localName" beanProperty="predicate.name"/>
 		<tripleMap predicateUri="*" var="o" varType="literalValue" beanProperty="valueAsReference[0].literal.value.content"/>
 	</compositeResultMap>

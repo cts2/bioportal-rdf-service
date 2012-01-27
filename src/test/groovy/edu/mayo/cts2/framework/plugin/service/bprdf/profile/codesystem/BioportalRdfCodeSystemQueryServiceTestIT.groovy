@@ -25,5 +25,17 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
 	}
+	
+	@Test
+	void TestGetResourceSummariesHaveHrefs(){
+		def dir = query.getResourceSummaries(null,null,new Page())
+		
+		dir.entries.each {
+			
+			assertNotNull it.href 
+			
+		}
+
+	}
 
 }

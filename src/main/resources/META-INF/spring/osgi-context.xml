@@ -12,5 +12,5 @@
 	<osgi:reference id="cts2Marshaller" interface="edu.mayo.cts2.framework.core.xml.Cts2Marshaller"/>
 	
 	<osgi:service ref="bioportalRdfServiceProvider" interface="edu.mayo.cts2.framework.service.provider.ServiceProvider"/>
-	
+	 
 </beans>

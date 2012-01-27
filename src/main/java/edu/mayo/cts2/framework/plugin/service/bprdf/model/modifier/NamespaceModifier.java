@@ -23,6 +23,12 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
+
 import edu.mayo.twinkql.result.callback.Modifier;
 
 /**
@@ -30,7 +36,20 @@ import edu.mayo.twinkql.result.callback.Modifier;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public class NamespaceModifier implements Modifier<String> {
+@Component("namespaceModifier")
+public class NamespaceModifier implements Modifier<String>, InitializingBean {
+	
+	private Map<String,String> knownNamespaces;
+
+	/* (non-Javadoc)
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if(this.knownNamespaces == null){
+			this.knownNamespaces = this.setUpDefaultKnownNamespaces();
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.Modifier#beforeSetting(java.lang.Object)
@@ -47,9 +66,31 @@ public class NamespaceModifier implements Modifier<String> {
 	 * @return the namespace
 	 */
 	protected String getNamespace(String uri){
-		String hashString = Integer.toString(uri.hashCode());
 		
-		return "ns"+hashString;
+		if(! this.knownNamespaces.containsKey(uri)){
+			String hashString = Integer.toString(uri.hashCode());
+			
+			hashString = "ns"+hashString;
+			
+			this.knownNamespaces.put(uri, hashString);
+		}
+		
+		return this.knownNamespaces.get(uri);
 	}
-
+	
+	//need to externalize this with a Namespace service
+	/**
+	 * Sets the up default known namespaces.
+	 *
+	 * @return the map
+	 */
+	protected Map<String,String> setUpDefaultKnownNamespaces(){
+		Map<String,String> namespaces = new HashMap<String,String>();
+		
+		namespaces.put("bioportal", "http://purl.bioontology.org/ontology/bioportal/description");
+		namespaces.put("rdfs", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
+		
+		return namespaces;
+		
+	}
 }

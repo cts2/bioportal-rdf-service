@@ -4,7 +4,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
 	<perRowResultMap id="codeSystemCatalogEntrySummaryResult" 
-		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary">
+		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary"
+		afterMap="spring:codeSystemSummaryHrefCallback">
 		<rowMap var="abr" varType="literalValue" beanProperty="resourceName"/>
 		<rowMap var="abr" varType="literalValue" beanProperty="codeSystemName"/>
 		<rowMap var="description" varType="literalValue" beanProperty="resourceSynopsis.value.content"/>
@@ -51,6 +52,20 @@
    				?s a <http://www.w3.org/2002/07/owl#Ontology>;
    				<http://purl.bioontology.org/ontology/bioportal/abbreviation> "#{name}";
    				?p ?o
+   			}
+		}
+	 
+	 ]]>
+	</select>
+	
+	<select id="getCodeSystemByUri" resultMap="codeSystemCatalogEntryResult">
+	<![CDATA[
+
+		SELECT ?s ?p ?o
+		WHERE {
+ 			GRAPH ?graph {
+   				<#{uri}> ?p ?o .
+   				?s ?p ?o
    			}
 		}
 	 

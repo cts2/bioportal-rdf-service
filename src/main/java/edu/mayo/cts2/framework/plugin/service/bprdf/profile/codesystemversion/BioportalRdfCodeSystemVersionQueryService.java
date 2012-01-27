@@ -25,8 +25,6 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
 import java.util.Set;
 
-import javax.annotation.Resource;
-
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary;
 import edu.mayo.cts2.framework.model.command.Page;
@@ -35,7 +33,6 @@ import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQuery;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQueryService;
 
@@ -46,9 +43,6 @@ import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersi
  */
 public class BioportalRdfCodeSystemVersionQueryService implements
 		CodeSystemVersionQueryService {
-	
-	@Resource
-	private RdfDao RdfDao;
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#getResourceSummaries(edu.mayo.cts2.framework.service.profile.ResourceQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
