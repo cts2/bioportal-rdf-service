@@ -4,13 +4,13 @@ import static org.junit.Assert.*
 
 import javax.annotation.Resource
 
+import org.apache.commons.lang.StringUtils
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
 import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry
-import edu.mayo.cts2.framework.model.util.ModelUtils
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(value="classpath:/bioportal-rdf-service-test-context.xml")
@@ -62,5 +62,15 @@ abstract class BioportalRdfCodeSystemReadServiceTestITBase {
 		CodeSystemCatalogEntry cs = doRead()
 		
 		assertEquals "MA", cs.codeSystemName
+	}
+	
+	@Test
+	void CheckNamespaces() {
+		def cs = doRead()
+			
+		cs.property.each {
+			println it.predicate.namespace
+			assertFalse StringUtils.startsWith(it.predicate.namespace, "ns-")
+		}
 	}
 }

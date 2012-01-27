@@ -87,8 +87,9 @@ public class NamespaceModifier implements Modifier<String>, InitializingBean {
 	protected Map<String,String> setUpDefaultKnownNamespaces(){
 		Map<String,String> namespaces = new HashMap<String,String>();
 		
-		namespaces.put("bioportal", "http://purl.bioontology.org/ontology/bioportal/description");
-		namespaces.put("rdfs", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
+		namespaces.put("http://purl.bioontology.org/ontology/bioportal/", "bioportal");
+		namespaces.put("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs");
+		namespaces.put("http://www.w3.org/2002/07/owl#", "owl");
 		
 		return namespaces;
 		
