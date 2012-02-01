@@ -25,12 +25,6 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
 
 import java.util.Map;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
@@ -38,21 +32,15 @@ import edu.mayo.twinkql.result.callback.AfterResultBinding;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
-
-	@Resource
-	private UrlConstructor urlConstructor;
+public abstract class AbstractCodeSystemNameSettingCallback<T> implements AfterResultBinding<T> {
 	
-	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
-	 */
-	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
-			Map<String,Object> callbackParams) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
+	protected CodeSystemName getCodeSystemName(Map<String,Object> callbackParams) {
+		String acronym = (String) callbackParams.get("acronym");
+		String ontologyId = (String) callbackParams.get("id");
+		
+		CodeSystemName name = new CodeSystemName(acronym,ontologyId);
+		
+		return name;
 	}
 
 }

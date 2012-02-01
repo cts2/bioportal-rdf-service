@@ -194,7 +194,7 @@
 		<dependency>
 			<groupId>edu.mayo</groupId>
 			<artifactId>twinkql</artifactId>
-			<version>0.1.0</version>
+			<version>0.1.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.codehaus.castor</groupId>

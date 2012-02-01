@@ -62,7 +62,7 @@ public class BioportalRdfCodeSystemReadService implements CodeSystemReadService 
 		
 		if(StringUtils.isNotBlank(identifier.getName())){
 			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("name", identifier.getName());
+			parameters.put("name", CodeSystemName.parse(identifier.getName()));
 
 			return this.rdfDao.selectForObject(
 					CODESYSTEM_NAMESPACE, 

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMap namespace="codeSystem"
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	
+	<perRowResultMap id="codeSystemVersionCatalogEntrySummaryResult" extends="common:resourceDescriptionDirectoryEntry"
+		resultClass="edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary"
+		afterMap="spring:codeSystemVersionSummaryHrefCallback">
+		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
+		<rowMap var="versionId" varType="literalValue" callbackId="latestVersionId"/>
+		<rowMap var="id" varType="literalValue" callbackId="id"/>
+		<rowMap var="s" varType="uri" beanProperty="about"/>
+	</perRowResultMap>
+	
+	<compositeResultMap id="codeSystemVersionCatalogEntryResult"
+	 	extends="common:resourceVersionDescriptionResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry"
+		afterMap="spring:codeSystemVersionNameCallback,spring:codeSystemVersionHrefCallback">
+		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" callbackId="acronym"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="ontologyId"/>
+	</compositeResultMap>
+	
+	<select id="getCodeSystemVersionCatalogSummaries" resultMap="codeSystemVersionCatalogEntrySummaryResult">
+		
+		SELECT  ?s ?acronym ?ontologyId ?versionId ?id ?description
+        WHERE { 
+ 
+                     ?s1 a omv:Ontology;
+                        bpMetadata:timestampCreation ?time;
+                        omv:acronym ?acronym1
+                        
+                     OPTIONAL {
+	        		 ?s2 a omv:Ontology;
+	                         bpMetadata:timestampCreation ?othertime ;
+                                 omv:acronym ?acronym2
+                                 <![CDATA[
+	                             FILTER( ?acronym1 = ?acronym2 && ?time < ?othertime ) .
+	                             ]]>
+	                      } .
+	                
+	                      ?s bpMetadata:timestampCreation ?time ;
+                                  omv:acronym ?acronym ;
+                                  bpMetadata:id ?versionId ;
+                                  omv:description ?description ;
+                                  bpMetadata:isVersionOfVirtualOntology ?ontologyId .
+                              ?ontologyId bpMetadata:id ?id
+	                   
+	                      FILTER ( !bound(?othertime) ) .
+            
+	    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
+	   	    CONTAINS( ?#{item.var}, '#{item.text}' ) 
+	    </iterator>
+	    }
+	    LIMIT  #{limit}
+	    OFFSET #{offset}
+	 
+
+	</select>
+	
+	<select id="getCodeSystemVersionByName" resultMap="codeSystemVersionCatalogEntryResult">
+        <![CDATA[
+        SELECT DISTINCT ?s3 ?p ?o
+        WHERE { 
+                
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{name.ontologyId}/metadata/> {
+	
+                       ?s1 a omv:Ontology;
+                          bpMetadata:timestampCreation ?time .
+                          
+                       OPTIONAL {
+	        			  ?s2 a omv:Ontology;
+	                         bpMetadata:timestampCreation ?othertime .
+	                             FILTER( ?time < ?othertime ) .
+	                      } .
+	                
+	                      ?s bpMetadata:timestampCreation ?time ;
+	                      ?p ?o
+	                      FILTER ( !bound(?othertime) ) .
+                 }
+        }
+        ]]>
+	</select>
+	
+	<select id="getCodeSystemVersionByUri" resultMap="codeSystemVersionCatalogEntryResult">
+        <![CDATA[
+        SELECT DISTINCT ?s3 ?p ?o
+        WHERE { 
+                
+				GRAPH <#{uri}/metadata/> {
+	
+                       ?s1 a omv:Ontology;
+                          bpMetadata:timestampCreation ?time .
+                          
+                       OPTIONAL {
+	        			  ?s2 a omv:Ontology;
+	                         bpMetadata:timestampCreation ?othertime .
+	                             FILTER( ?time < ?othertime ) .
+	                      } .
+	                
+	                      ?s bpMetadata:timestampCreation ?time ;
+	                      ?p ?o
+	                      FILTER ( !bound(?othertime) ) .
+                 }
+        }
+        ]]>
+	</select>
+</sparqlMap>

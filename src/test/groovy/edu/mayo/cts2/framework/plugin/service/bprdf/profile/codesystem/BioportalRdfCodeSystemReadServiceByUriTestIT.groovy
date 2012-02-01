@@ -19,7 +19,18 @@ class BioportalRdfCodeSystemReadServiceByUriTestIT extends BioportalRdfCodeSyste
 	BioportalRdfCodeSystemReadService read
 	
 	def doRead() {
-		read.read(ModelUtils.nameOrUriFromUri("http://purl.bioontology.org/ontology/MA.rdf"), null)
+		read.read(ModelUtils.nameOrUriFromUri("http://bioportal.bioontology.org/ontologies/1000"), null)
+	}
+	
+	@Test
+	void TestDoRead() {
+		def cs = doRead()
+		
+		assertNotNull cs
+		
+		cs.property.each {
+			println it.predicate.name
+		}
 	}
 	
 	
