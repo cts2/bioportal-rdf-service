@@ -53,6 +53,8 @@ public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<
 			Map<String,Object> callbackParams) {
 		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
 		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
+		
+		//bindingResult.setCurrentVersion(currentVersion)
 	}
 
 }

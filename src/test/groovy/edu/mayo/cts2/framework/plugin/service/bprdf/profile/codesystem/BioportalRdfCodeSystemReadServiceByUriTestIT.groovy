@@ -27,16 +27,13 @@ class BioportalRdfCodeSystemReadServiceByUriTestIT extends BioportalRdfCodeSyste
 		def cs = doRead()
 		
 		assertNotNull cs
-		
-		cs.property.each {
-			println it.predicate.name
-		}
+
 	}
 	
 	
 	@Test
 	void doReadByInvalid() {
-		assertNull read.read(ModelUtils.nameOrUriFromUri("http://__INVALID__"), null)
+		assertNull read.read(ModelUtils.nameOrUriFromUri("http://__INVALID__/9999999"), null)
 	}
 
 }

@@ -30,13 +30,13 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService;
 
 /**
@@ -53,6 +53,9 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 
 	@Resource
 	private RdfDao rdfDao;
+	
+	@Resource
+	private IdService idService;
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService#read(edu.mayo.cts2.framework.model.service.core.NameOrURI, edu.mayo.cts2.framework.model.command.ResolvedReadContext)
@@ -62,14 +65,19 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 			ResolvedReadContext readContext) {
 		
 		if(StringUtils.isNotBlank(identifier.getName())){
-			String[] splitName = StringUtils.split(identifier.getName(), "_");
-			Assert.noNullElements(splitName);
-			Assert.isTrue(splitName.length == 2);
+			CodeSystemVersionName name = CodeSystemVersionName.parse(identifier.getName());
+			
+			String ontologyId = this.idService.getOntologyIdForId(name.getId());
+			
+			if(StringUtils.isBlank(ontologyId)){
+				//not found
+				return null;
+			}
 			
 			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("abbr", splitName[0]);
-			parameters.put("version", splitName[1]);
-
+			parameters.put("id", name.getId());
+			parameters.put("ontologyId", ontologyId);
+			
 			return this.rdfDao.selectForObject(
 					CODESYSTEMVERSION_NAMESPACE, 
 					GET_CODESYSTEMVERSION_BY_NAME, 
@@ -117,12 +125,18 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#existsCodeSystemVersionForCodeSystem(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String)
+	 */
 	@Override
 	public boolean existsCodeSystemVersionForCodeSystem(NameOrURI codeSystem,
 			String tagName) {
 		throw new UnsupportedOperationException();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#getCodeSystemVersionForCodeSystem(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String)
+	 */
 	@Override
 	public CodeSystemVersionCatalogEntry getCodeSystemVersionForCodeSystem(
 			NameOrURI codeSystem, String tagName) {
@@ -130,6 +144,9 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#existsVersionId(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String)
+	 */
 	@Override
 	public boolean existsVersionId(NameOrURI codeSystem,
 			String officialResourceVersionId) {
@@ -137,6 +154,9 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#getCodeSystemVersionForCodeSystem(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String, edu.mayo.cts2.framework.model.command.ResolvedReadContext)
+	 */
 	@Override
 	public CodeSystemVersionCatalogEntry getCodeSystemVersionForCodeSystem(
 			NameOrURI codeSystem, String tagName,
@@ -145,6 +165,9 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#getCodeSystemByVersionId(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String, edu.mayo.cts2.framework.model.command.ResolvedReadContext)
+	 */
 	@Override
 	public CodeSystemVersionCatalogEntry getCodeSystemByVersionId(
 			NameOrURI codeSystem, String officialResourceVersionId,

@@ -36,6 +36,7 @@ import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService;
 
 /**
@@ -52,6 +53,9 @@ public class BioportalRdfCodeSystemReadService implements CodeSystemReadService 
 
 	@Resource
 	private RdfDao rdfDao;
+	
+	@Resource
+	private IdService idService;
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService#read(edu.mayo.cts2.framework.model.service.core.NameOrURI, edu.mayo.cts2.framework.model.command.ResolvedReadContext)
@@ -61,8 +65,18 @@ public class BioportalRdfCodeSystemReadService implements CodeSystemReadService 
 			ResolvedReadContext readContext) {
 		
 		if(StringUtils.isNotBlank(identifier.getName())){
+			CodeSystemName name = CodeSystemName.parse(identifier.getName());
+			
+			String id = this.idService.getCurrentIdForOntologyId(name.getOntologyId());
+			
+			if(StringUtils.isBlank(id)){
+				//not found
+				return null;
+			}
+			
 			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("name", CodeSystemName.parse(identifier.getName()));
+			parameters.put("id", id);
+			parameters.put("ontologyId", name.getOntologyId());
 
 			return this.rdfDao.selectForObject(
 					CODESYSTEM_NAMESPACE, 
@@ -70,8 +84,22 @@ public class BioportalRdfCodeSystemReadService implements CodeSystemReadService 
 					parameters, 
 					CodeSystemCatalogEntry.class);
 		} else {
+			String uri = identifier.getUri();
+			String ontologyId = this.getOntologyIdFromUri(uri);
+			
+			if(StringUtils.isBlank(ontologyId)){
+				return null;
+			}
+
+			String id = this.idService.getCurrentIdForOntologyId(ontologyId);
+			
+			if(StringUtils.isBlank(id)){
+				return null;
+			}
+			
 			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("uri", identifier.getUri());
+			parameters.put("uri", uri);
+			parameters.put("id", id);
 
 			return this.rdfDao.selectForObject(
 					CODESYSTEM_NAMESPACE, 
@@ -79,6 +107,16 @@ public class BioportalRdfCodeSystemReadService implements CodeSystemReadService 
 					parameters, 
 					CodeSystemCatalogEntry.class);
 		}
+	}
+	
+	/**
+	 * Gets the ontology id from uri.
+	 *
+	 * @param uri the uri
+	 * @return the ontology id from uri
+	 */
+	private String getOntologyIdFromUri(String uri){
+		return StringUtils.substringAfterLast(uri, "/");
 	}
 
 	/* (non-Javadoc)

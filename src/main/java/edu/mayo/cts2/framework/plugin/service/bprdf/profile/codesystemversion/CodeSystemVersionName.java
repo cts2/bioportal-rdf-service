@@ -21,44 +21,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
 import org.apache.commons.lang.StringUtils;
 
 /**
- * The Class CodeSystemName.
+ * The Class CodeSystemVersionName.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public class CodeSystemName {
+public class CodeSystemVersionName {
 	
 	private static final String SEPARATOR = "-";
 
 	private String acronym;
-	private String ontologyId;
+	private String id;
 	
 	/**
 	 * Parses the.
 	 *
 	 * @param name the name
-	 * @return the code system name
+	 * @return the code system version name
 	 */
-	public static CodeSystemName parse(String name) {
+	public static CodeSystemVersionName parse(String name) {
 		String[] parts = StringUtils.split(name, SEPARATOR);
 		
-		return new CodeSystemName(parts[0], parts[1]);
+		return new CodeSystemVersionName(parts[0], parts[1]);
 	}
 
 	/**
-	 * Instantiates a new code system name.
+	 * Instantiates a new code system version name.
 	 *
 	 * @param acronym the acronym
-	 * @param ontologyId the ontology id
+	 * @param id the id
 	 */
-	public CodeSystemName(String acronym, String ontologyId) {
+	public CodeSystemVersionName(String acronym, String id) {
 		super();
 		this.acronym = acronym;
-		this.ontologyId = ontologyId;
+		this.id = id;
+	}
+
+	public String getAcronym() {
+		return acronym;
+	}
+
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	/* (non-Javadoc)
@@ -66,9 +82,9 @@ public class CodeSystemName {
 	 */
 	@Override
 	public String toString() {
-		return this.acronym + SEPARATOR + this.ontologyId;
+		return this.acronym + SEPARATOR + this.id;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -77,11 +93,10 @@ public class CodeSystemName {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((acronym == null) ? 0 : acronym.hashCode());
-		result = prime * result
-				+ ((ontologyId == null) ? 0 : ontologyId.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -93,31 +108,20 @@ public class CodeSystemName {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CodeSystemName other = (CodeSystemName) obj;
+		CodeSystemVersionName other = (CodeSystemVersionName) obj;
 		if (acronym == null) {
 			if (other.acronym != null)
 				return false;
 		} else if (!acronym.equals(other.acronym))
 			return false;
-		if (ontologyId == null) {
-			if (other.ontologyId != null)
+		if (id == null) {
+			if (other.id != null)
 				return false;
-		} else if (!ontologyId.equals(other.ontologyId))
+		} else if (!id.equals(other.id))
 			return false;
 		return true;
 	}
-	public String getAcronym() {
-		return acronym;
-	}
-	public void setAcronym(String acronym) {
-		this.acronym = acronym;
-	}
-	public String getOntologyId() {
-		return ontologyId;
-	}
-	public void setOntologyId(String ontologyId) {
-		this.ontologyId = ontologyId;
-	}
+	
 	
 	
 }

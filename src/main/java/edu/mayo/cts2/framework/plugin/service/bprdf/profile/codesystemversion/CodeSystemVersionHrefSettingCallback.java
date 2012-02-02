@@ -31,7 +31,8 @@ import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
-import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem.CodeSystemName;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
@@ -39,10 +40,13 @@ import edu.mayo.twinkql.result.callback.AfterResultBinding;
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component("codeSystemVersionHrefCallback")
-public class CodeSystemVersionHrefSettingCallback implements AfterResultBinding<CodeSystemVersionCatalogEntry> {
+public class CodeSystemVersionHrefSettingCallback extends AbstractCodeSystemVersionNameSettingCallback<CodeSystemVersionCatalogEntry> {
 
 	@Resource
 	private UrlConstructor urlConstructor;
+	
+	@Resource
+	private IdService idService;
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
@@ -52,12 +56,16 @@ public class CodeSystemVersionHrefSettingCallback implements AfterResultBinding<
 			CodeSystemVersionCatalogEntry bindingResult, 
 			Map<String,Object> callbackParams) {
 
-		String codeSystemName = (String) callbackParams.get(CodeSystemVersionConstants.ABBREVIATION_CALLBACK_PARAM);
+		CodeSystemVersionName csvName = this.getCodeSystemVersionName(callbackParams);
 		
-		String version = (String) callbackParams.get(CodeSystemVersionConstants.VERSION_CALLBACK_PARAM);
+		String acronym = csvName.getAcronym();
+		
+		CodeSystemName csName = new CodeSystemName(acronym, this.idService.getOntologyIdForId(csvName.getId()));
 		
 		bindingResult.setEntityDescriptions(
-				this.urlConstructor.createEntitiesOfCodeSystemVersionUrl(codeSystemName, version));
+				this.urlConstructor.createEntitiesOfCodeSystemVersionUrl(
+						csName.toString(), 
+						csvName.toString()));
 	}
 
 }

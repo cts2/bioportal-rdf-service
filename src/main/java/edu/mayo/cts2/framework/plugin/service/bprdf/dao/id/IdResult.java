@@ -1,5 +1,5 @@
 /*
- * Copyright: (c) 2004-2011 Mayo Foundation for Medical Education and 
+ * Copyright: (c) 2004-2012 Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
  * triple-shield Mayo logo are trademarks and service marks of MFMER.
  *
@@ -21,44 +21,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
-
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
-import edu.mayo.twinkql.result.callback.AfterResultBinding;
+package edu.mayo.cts2.framework.plugin.service.bprdf.dao.id;
 
 /**
- * The Class CodeSystemHrefSettingCallback.
+ * The Class IdResult.
  *
- * @param <T> the generic type
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component
-public abstract class AbstractCodeSystemNameSettingCallback<T> implements AfterResultBinding<T> {
+public class IdResult {
 	
-	@Resource
-	private IdService idService;
+	private String ontologyId;
+	private String id;
 	
-	/**
-	 * Gets the code system name.
-	 *
-	 * @param callbackParams the callback params
-	 * @return the code system name
-	 */
-	protected CodeSystemName getCodeSystemName(Map<String,Object> callbackParams) {
-		String acronym = (String) callbackParams.get("acronym");
-		String id = (String) callbackParams.get("id");
-		
-		String ontologyId = this.idService.getOntologyIdForId(id);
-		
-		CodeSystemName name = new CodeSystemName(acronym,ontologyId);
-		
-		return name;
+	public String getOntologyId() {
+		return ontologyId;
 	}
-
+	public void setOntologyId(String ontologyId) {
+		this.ontologyId = ontologyId;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 }

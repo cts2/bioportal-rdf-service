@@ -21,35 +21,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
+package edu.mayo.cts2.framework.plugin.service.bprdf.callback.common;
 
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary;
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
+import edu.mayo.cts2.framework.model.core.NameAndMeaningReference;
+import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemVersionSummaryDocumentUriCallback")
-public class CodeSystemVersionSummaryDocumentUriSettingCallback extends AbstractCodeSystemVersionSummaryDocumentUriSettingCallback<CodeSystemVersionCatalogEntrySummary> {
+@Component("codeSystemVersionReferenceHrefCallback")
+public class CodeSystemVersionReferenceHrefSettingCallback implements AfterResultBinding<CodeSystemVersionReference> {
 
+	@Resource
+	private UrlConstructor urlConstructor;
+	
+	@Resource
+	private CodeSystemReferenceHrefSettingCallback codeSystemReferenceHrefSettingCallback;
+	
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
 	public void afterBinding(
-			CodeSystemVersionCatalogEntrySummary bindingResult,
+			CodeSystemVersionReference bindingResult,
 			Map<String,Object> callbackParams) {
-		
-		String about = (String) callbackParams.get("about");
-		
-		String version = (String) callbackParams.get(CodeSystemVersionConstants.VERSION_CALLBACK_PARAM);
-		
-		bindingResult.setDocumentURI(this.getDocumentUri(about, version));
-	}
+		this.codeSystemReferenceHrefSettingCallback.afterBinding(
+				bindingResult.getCodeSystem(), 
+				callbackParams);
 	
+		NameAndMeaningReference versionRef = bindingResult.getVersion();
+		versionRef.setHref(this.urlConstructor.createCodeSystemVersionUrl(
+				bindingResult.getCodeSystem().getContent(),
+				versionRef.getContent()));
+	}
+
 }

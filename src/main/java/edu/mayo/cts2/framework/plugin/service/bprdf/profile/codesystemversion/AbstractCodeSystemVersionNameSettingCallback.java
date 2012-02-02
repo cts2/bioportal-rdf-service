@@ -23,17 +23,31 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
+import java.util.Map;
+
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
+ * @param <T> the generic type
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 public abstract class AbstractCodeSystemVersionNameSettingCallback<T> implements AfterResultBinding<T> {
 	
-	protected String getCodeSystemVersionName(String abbreviation, String version){
-		return abbreviation + "_" + version;
+	/**
+	 * Gets the code system version name.
+	 *
+	 * @param callbackParams the callback params
+	 * @return the code system version name
+	 */
+	protected CodeSystemVersionName getCodeSystemVersionName(Map<String,Object> callbackParams){
+		
+		String accronym = (String) callbackParams.get(CodeSystemVersionConstants.ACRONYM_CALLBACK_PARAM);
+		
+		String id = (String) callbackParams.get(CodeSystemVersionConstants.ID_CALLBACK_PARAM);
+		
+		return new CodeSystemVersionName(accronym, id);
 	}
 
 }

@@ -69,14 +69,14 @@ abstract class BioportalRdfCodeSystemVersionReadServiceTestITBase {
 	void TestReadByNameHasName(){
 		CodeSystemVersionCatalogEntry cs = doRead()
 		
-		assertEquals "MA_1.205", cs.codeSystemVersionName
+		assertEquals "FIX-45720", cs.codeSystemVersionName
 	}
 	
 	@Test
 	void TestReadByNameHasVersion(){
 		CodeSystemVersionCatalogEntry cs = doRead()
 		
-		assertEquals "1.205", cs.officialResourceVersionId
+		assertEquals "See Remote Site", cs.officialResourceVersionId
 	}
 	
 	@Test
@@ -84,7 +84,6 @@ abstract class BioportalRdfCodeSystemVersionReadServiceTestITBase {
 		def cs = doRead()
 			
 		cs.property.each {
-			println it.predicate.namespace
 			assertFalse StringUtils.startsWith(it.predicate.namespace, "ns-")
 		}
 	}

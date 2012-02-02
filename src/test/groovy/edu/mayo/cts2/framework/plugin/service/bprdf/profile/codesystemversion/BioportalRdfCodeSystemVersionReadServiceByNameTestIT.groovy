@@ -11,7 +11,7 @@ class BioportalRdfCodeSystemVersionReadServiceByNameTestIT extends BioportalRdfC
 
 	@Override
 	public Object doRead() {
-		read.read(ModelUtils.nameOrUriFromName("MA_1.205"), null)
+		read.read(ModelUtils.nameOrUriFromName("FIX-45720"), null)
 	}
 
 	@Test
@@ -23,8 +23,8 @@ class BioportalRdfCodeSystemVersionReadServiceByNameTestIT extends BioportalRdfC
 	
 	@Test
 	void doReadByInvalid() {
-		def csv = read.read(ModelUtils.nameOrUriFromName("INVALID_VERSION"), null)
-		println csv
+		def csv = read.read(ModelUtils.nameOrUriFromName("INVALID-VERSION"), null)
+		assertNull csv
 	}
 
 }

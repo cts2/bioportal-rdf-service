@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary;
@@ -50,13 +51,12 @@ public class CodeSystemVersionSummaryHrefSettingCallback implements AfterResultB
 	@Override
 	public void afterBinding(
 			CodeSystemVersionCatalogEntrySummary bindingResult, 
-			Map<String,Object> callbackParams) {
+			Map<String,Object> callbackParams) {;
 
-		String codeSystemName = (String) callbackParams.get(CodeSystemVersionConstants.ABBREVIATION_CALLBACK_PARAM);
+		Assert.notNull(bindingResult.getVersionOf());
 		
-		String version = (String) callbackParams.get(CodeSystemVersionConstants.VERSION_CALLBACK_PARAM);
-
-		bindingResult.setHref(this.urlConstructor.createCodeSystemVersionUrl(codeSystemName, version));
+		bindingResult.setHref(this.urlConstructor.createCodeSystemVersionUrl(
+				bindingResult.getVersionOf().getContent(), bindingResult.getCodeSystemVersionName()));
 	}
 
 }

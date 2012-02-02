@@ -3,16 +3,39 @@
 	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
-	<perRowResultMap id="codeSystemCatalogEntrySummaryResult" extends="common:resourceDescriptionDirectoryEntry"
+	<perRowResultMap id="codeSystemCatalogEntrySummaryResultMap" 
+		extends="common:resourceDescriptionDirectoryEntryResultMap"
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary"
-		afterMap="spring:codeSystemSummaryNameCallback,spring:codeSystemSummaryHrefCallback">
+		afterMap="spring:codeSystemSummaryHrefCallback">
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
-		<rowMap var="versionId" varType="literalValue" callbackId="latestVersionId"/>
-		<rowMap var="id" varType="literalValue" callbackId="id"/>
-		<rowMap var="ontologyId" varType="uri" beanProperty="about"/>
+		<rowMap var="ontologyId" varType="uri" beanProperty="about" />
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="codeSystemName" />
+		<rowMap var="resourceName" varType="literalValue" beanProperty="codeSystemName"/>
+		<rowMap var="id" varType="literalValue" callbackId="id" />
+		<rowMap var="virtualId" varType="literalValue" callbackId="virtualId"/>
+		<rowMap beanProperty="currentVersion" resultMapping="codeSystem:codeSystemVersionReferenceResultMap"/>	
 	</perRowResultMap>
 	
-	<compositeResultMap id="codeSystemCatalogEntryResult"
+	<perRowResultMap id="codeSystemVersionReferenceResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemVersionReference"
+		afterMap="spring:codeSystemVersionReferenceHrefCallback">
+		<rowMap beanProperty="version" resultMapping="codeSystem:currentVersionVersionNameAndMeaningReferenceResultMap"/>
+		<rowMap beanProperty="codeSystem" resultMapping="codeSystem:currentVersionCodeSystemNameAndMeaningReferenceResultMap"/>
+	</perRowResultMap>
+	
+	<perRowResultMap id="currentVersionCodeSystemNameAndMeaningReferenceResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference">
+		<rowMap var="ontologyId" varType="uri" beanProperty="uri"/>
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="content"/>
+	</perRowResultMap>
+	
+	<perRowResultMap id="currentVersionVersionNameAndMeaningReferenceResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
+		<rowMap var="s" varType="uri" beanProperty="uri"/>
+		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="content"/>
+	</perRowResultMap>
+	
+	<compositeResultMap id="codeSystemCatalogEntryResultMap"
 	 	extends="common:resourceDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry"
 		afterMap="spring:codeSystemNameCallback,spring:codeSystemHrefCallback">
@@ -21,85 +44,75 @@
 		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
 	</compositeResultMap>
 	
-	<select id="getCodeSystemCatalogSummaries" resultMap="codeSystemCatalogEntrySummaryResult">
+	<select id="getCodeSystemCatalogSummaries" resultMap="codeSystemCatalogEntrySummaryResultMap">
         
-		SELECT  ?s ?acronym ?ontologyId ?versionId ?id ?description
-        WHERE { 
- 
-                     ?s1 a omv:Ontology;
-                        bpMetadata:timestampCreation ?time;
-                        omv:acronym ?acronym1
-                        
-                     OPTIONAL {
-	        		 ?s2 a omv:Ontology;
-	                         bpMetadata:timestampCreation ?othertime ;
-                                 omv:acronym ?acronym2
-                                 <![CDATA[
-	                             FILTER( ?acronym1 = ?acronym2 && ?time < ?othertime ) .
-	                             ]]>
-	                      } .
-	                
-	                      ?s bpMetadata:timestampCreation ?time ;
-                                  omv:acronym ?acronym ;
-                                  bpMetadata:id ?versionId ;
-                                  omv:description ?description ;
-                                  bpMetadata:isVersionOfVirtualOntology ?ontologyId .
-                              ?ontologyId bpMetadata:id ?id
-	                   
-	                      FILTER ( !bound(?othertime) ) .
-            
-	    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
-	   	    CONTAINS( ?#{item.var}, '#{item.text}' ) 
-	    </iterator>
+       SELECT 
+          ?s
+          ?formalName
+          ?description
+          ?id
+          ?ontologyId
+          ( CONCAT( ?acronym, "-", ?virtualId ) as ?codeSystemName )
+          ( CONCAT( ?acronym, "-", ?id ) as ?codeSystemVersionName )
+    
+	   WHERE {
+	   ?s a omv:Ontology;
+	      omv:acronym ?acronym ;
+	      omv:name ?formalName ;
+	      bpMetadata:id ?id ;
+	      omv:description ?description ;
+	      bpMetadata:isVersionOfVirtualOntology ?ontologyId .
+	   ?ontologyId bpMetadata:id ?virtualId ;
+		
+		    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
+		   	    CONTAINS( ?#{item.var}, '#{item.text}' ) 
+		    </iterator>
 	    }
+	    
+	    GROUP BY ?ontologyId
+ 
 	    LIMIT  #{limit}
 	    OFFSET #{offset}
 	  
 	</select>
 	
-	<select id="getCodeSystemByName" resultMap="codeSystemCatalogEntryResult">
+	<select id="getCodeSystemByName" resultMap="codeSystemCatalogEntryResultMap">
         <![CDATA[
-        SELECT DISTINCT ?s3 ?p ?o
+        SELECT DISTINCT ?s ?p ?o
         WHERE { 
                 
-				GRAPH <http://bioportal.bioontology.org/ontologies/#{name.ontologyId}/metadata/> {
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata/> {
 	
-                       ?s1 a omv:Ontology;
-                          bpMetadata:timestampCreation ?time .
+                       ?s a omv:Ontology ;
+                          bpMetadata:id #{id} ;
+                          ?p ?o  
                           
-                       OPTIONAL {
-	        			  ?s2 a omv:Ontology;
-	                         bpMetadata:timestampCreation ?othertime .
-	                             FILTER( ?time < ?othertime ) .
-	                      } .
-	                
-	                      ?s bpMetadata:timestampCreation ?time ;
-	                      ?p ?o
-	                      FILTER ( !bound(?othertime) ) .
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses
+		               )       
                  }
         }
         ]]>
 	</select>
 	
-	<select id="getCodeSystemByUri" resultMap="codeSystemCatalogEntryResult">
+	<select id="getCodeSystemByUri" resultMap="codeSystemCatalogEntryResultMap">
         <![CDATA[
-        SELECT DISTINCT ?s3 ?p ?o
+        SELECT DISTINCT ?s ?p ?o
         WHERE { 
                 
 				GRAPH <#{uri}/metadata/> {
 	
-                       ?s1 a omv:Ontology;
-                          bpMetadata:timestampCreation ?time .
+                       ?s a omv:Ontology ;
+                          bpMetadata:id #{id} ;
+                          ?p ?o  
                           
-                       OPTIONAL {
-	        			  ?s2 a omv:Ontology;
-	                         bpMetadata:timestampCreation ?othertime .
-	                             FILTER( ?time < ?othertime ) .
-	                      } .
-	                
-	                      ?s bpMetadata:timestampCreation ?time ;
-	                      ?p ?o
-	                      FILTER ( !bound(?othertime) ) .
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses
+		               )       
                  }
         }
         ]]>

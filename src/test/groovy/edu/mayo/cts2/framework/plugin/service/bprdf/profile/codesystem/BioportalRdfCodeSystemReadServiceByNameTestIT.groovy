@@ -11,7 +11,7 @@ class BioportalRdfCodeSystemReadServiceByNameTestIT extends BioportalRdfCodeSyst
 
 	@Override
 	public Object doRead() {
-		def cs = read.read(ModelUtils.nameOrUriFromName("CARO-1063"), null)
+		def cs = read.read(ModelUtils.nameOrUriFromName("GO-1070"), null)
 		
 		cs
 	}
@@ -22,14 +22,11 @@ class BioportalRdfCodeSystemReadServiceByNameTestIT extends BioportalRdfCodeSyst
 		
 		assertNotNull cs
 		
-		cs.property.each {
-			println it.predicate.name
-		}
 	}
 
 	@Test
 	void doReadByInvalid() {
-		assertNull read.read(ModelUtils.nameOrUriFromName("__INVALID__"), null)
+		assertNull read.read(ModelUtils.nameOrUriFromName("TEST-INVALID"), null)
 	}
 
 }

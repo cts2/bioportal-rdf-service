@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMap namespace="util"
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	
+	<perRowResultMap id="idsResultMap" resultClass="edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdResult">
+		<rowMap var="id" varType="literalValue" beanProperty="id"/>
+		<rowMap var="ontologyId" varType="literalValue" beanProperty="ontologyId"/>
+	</perRowResultMap>
+	
+	<select id="getIds" resultMap="idsResultMap">
+		SELECT ?id ?ontologyId {
+    		?ontology bpMetadata:hasVersion ?ontologyVersion ;
+    			bpMetadata:id ?ontologyId .
+    		?ontologyVersion bpMetadata:id ?id .
+		}
+	</select>
+</sparqlMap>

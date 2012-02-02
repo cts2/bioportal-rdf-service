@@ -31,9 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
 
 import edu.mayo.cts2.framework.core.config.option.Option;
@@ -75,8 +73,8 @@ public class HttpQueryExecutionProvider implements QueryExecutionProvider, Initi
 	 * @see edu.mayo.twinkql.context.QueryExecutionProvider#provideQueryExecution(com.hp.hpl.jena.query.Query)
 	 */
 	@Override
-	public QueryExecution provideQueryExecution(Query query) {
-		QueryEngineHTTP qexec = QueryExecutionFactory.createServiceRequest(
+	public QueryExecution provideQueryExecution(String query) {
+		QueryEngineHTTP qexec = new QueryEngineHTTP(
 				this.sparqlService, query);
 		
 		qexec.addParam("apikey", this.apiKey);

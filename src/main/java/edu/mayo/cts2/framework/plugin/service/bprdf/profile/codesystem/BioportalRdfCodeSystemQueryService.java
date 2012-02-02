@@ -131,12 +131,15 @@ public class BioportalRdfCodeSystemQueryService extends AbstractQueryService imp
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService#doAddSupportedModelAttributes(java.util.Set)
+	 */
 	@Override
 	public void doAddSupportedModelAttributes(
 			Set<edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference> set) {
 		VariableTiedModelAttributeReference name = new VariableTiedModelAttributeReference();
 		name.setContent("resourceName");
-		name.setVariable("abr");
+		name.setVariable("acronym");
 
 		set.add(name);
 	}	

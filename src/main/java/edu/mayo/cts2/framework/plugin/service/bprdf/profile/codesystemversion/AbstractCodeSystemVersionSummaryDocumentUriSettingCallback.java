@@ -28,10 +28,18 @@ import edu.mayo.twinkql.result.callback.AfterResultBinding;
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
+ * @param <T> the generic type
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 public abstract class AbstractCodeSystemVersionSummaryDocumentUriSettingCallback<T> implements AfterResultBinding<T> {
 
+	/**
+	 * Gets the document uri.
+	 *
+	 * @param about the about
+	 * @param version the version
+	 * @return the document uri
+	 */
 	protected String getDocumentUri(String about, String version){
 		return about + "/version/" + version;
 	}

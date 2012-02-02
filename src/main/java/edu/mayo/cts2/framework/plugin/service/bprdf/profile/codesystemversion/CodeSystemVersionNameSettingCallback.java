@@ -45,10 +45,6 @@ public class CodeSystemVersionNameSettingCallback extends AbstractCodeSystemVers
 			CodeSystemVersionCatalogEntry bindingResult,
 			Map<String,Object> callbackParams) {
 		
-		String codeSystemName = (String) callbackParams.get(CodeSystemVersionConstants.ABBREVIATION_CALLBACK_PARAM);
-		
-		String version = (String) callbackParams.get(CodeSystemVersionConstants.VERSION_CALLBACK_PARAM);
-		
-		bindingResult.setCodeSystemVersionName(this.getCodeSystemVersionName(codeSystemName, version));
+		bindingResult.setCodeSystemVersionName(this.getCodeSystemVersionName(callbackParams).toString());
 	}
 }

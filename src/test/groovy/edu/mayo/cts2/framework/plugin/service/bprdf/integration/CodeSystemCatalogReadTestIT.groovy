@@ -12,7 +12,7 @@ class CodeSystemCatalogReadTestIT extends BaseServiceTestITBase {
 	@Test void TestGetCodeSystemByName(){
 		
 		CodeSystemCatalogEntryMsg result = 
-			client.getCts2Resource(server + "codesystem/MA", CodeSystemCatalogEntryMsg.class);
+			client.getCts2Resource(server + "codesystem/GO-1070", CodeSystemCatalogEntryMsg.class);
 			
 		assertNotNull result
 	}
@@ -21,7 +21,7 @@ class CodeSystemCatalogReadTestIT extends BaseServiceTestITBase {
 	@Test void TestGetCodeSystemByUri(){
 		
 		CodeSystemCatalogEntryMsg result = 
-			client.getCts2Resource(server + "codesystembyuri?uri=http://purl.bioontology.org/ontology/MA.rdf", CodeSystemCatalogEntryMsg.class);
+			client.getCts2Resource(server + "codesystembyuri?uri=http://bioportal.bioontology.org/ontologies/1000", CodeSystemCatalogEntryMsg.class);
 			
 		assertNotNull result
 	}

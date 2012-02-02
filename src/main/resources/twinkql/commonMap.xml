@@ -3,8 +3,9 @@
 	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
-	<perRowResultMap id="resourceDescriptionDirectoryEntry">
+	<perRowResultMap id="resourceDescriptionDirectoryEntryResultMap">
 		<rowMap var="description" varType="literalValue" beanProperty="resourceSynopsis.value.content"/>
+		<rowMap var="formalName" varType="literalValue" beanProperty="formalName"/>
 	</perRowResultMap>
 	
 	<compositeResultMap id="resourceVersionDescriptionResultMap" extends="common:resourceDescriptionResultMap">
@@ -13,6 +14,7 @@
 	
 	<compositeResultMap id="resourceDescriptionResultMap" >
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:description" beanProperty="resourceSynopsis.value.content"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:name" beanProperty="formalName"/>
 		<tripleMap resultMapping="common:propertyResultMap" predicateUri="*" beanProperty="propertyAsReference[]"/>	
 	</compositeResultMap>
 	

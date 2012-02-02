@@ -30,17 +30,19 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary;
 import edu.mayo.cts2.framework.model.command.Page;
-import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
-import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
-import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
+import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem.CodeSystemName;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQuery;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQueryService;
 
@@ -50,7 +52,7 @@ import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersi
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
-public class BioportalRdfCodeSystemVersionQueryService implements
+public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryService implements
 		CodeSystemVersionQueryService {
 	
 	private final static String CODESYSTEMVERSION_NAMESPACE = "codeSystemVersion";
@@ -74,6 +76,22 @@ public class BioportalRdfCodeSystemVersionQueryService implements
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put(LIMIT, page.getMaxToReturn()+1);
 		parameters.put(OFFSET, page.getStart());
+
+		String codeSystemVersionRestriction = "?codeSystemVersionRestriction";
+		
+		if(query != null && query.getRestrictions() != null) {
+			NameOrURI codeSystem = query.getRestrictions().getCodeSystem();
+		
+			if(codeSystem != null){
+				if(StringUtils.isNotBlank(codeSystem.getName())){
+					CodeSystemName name = CodeSystemName.parse(codeSystem.getName());
+					
+					codeSystemVersionRestriction = name.getOntologyId();
+				}
+			}
+		}
+		
+		parameters.put("codeSystemVersionRestriction", codeSystemVersionRestriction);
 		
 		List<CodeSystemVersionCatalogEntrySummary> results;
 		
@@ -91,6 +109,7 @@ public class BioportalRdfCodeSystemVersionQueryService implements
 		
 		return new DirectoryResult<CodeSystemVersionCatalogEntrySummary>(results,!moreResults,false);
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#getResourceList(edu.mayo.cts2.framework.service.profile.ResourceQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
@@ -111,19 +130,18 @@ public class BioportalRdfCodeSystemVersionQueryService implements
 		throw new UnsupportedOperationException();
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService#doAddSupportedModelAttributes(java.util.Set)
+	 */
 	@Override
-	public Set<? extends MatchAlgorithmReference> getSupportedMatchAlgorithms() {
-		throw new UnsupportedOperationException();
+	public void doAddSupportedModelAttributes(
+			Set<VariableTiedModelAttributeReference> set) {
+		VariableTiedModelAttributeReference name = new VariableTiedModelAttributeReference();
+		name.setContent("resourceName");
+		name.setVariable("acronym");
+
+		set.add(name);
 	}
 
-	@Override
-	public Set<? extends ModelAttributeReference> getSupportedModelAttributes() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Set<? extends PredicateReference> getSupportedProperties() {
-		throw new UnsupportedOperationException();
-	}
 
 }
