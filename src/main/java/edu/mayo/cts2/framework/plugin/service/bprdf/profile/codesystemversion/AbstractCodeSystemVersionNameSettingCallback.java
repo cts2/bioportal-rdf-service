@@ -21,40 +21,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
 import java.util.Map;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
+ * @param <T> the generic type
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
-
-	@Resource
-	private UrlConstructor urlConstructor;
+public abstract class AbstractCodeSystemVersionNameSettingCallback<T> implements AfterResultBinding<T> {
 	
-	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
+	/**
+	 * Gets the code system version name.
+	 *
+	 * @param callbackParams the callback params
+	 * @return the code system version name
 	 */
-	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
-			Map<String,Object> callbackParams) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
+	protected CodeSystemVersionName getCodeSystemVersionName(Map<String,Object> callbackParams){
 		
-		//bindingResult.setCurrentVersion(currentVersion)
+		String accronym = (String) callbackParams.get(CodeSystemVersionConstants.ACRONYM_CALLBACK_PARAM);
+		
+		String id = (String) callbackParams.get(CodeSystemVersionConstants.ID_CALLBACK_PARAM);
+		
+		return new CodeSystemVersionName(accronym, id);
 	}
 
 }

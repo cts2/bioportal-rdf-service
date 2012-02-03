@@ -35,12 +35,15 @@ import org.springframework.stereotype.Component;
 import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry;
 import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
 import edu.mayo.cts2.framework.model.command.Page;
-import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
+import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
-import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder.VariableQuery;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference;
 import edu.mayo.cts2.framework.service.profile.ResourceQuery;
 import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemQueryService;
 
@@ -50,7 +53,7 @@ import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemQueryService
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
-public class BioportalRdfCodeSystemQueryService implements
+public class BioportalRdfCodeSystemQueryService extends AbstractQueryService implements
 		CodeSystemQueryService {
 	
 	private final static String CODESYSTEM_NAMESPACE = "codeSystem";
@@ -74,6 +77,22 @@ public class BioportalRdfCodeSystemQueryService implements
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put(LIMIT, page.getMaxToReturn()+1);
 		parameters.put(OFFSET, page.getStart());
+		
+		VariableQueryBuilder builder = new VariableQueryBuilder();
+		
+		if(query != null){
+			for(ResolvedFilter filter : query.getFilterComponent()){
+				ModelAttributeReference modelRef = filter.getModelAttributeReference();
+				
+				VariableTiedModelAttributeReference variableModelRef = this.findSupportedModelAttribute(modelRef);
+				
+				builder = builder.addQuery(variableModelRef.getVariable(), filter.getMatchValue());
+			}
+		}
+		
+		VariableQuery variableQuery = builder.build();
+		
+		parameters.put("filters", variableQuery);
 		
 		List<CodeSystemCatalogEntrySummary> results;
 		
@@ -111,23 +130,17 @@ public class BioportalRdfCodeSystemQueryService implements
 		return 0;
 	}
 
-	@Override
-	public Set<? extends MatchAlgorithmReference> getSupportedMatchAlgorithms() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Set<? extends ModelAttributeReference> getSupportedModelAttributes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Set<? extends PredicateReference> getSupportedProperties() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	
+	/* (non-Javadoc)
+	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService#doAddSupportedModelAttributes(java.util.Set)
+	 */
+	@Override
+	public void doAddSupportedModelAttributes(
+			Set<edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference> set) {
+		VariableTiedModelAttributeReference name = new VariableTiedModelAttributeReference();
+		name.setContent("resourceName");
+		name.setVariable("acronym");
+
+		set.add(name);
+	}	
 }

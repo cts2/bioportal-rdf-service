@@ -1,5 +1,5 @@
 /*
- * Copyright: (c) 2004-2011 Mayo Foundation for Medical Education and 
+ * Copyright: (c) 2004-2012 Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
  * triple-shield Mayo logo are trademarks and service marks of MFMER.
  *
@@ -21,40 +21,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
-
-import java.util.Map;
-
-import javax.annotation.Resource;
+package edu.mayo.cts2.framework.plugin.service.bprdf.result;
 
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
-import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+
+import edu.mayo.twinkql.result.callback.ConditionalTest;
 
 /**
- * The Class CodeSystemHrefSettingCallback.
+ * The Class IsNotLiteralConditional.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
+@Component("isNotLiteral")
+public class IsNotLiteralConditional implements ConditionalTest<RDFNode> {
 
-	@Resource
-	private UrlConstructor urlConstructor;
-	
 	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
+	 * @see edu.mayo.twinkql.result.callback.ConditionalTest#test(java.lang.Object)
 	 */
 	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
-			Map<String,Object> callbackParams) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
-		
-		//bindingResult.setCurrentVersion(currentVersion)
+	public boolean test(RDFNode param) {
+		return !param.isLiteral();
 	}
 
 }

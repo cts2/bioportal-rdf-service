@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMap namespace="codeSystemVersion"
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	
+	<perRowResultMap id="codeSystemVersionCatalogEntrySummaryResultMap" 
+	    extends="common:resourceDescriptionDirectoryEntryResultMap"
+		resultClass="edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary"
+		afterMap="spring:codeSystemVersionSummaryHrefCallback">
+		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
+		<rowMap var="versionId" varType="literalValue" callbackId="latestVersionId"/>
+		<rowMap var="id" varType="literalValue" callbackId="id"/>
+		<rowMap var="s" varType="uri" beanProperty="about"/>
+		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="codeSystemVersionName"/>
+		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="resourceName"/>
+		<rowMap var="s" varType="uri" beanProperty="documentURI" />
+		<rowMap resultMapping="codeSystemVersion:versionOfResultMap" beanProperty="versionOf"/>
+	</perRowResultMap>
+	
+	<perRowResultMap id="versionOfResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference"
+		afterMap="spring:codeSystemReferenceHrefCallback">
+		<rowMap var="ontologyId" varType="uri" beanProperty="uri"/>
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="content"/>
+	</perRowResultMap>
+	
+	<compositeResultMap id="codeSystemVersionCatalogEntryResultMap"
+	 	extends="common:resourceVersionDescriptionResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry"
+		afterMap="spring:codeSystemVersionNameCallback,spring:codeSystemVersionHrefCallback">
+		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" callbackId="acronym"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
+		<tripleMap var="s" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="documentURI"/>
+		<tripleMap resultMapping="codeSystemVersion:compositeVersionOfResultMap" predicateUri="->" beanProperty="versionOf"/>
+	</compositeResultMap>
+	
+	<compositeResultMap id="compositeVersionOfResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference"
+		afterMap="spring:codeSystemVersionOfNameCallback,spring:codeSystemReferenceHrefCallback">
+		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="uri"/>
+	</compositeResultMap>
+	
+	<select id="getCodeSystemVersionCatalogSummaries" resultMap="codeSystemVersionCatalogEntrySummaryResultMap">
+		
+       SELECT DISTINCT
+          ?s
+          ?formalName
+          ?description
+          ?id
+          ?ontologyId
+          ( CONCAT( ?acronym, "-", ?virtualId ) as ?codeSystemName )
+          ( CONCAT( ?acronym, "-", ?id ) as ?codeSystemVersionName )
+
+	   WHERE {
+	   ?s a omv:Ontology;
+	      omv:acronym ?acronym ;
+	      omv:name ?formalName ;
+	      bpMetadata:id ?id ;
+	      omv:description ?description ;
+	      bpMetadata:isVersionOfVirtualOntology ?ontologyId .
+	   ?ontologyId bpMetadata:id ?virtualId .
+	   ?ontologyId bpMetadata:id #{codeSystemVersionRestriction}
+		
+		    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
+		   	    CONTAINS( UCASE( ?#{item.var} ), UCASE( '#{item.text}' ) ) 
+		    </iterator>
+	    }
+
+	    LIMIT  #{limit}
+	    OFFSET #{offset} 
+
+	</select>
+	
+	<select id="getCodeSystemVersionByName" resultMap="codeSystemVersionCatalogEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT ?s ?p ?o
+        WHERE { 
+                
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata/> {
+	
+                       ?s a omv:Ontology ;
+                          bpMetadata:id #{id} ;
+                          ?p ?o  
+                          
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses
+		               )       
+                 }
+        }
+        ]]>
+	</select>
+	
+	<select id="getCodeSystemVersionByUri" resultMap="codeSystemVersionCatalogEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT ?s ?p ?o
+        WHERE { 
+                
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata/> {
+	
+                       ?s a omv:Ontology ;
+                          bpMetadata:id #{id} ;
+                          ?p ?o  
+                          
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses 
+		               )       
+                 }
+        }
+        ]]>
+	</select>
+	
+	<select id="getCodeSystemVersionByCodeSystemNameAndVersionId" resultMap="codeSystemVersionCatalogEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT ?s ?p ?o
+        WHERE { 
+                
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata/> {
+	
+                       ?s a omv:Ontology ;
+                          omv:version "#{versionId}"^^xsd:string ;
+                          ?p ?o  
+                          
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses 
+		               )       
+                 }
+        }
+        ]]>
+	</select>
+</sparqlMap>

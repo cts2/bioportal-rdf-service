@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMap namespace="common"
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	
+	<perRowResultMap id="resourceDescriptionDirectoryEntryResultMap">
+		<rowMap var="description" varType="literalValue" beanProperty="resourceSynopsis.value.content"/>
+		<rowMap var="formalName" varType="literalValue" beanProperty="formalName"/>
+	</perRowResultMap>
+	
+	<compositeResultMap id="resourceVersionDescriptionResultMap" extends="common:resourceDescriptionResultMap">
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:version" beanProperty="officialResourceVersionId"/>
+	    <tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:downloadLocation" beanProperty="sourceAndNotation.sourceDocument"/>
+	    <tripleMap var="o" varType="localName" predicateUri="omv:hasOntologyLanguage" beanProperty="sourceAndNotation.sourceDocumentSyntax.content" />
+	    <tripleMap var="o" varType="uri" predicateUri="omv:hasOntologyLanguage" beanProperty="sourceAndNotation.sourceDocumentSyntax.uri" />
+	</compositeResultMap>
+	
+	<compositeResultMap id="resourceDescriptionResultMap" >
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:description" beanProperty="resourceSynopsis.value.content"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:name" beanProperty="formalName"/>
+		<tripleMap resultMapping="common:propertyResultMap" predicateUri="*" beanProperty="propertyAsReference[]"/>	
+	</compositeResultMap>
+	
+	<compositeResultMap id="propertyResultMap" resultClass="edu.mayo.cts2.framework.model.core.Property">
+		<tripleMap predicateUri="*" var="p" varType="uri" beanProperty="predicate.uri"/>
+		<tripleMap predicateUri="*" var="p" varType="namespace" beanProperty="predicate.namespace"
+			modifier="spring:namespaceModifier"/>
+		<tripleMap predicateUri="*" var="p" varType="localName" beanProperty="predicate.name"/>
+		<if function="spring:isNotLiteral" param="o">
+			<tripleMap predicateUri="*" var="o" varType="uri" beanProperty="valueAsReference[0].entity.uri"/>
+			<tripleMap predicateUri="*" var="o" varType="namespace" beanProperty="valueAsReference[0].entity.namespace"
+				modifier="spring:namespaceModifier"/>
+			<tripleMap predicateUri="*" var="o" varType="localName" beanProperty="valueAsReference[0].entity.name"/>
+		</if>	
+		<if function="spring:isLiteral" param="o">
+			<tripleMap predicateUri="*" var="o" varType="literalValue" beanProperty="valueAsReference[0].literal.value.content"/>
+		</if>
+	</compositeResultMap>
+
+</sparqlMap>

@@ -25,36 +25,30 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
 
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
-import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
-
-	@Resource
-	private UrlConstructor urlConstructor;
+@Component("codeSystemSummaryNameCallback")
+public class CodeSystemSummaryNameSettingCallback extends AbstractCodeSystemNameSettingCallback<CodeSystemCatalogEntrySummary> {
 	
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
 	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
+			CodeSystemCatalogEntrySummary bindingResult, 
 			Map<String,Object> callbackParams) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
-		
-		//bindingResult.setCurrentVersion(currentVersion)
+		CodeSystemName name = this.getCodeSystemName(callbackParams);
+
+		String toStringName = name.toString();
+		bindingResult.setCodeSystemName(toStringName);
+		bindingResult.setResourceName(toStringName);
 	}
 
 }

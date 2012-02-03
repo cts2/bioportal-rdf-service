@@ -1,5 +1,5 @@
 /*
- * Copyright: (c) 2004-2011 Mayo Foundation for Medical Education and 
+ * Copyright: (c) 2004-2012 Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
  * triple-shield Mayo logo are trademarks and service marks of MFMER.
  *
@@ -21,37 +21,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile;
 
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry;
-import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
 
 /**
- * The Class CodeSystemHrefSettingCallback.
+ * The Class VariableTiedModelAttributeReference.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemHrefCallback")
-public class CodeSystemHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntry> {
-
-	@Resource
-	private UrlConstructor urlConstructor;
+public class VariableTiedModelAttributeReference extends ModelAttributeReference{
 	
-	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
-	 */
-	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntry bindingResult, 
-			Map<String,Object> callbackParams) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
+	private static final long serialVersionUID = 6302391653888781044L;
+	
+	private String variable;
+
+	public String getVariable() {
+		return variable;
 	}
 
+	public void setVariable(String variable) {
+		this.variable = variable;
+	}
 }

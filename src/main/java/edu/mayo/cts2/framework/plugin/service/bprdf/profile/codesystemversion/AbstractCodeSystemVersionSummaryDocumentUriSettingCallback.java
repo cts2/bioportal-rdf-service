@@ -21,40 +21,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
+ * @param <T> the generic type
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
+public abstract class AbstractCodeSystemVersionSummaryDocumentUriSettingCallback<T> implements AfterResultBinding<T> {
 
-	@Resource
-	private UrlConstructor urlConstructor;
-	
-	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
+	/**
+	 * Gets the document uri.
+	 *
+	 * @param about the about
+	 * @param version the version
+	 * @return the document uri
 	 */
-	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
-			Map<String,Object> callbackParams) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
-		
-		//bindingResult.setCurrentVersion(currentVersion)
+	protected String getDocumentUri(String about, String version){
+		return about + "/version/" + version;
 	}
-
+	
 }

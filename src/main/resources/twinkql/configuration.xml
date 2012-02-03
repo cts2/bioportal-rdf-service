@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<twinkqlConfig
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql ../../../main/castor/twinkql.xsd ">
+	
+	<namespace prefix="omv" uri="http://omv.ontoware.org/2005/05/ontology#"/>
+	<namespace prefix="bpMetadata" uri="http://bioportal.bioontology.org/metadata/def/"/>
+	<namespace prefix="bpOntologies" uri="http://bioportal.bioontology.org/ontologies/"/>
+	<namespace prefix="owl" uri="http://www.w3.org/2002/07/owl#"/>
+	<namespace prefix="fn" uri="http://www.w3.org/2005/xpath-functions#"/>
+	<namespace prefix="metrics" uri="http://protege.stanford.edu/ontologies/metrics/metrics.rdfs#"/>
+	<namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#" />
+	
+
+</twinkqlConfig>

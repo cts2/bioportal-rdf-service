@@ -1,25 +1,25 @@
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion
 
 import static org.junit.Assert.*
 
 import javax.annotation.Resource
 
 import org.apache.commons.lang.StringUtils
-import org.junit.Ignore;
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
 import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry
+import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(value="classpath:/bioportal-rdf-service-test-context.xml")
 
-abstract class BioportalRdfCodeSystemReadServiceTestITBase {
+abstract class BioportalRdfCodeSystemVersionReadServiceTestITBase {
 	
 	@Resource
-	BioportalRdfCodeSystemReadService read
+	BioportalRdfCodeSystemVersionReadService read
 	
 	abstract doRead()
 
@@ -32,37 +32,51 @@ abstract class BioportalRdfCodeSystemReadServiceTestITBase {
 	
 	@Test
 	void TestReadByNameHasDescription(){
-		CodeSystemCatalogEntry cs = doRead()
+		CodeSystemVersionCatalogEntry cs = doRead()
 		
 		assertNotNull cs.resourceSynopsis.value.content
 	}
 	
 	@Test
 	void TestReadByNameHasFormalName(){
-		CodeSystemCatalogEntry cs = doRead()
+		CodeSystemVersionCatalogEntry cs = doRead()
 		
 		assertNotNull cs.formalName
 	}
 	
 	@Test
+	void TestReadByNameHasDocumentUri(){
+		CodeSystemVersionCatalogEntry cs = doRead()
+		
+		assertNotNull cs.documentURI
+	}
+	
+	@Test
 	void TestReadByNameHasProperties(){
-		CodeSystemCatalogEntry cs = doRead()
+		CodeSystemVersionCatalogEntry cs = doRead()
 		
 		assertTrue cs.getProperty().length > 0
 	}
 	
 	@Test
-	void TestReadByNameHasVersionsUrl(){
-		CodeSystemCatalogEntry cs = doRead()
+	void TestReadByNameHasEntitiesUrl(){
+		CodeSystemVersionCatalogEntry cs = doRead()
 		
-		assertNotNull cs.versions
+		assertNotNull cs.entityDescriptions
 	}
 	
 	@Test
 	void TestReadByNameHasName(){
-		CodeSystemCatalogEntry cs = doRead()
+		CodeSystemVersionCatalogEntry cs = doRead()
 		
-		assertEquals "GO-1070", cs.codeSystemName
+		assertEquals "FIX-45720", cs.codeSystemVersionName
+	}
+	
+	@Test
+	void TestReadByNameHasVersion(){
+		CodeSystemVersionCatalogEntry cs = doRead()
+		
+		assertEquals "See Remote Site", cs.officialResourceVersionId
 	}
 	
 	@Test
@@ -70,7 +84,6 @@ abstract class BioportalRdfCodeSystemReadServiceTestITBase {
 		def cs = doRead()
 			
 		cs.property.each {
-			println it.predicate.namespace
 			assertFalse StringUtils.startsWith(it.predicate.namespace, "ns-")
 		}
 	}

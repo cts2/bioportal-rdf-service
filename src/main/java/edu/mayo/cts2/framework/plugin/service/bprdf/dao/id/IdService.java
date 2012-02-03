@@ -1,5 +1,5 @@
 /*
- * Copyright: (c) 2004-2011 Mayo Foundation for Medical Education and 
+ * Copyright: (c) 2004-2012 Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
  * triple-shield Mayo logo are trademarks and service marks of MFMER.
  *
@@ -21,37 +21,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
-
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry;
-import edu.mayo.twinkql.result.callback.AfterResultBinding;
+package edu.mayo.cts2.framework.plugin.service.bprdf.dao.id;
 
 /**
- * The Class CodeSystemHrefSettingCallback.
+ * The Interface IdService.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemHrefCallback")
-public class CodeSystemHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntry> {
+public interface IdService {
 
-	@Resource
-	private UrlConstructor urlConstructor;
-	
-	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
+	/**
+	 * Gets the ontology id for id.
+	 *
+	 * @param id the id
+	 * @return the ontology id for id
 	 */
-	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntry bindingResult, 
-			Map<String,Object> callbackParams) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-	}
-
+	public String getOntologyIdForId(String id);
+	
+	/**
+	 * Gets the ids for ontology id.
+	 *
+	 * @param OntologyId the ontology id
+	 * @return the ids for ontology id
+	 */
+	public Iterable<String> getIdsForOntologyId(String OntologyId);
+	
+	/**
+	 * Gets the current id for ontology id.
+	 *
+	 * @param OntologyId the ontology id
+	 * @return the current id for ontology id
+	 */
+	public String getCurrentIdForOntologyId(String OntologyId);
 }

@@ -29,32 +29,36 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
+ * @param <T> the generic type
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
-
-	@Resource
-	private UrlConstructor urlConstructor;
+@Component
+public abstract class AbstractCodeSystemNameSettingCallback<T> implements AfterResultBinding<T> {
 	
-	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
+	@Resource
+	private IdService idService;
+	
+	/**
+	 * Gets the code system name.
+	 *
+	 * @param callbackParams the callback params
+	 * @return the code system name
 	 */
-	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
-			Map<String,Object> callbackParams) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
+	protected CodeSystemName getCodeSystemName(Map<String,Object> callbackParams) {
+		String acronym = (String) callbackParams.get("acronym");
+		String id = (String) callbackParams.get("id");
 		
-		//bindingResult.setCurrentVersion(currentVersion)
+		String ontologyId = this.idService.getOntologyIdForId(id);
+		
+		CodeSystemName name = new CodeSystemName(acronym,ontologyId);
+		
+		return name;
 	}
 
 }

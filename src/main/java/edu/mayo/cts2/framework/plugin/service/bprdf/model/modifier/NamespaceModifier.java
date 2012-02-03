@@ -26,9 +26,15 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
+import edu.mayo.twinkql.context.TwinkqlContext;
+import edu.mayo.twinkql.model.NamespaceDefinition;
+import edu.mayo.twinkql.model.TwinkqlConfig;
+import edu.mayo.twinkql.model.TwinkqlConfigItem;
 import edu.mayo.twinkql.result.callback.Modifier;
 
 /**
@@ -40,6 +46,9 @@ import edu.mayo.twinkql.result.callback.Modifier;
 public class NamespaceModifier implements Modifier<String>, InitializingBean {
 	
 	private Map<String,String> knownNamespaces;
+	
+	@Resource
+	private TwinkqlContext twinkqlContext;
 
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -90,6 +99,16 @@ public class NamespaceModifier implements Modifier<String>, InitializingBean {
 		namespaces.put("http://purl.bioontology.org/ontology/bioportal/", "bioportal");
 		namespaces.put("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs");
 		namespaces.put("http://www.w3.org/2002/07/owl#", "owl");
+		
+		TwinkqlConfig twinkqlConfig = this.twinkqlContext.getTwinkqlConfig();
+		if(twinkqlConfig != null && twinkqlConfig.getTwinkqlConfigItem() != null){
+			for(TwinkqlConfigItem item : twinkqlConfig.getTwinkqlConfigItem()){
+				if(item.getNamespace() != null){
+					NamespaceDefinition def = item.getNamespace();
+					namespaces.put(def.getUri(), def.getPrefix());
+				}
+			}
+		}
 		
 		return namespaces;
 		
