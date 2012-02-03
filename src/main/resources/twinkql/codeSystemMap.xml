@@ -4,13 +4,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
 	<perRowResultMap id="codeSystemCatalogEntrySummaryResultMap" 
-		extends="common:resourceDescriptionDirectoryEntryResultMap"
+		
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary"
 		afterMap="spring:codeSystemSummaryHrefCallback">
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
 		<rowMap var="ontologyId" varType="uri" beanProperty="about" />
 		<rowMap var="codeSystemName" varType="literalValue" beanProperty="codeSystemName" />
-		<rowMap var="resourceName" varType="literalValue" beanProperty="codeSystemName"/>
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="resourceName"/>
 		<rowMap var="id" varType="literalValue" callbackId="id" />
 		<rowMap var="virtualId" varType="literalValue" callbackId="virtualId"/>
 		<rowMap beanProperty="currentVersion" resultMapping="codeSystem:codeSystemVersionReferenceResultMap"/>	
@@ -65,7 +65,7 @@
 	   ?ontologyId bpMetadata:id ?virtualId ;
 		
 		    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
-		   	    CONTAINS( ?#{item.var}, '#{item.text}' ) 
+		   	    CONTAINS( UCASE( ?#{item.var} ), UCASE( '#{item.text}' ) ) 
 		    </iterator>
 	    }
 	    
@@ -90,7 +90,7 @@
                        FILTER ( 
 			              ?p != metrics:classesWithSingleSubclass
 			              &&
-			              ?p != metrics:classesWithMoreThanXSubclasses
+			              ?p != metrics:classesWithMoreThanXSubclasses 
 		               )       
                  }
         }

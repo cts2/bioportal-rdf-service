@@ -62,7 +62,7 @@ abstract class BioportalRdfCodeSystemReadServiceTestITBase {
 	void TestReadByNameHasName(){
 		CodeSystemCatalogEntry cs = doRead()
 		
-		assertEquals "MA-1000", cs.codeSystemName
+		assertEquals "GO-1070", cs.codeSystemName
 	}
 	
 	@Test

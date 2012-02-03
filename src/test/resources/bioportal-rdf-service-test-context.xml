@@ -9,6 +9,8 @@
 
 	<context:component-scan base-package="edu.mayo.cts2.framework.plugin.service.bprdf"/>
 
+	<bean id="cts2Marshaller" class="edu.mayo.cts2.framework.core.xml.DelegatingMarshaller"/>
+
 	<bean
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">

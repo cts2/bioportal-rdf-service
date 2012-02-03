@@ -3,12 +3,14 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem
 import static org.junit.Assert.*
 
 import javax.annotation.Resource
+import javax.xml.transform.stream.StreamResult
 
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
+import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
 import edu.mayo.cts2.framework.model.command.ResolvedFilter
 import edu.mayo.cts2.framework.model.core.ModelAttributeReference
@@ -20,6 +22,9 @@ import edu.mayo.cts2.framework.service.profile.ResourceQuery
 class BioportalRdfCodeSystemQueryServiceTestIT {
 	
 	@Resource
+	Cts2Marshaller marshaller
+	
+	@Resource
 	BioportalRdfCodeSystemQueryService query
 	
 	@Test
@@ -29,6 +34,16 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
+	}
+	
+	@Test
+	void TestGetResourceSummariesValidXml(){
+		def dir = query.getResourceSummaries(
+			null,null,new Page())
+		
+		dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
 	}
 	
 	@Test
@@ -53,13 +68,13 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 	}
 	
 	@Test
-	void TestGetResourceSummariesFilteredRegex(){
+	void TestGetResourceSummariesFilteredContains(){
 		def dir = query.getResourceSummaries(
 			[
 				getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(
-						matchValue:"CPTAC",
+						matchValue:"CPT",
 						modelAttributeReference: new ModelAttributeReference(content:"resourceName")
 						)] as Set
 				}
@@ -70,8 +85,40 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 		assertTrue dir.getEntries().size() > 0
 		
 		dir.entries.each { 
-			assertTrue it.codeSystemName, it.codeSystemName.contains("CPTAC")
+			assertTrue it.codeSystemName, it.codeSystemName.contains("CPT")
 		}
+	}
+	
+	@Test
+	void TestGetResourceSummariesFilteredContainsNoCase(){
+		def dir1 = query.getResourceSummaries(
+			[
+				getRestrictions:{null},
+				getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"CPT",
+						modelAttributeReference: new ModelAttributeReference(content:"resourceName")
+						)] as Set
+				}
+				
+			] as ResourceQuery,null,new Page())
+		
+		assertNotNull dir1
+		assertTrue dir1.getEntries().size() > 0
+		
+		def dir2 = query.getResourceSummaries(
+			[
+				getRestrictions:{null},
+				getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"cPt",
+						modelAttributeReference: new ModelAttributeReference(content:"resourceName")
+						)] as Set
+				}
+				
+			] as ResourceQuery,null,new Page())
+		
+		assertEquals dir1.entries.size(), dir2.entries.size()
 	}
 	
 	@Test

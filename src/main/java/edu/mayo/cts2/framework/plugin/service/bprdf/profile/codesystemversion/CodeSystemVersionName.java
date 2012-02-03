@@ -44,9 +44,10 @@ public class CodeSystemVersionName {
 	 * @return the code system version name
 	 */
 	public static CodeSystemVersionName parse(String name) {
-		String[] parts = StringUtils.split(name, SEPARATOR);
+		String acronym = StringUtils.substringBeforeLast(name, SEPARATOR);
+		String id = StringUtils.substringAfterLast(name, SEPARATOR);
 		
-		return new CodeSystemVersionName(parts[0], parts[1]);
+		return new CodeSystemVersionName(acronym, id);
 	}
 
 	/**

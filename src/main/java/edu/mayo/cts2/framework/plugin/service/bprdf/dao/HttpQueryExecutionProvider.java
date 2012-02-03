@@ -52,7 +52,7 @@ public class HttpQueryExecutionProvider implements QueryExecutionProvider, Initi
 	
 	private static final String API_KEY_PROP = "apiKey";
 	
-	private String sparqlService = "http://alphasparql.bioontology.org/sparql";
+	private String sparqlService = "http://alphasparql.bioontology.org/sparql/";
 	
 	private String apiKey;
 	

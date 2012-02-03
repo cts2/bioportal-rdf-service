@@ -19,13 +19,19 @@ class BioportalRdfCodeSystemVersionReadServiceByUriTestIT extends BioportalRdfCo
 	BioportalRdfCodeSystemVersionReadService read
 	
 	def doRead() {
-		read.read(ModelUtils.nameOrUriFromUri("http://purl.bioontology.org/ontology/MA.rdf/version/1.205"), null)
+		read.read(ModelUtils.nameOrUriFromUri("http://bioportal.bioontology.org/ontologies/45720"), null)
 	}
 	
+	@Test
+	void TestDoRead() {
+		def csv = doRead()
+		
+		assertNotNull csv
+	}
 	
 	@Test
 	void doReadByInvalid() {
-		def csv = read.read(ModelUtils.nameOrUriFromUri("http://purl.bioontology.org/ontology/MA.rdf/version/__INVALID__"), null)
+		def csv = read.read(ModelUtils.nameOrUriFromUri("http://bioportal.bioontology.org/ontologies/4572023423423"), null)
 		assertNull csv
 	}
 

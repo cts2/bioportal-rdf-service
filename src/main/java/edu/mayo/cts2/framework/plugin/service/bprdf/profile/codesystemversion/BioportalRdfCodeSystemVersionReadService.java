@@ -37,6 +37,7 @@ import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem.CodeSystemName;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService;
 
 /**
@@ -50,6 +51,7 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 	private final static String CODESYSTEMVERSION_NAMESPACE = "codeSystemVersion";
 	private final static String GET_CODESYSTEMVERSION_BY_URI = "getCodeSystemVersionByUri";
 	private final static String GET_CODESYSTEMVERSION_BY_NAME = "getCodeSystemVersionByName";
+	private final static String GET_CODESYSTEMVERSION_BY_CODE_SYSTEM_NAME_AND_VERSION_ID = "getCodeSystemVersionByCodeSystemNameAndVersionId";
 
 	@Resource
 	private RdfDao rdfDao;
@@ -84,12 +86,18 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 					parameters, 
 					CodeSystemVersionCatalogEntry.class);
 		} else {
-			String[] splitDocumentUri = this.splitUri(identifier.getUri());
+			String id = StringUtils.substringAfterLast(identifier.getUri(), "/");
+			String ontologyId = this.idService.getOntologyIdForId(id);
+			
+			if(StringUtils.isBlank(ontologyId)){
+				//no ontologyId found -- means an invalid id
+				return null;
+			}
 			
 			Map<String,Object> parameters = new HashMap<String,Object>();
 			
-			parameters.put("about", splitDocumentUri[0]);
-			parameters.put("version", splitDocumentUri[1]);
+			parameters.put("ontologyId", ontologyId);
+			parameters.put("id", id);
 
 			return this.rdfDao.selectForObject(
 					CODESYSTEMVERSION_NAMESPACE, 
@@ -99,22 +107,6 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 		}
 	}
 	
-	
-	/**
-	 * We will form document URIs like this:
-	 * {codeSystemAbout}/version/{versionNumber}
-	 * Example: http://purl.bioontology.org/ontology/MA.rdf/version/1.205
-	 *
-	 * @param uri the uri
-	 * @return the string[]
-	 */
-	protected String[] splitUri(String uri){
-		String about = StringUtils.substringBeforeLast(uri, "/version/");
-		String version = StringUtils.substringAfterLast(uri, "/version/");
-		
-		return new String[]{ about,version };
-	}
-
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService#exists(edu.mayo.cts2.framework.model.service.core.NameOrURI, edu.mayo.cts2.framework.model.service.core.ReadContext)
@@ -170,19 +162,33 @@ public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersi
 	 */
 	@Override
 	public CodeSystemVersionCatalogEntry getCodeSystemByVersionId(
-			NameOrURI codeSystem, String officialResourceVersionId,
+			NameOrURI codeSystem, 
+			String officialResourceVersionId,
 			ResolvedReadContext readContext) {
 		
-		Map<String,Object> parameters = new HashMap<String,Object>();
-		
-		parameters.put("name", codeSystem.getName());
-		parameters.put("version", officialResourceVersionId);
+		if(StringUtils.isNotBlank(codeSystem.getName())){
+			CodeSystemName name = CodeSystemName.parse(codeSystem.getName());
+			
+			String ontologyId = name.getOntologyId();
+			
+			if(StringUtils.isBlank(ontologyId)){
+				//not found
+				return null;
+			}
+			
+			Map<String,Object> parameters = new HashMap<String,Object>();
+			parameters.put("versionId", officialResourceVersionId);
+			parameters.put("ontologyId", ontologyId);
+	
 
 		return this.rdfDao.selectForObject(
 				CODESYSTEMVERSION_NAMESPACE, 
-				GET_CODESYSTEMVERSION_BY_NAME, 
+				GET_CODESYSTEMVERSION_BY_CODE_SYSTEM_NAME_AND_VERSION_ID, 
 				parameters, 
 				CodeSystemVersionCatalogEntry.class);
+		} else {
+			throw new UnsupportedOperationException("Cannot lookup a CodeSystemVersion by URI AND VersionId.");
+		}
 	}
 
 }

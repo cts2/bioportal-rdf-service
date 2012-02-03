@@ -44,9 +44,10 @@ public class CodeSystemName {
 	 * @return the code system name
 	 */
 	public static CodeSystemName parse(String name) {
-		String[] parts = StringUtils.split(name, SEPARATOR);
+		String acronym = StringUtils.substringBeforeLast(name, SEPARATOR);
+		String ontologyId = StringUtils.substringAfterLast(name, SEPARATOR);
 		
-		return new CodeSystemName(parts[0], parts[1]);
+		return new CodeSystemName(acronym, ontologyId);
 	}
 
 	/**

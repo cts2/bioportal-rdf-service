@@ -13,6 +13,7 @@
 		<rowMap var="s" varType="uri" beanProperty="about"/>
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="codeSystemVersionName"/>
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="resourceName"/>
+		<rowMap var="s" varType="uri" beanProperty="documentURI" />
 		<rowMap resultMapping="codeSystemVersion:versionOfResultMap" beanProperty="versionOf"/>
 	</perRowResultMap>
 	
@@ -31,6 +32,13 @@
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" callbackId="acronym"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
 		<tripleMap var="s" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="documentURI"/>
+		<tripleMap resultMapping="codeSystemVersion:compositeVersionOfResultMap" predicateUri="->" beanProperty="versionOf"/>
+	</compositeResultMap>
+	
+	<compositeResultMap id="compositeVersionOfResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference"
+		afterMap="spring:codeSystemVersionOfNameCallback,spring:codeSystemReferenceHrefCallback">
+		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="uri"/>
 	</compositeResultMap>
 	
 	<select id="getCodeSystemVersionCatalogSummaries" resultMap="codeSystemVersionCatalogEntrySummaryResultMap">
@@ -55,7 +63,7 @@
 	   ?ontologyId bpMetadata:id #{codeSystemVersionRestriction}
 		
 		    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
-		   	    CONTAINS( ?#{item.var}, '#{item.text}' ) 
+		   	    CONTAINS( UCASE( ?#{item.var} ), UCASE( '#{item.text}' ) ) 
 		    </iterator>
 	    }
 
@@ -87,23 +95,41 @@
 	
 	<select id="getCodeSystemVersionByUri" resultMap="codeSystemVersionCatalogEntryResultMap">
         <![CDATA[
-        SELECT DISTINCT ?s3 ?p ?o
+        SELECT DISTINCT ?s ?p ?o
         WHERE { 
                 
-				GRAPH <#{uri}/metadata/> {
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata/> {
 	
-                       ?s1 a omv:Ontology;
-                          bpMetadata:timestampCreation ?time .
+                       ?s a omv:Ontology ;
+                          bpMetadata:id #{id} ;
+                          ?p ?o  
                           
-                       OPTIONAL {
-	        			  ?s2 a omv:Ontology;
-	                         bpMetadata:timestampCreation ?othertime .
-	                             FILTER( ?time < ?othertime ) .
-	                      } .
-	                
-	                      ?s bpMetadata:timestampCreation ?time ;
-	                      ?p ?o
-	                      FILTER ( !bound(?othertime) ) .
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses 
+		               )       
+                 }
+        }
+        ]]>
+	</select>
+	
+	<select id="getCodeSystemVersionByCodeSystemNameAndVersionId" resultMap="codeSystemVersionCatalogEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT ?s ?p ?o
+        WHERE { 
+                
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata/> {
+	
+                       ?s a omv:Ontology ;
+                          omv:version "#{versionId}"^^xsd:string ;
+                          ?p ?o  
+                          
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses 
+		               )       
                  }
         }
         ]]>
