@@ -5,6 +5,7 @@ import static org.junit.Assert.*
 import javax.annotation.Resource
 import javax.xml.transform.stream.StreamResult
 
+import org.apache.commons.lang.StringUtils
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.test.context.ContextConfiguration
@@ -43,6 +44,16 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 		
 		dir.entries.each {
 			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
+	}
+	
+	@Test
+	void TestGetResourceSummariesHasDescritpion(){
+		def dir = query.getResourceSummaries(
+			null,null,new Page())
+		
+		dir.entries.each {
+			assertTrue StringUtils.isNotBlank(it.resourceSynopsis.value.content)
 		}
 	}
 	
@@ -89,6 +100,30 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 		}
 	}
 	
+	@Test
+	void TestGetResourceSummariesFilteredContainsDescription(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{null},
+				getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"Mouse",
+						modelAttributeReference: new ModelAttributeReference(content:"resourceSynopsis")
+						)] as Set
+				}
+				
+			] as ResourceQuery,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			assertTrue it.resourceSynopsis.value.content,
+				StringUtils.containsIgnoreCase(
+					it.resourceSynopsis.value.content, "Mouse")
+		}
+	}
+
 	@Test
 	void TestGetResourceSummariesFilteredContainsNoCase(){
 		def dir1 = query.getResourceSummaries(

@@ -11,6 +11,7 @@
 	<namespace prefix="fn" uri="http://www.w3.org/2005/xpath-functions#"/>
 	<namespace prefix="metrics" uri="http://protege.stanford.edu/ontologies/metrics/metrics.rdfs#"/>
 	<namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#" />
+	<namespace prefix="skos" uri="http://www.w3.org/2004/02/skos/core#" />
 	
 
 </twinkqlConfig>

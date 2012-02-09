@@ -44,6 +44,7 @@ import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder.VariableQuery;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference;
+import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
 import edu.mayo.cts2.framework.service.profile.ResourceQuery;
 import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemQueryService;
 
@@ -108,7 +109,7 @@ public class BioportalRdfCodeSystemQueryService extends AbstractQueryService imp
 			results.remove(results.size() - 1);
 		}
 		
-		return new DirectoryResult<CodeSystemCatalogEntrySummary>(results,!moreResults,false);
+		return new DirectoryResult<CodeSystemCatalogEntrySummary>(results,!moreResults);
 	}
 
 	/* (non-Javadoc)
@@ -137,10 +138,20 @@ public class BioportalRdfCodeSystemQueryService extends AbstractQueryService imp
 	@Override
 	public void doAddSupportedModelAttributes(
 			Set<edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference> set) {
-		VariableTiedModelAttributeReference name = new VariableTiedModelAttributeReference();
-		name.setContent("resourceName");
-		name.setVariable("acronym");
+		VariableTiedModelAttributeReference name = 
+				new VariableTiedModelAttributeReference(
+						StandardModelAttributeReference.RESOURCE_NAME, "acronym");
+		
+		VariableTiedModelAttributeReference description = 
+				new VariableTiedModelAttributeReference(
+						StandardModelAttributeReference.RESOURCE_SYNOPSIS, "description");
+		
+		VariableTiedModelAttributeReference about = 
+				new VariableTiedModelAttributeReference(
+						StandardModelAttributeReference.ABOUT, "ontologyId");
 
 		set.add(name);
+		set.add(description);
+		set.add(about);
 	}	
 }

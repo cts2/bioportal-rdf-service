@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -84,7 +85,7 @@
 							*
 						</Import-Package>
 						<Embed-Transitive>true</Embed-Transitive>
-						<Embed-Dependency>!groupId=org.springframework*,*;scope=compile|runtime;inline=false</Embed-Dependency>
+						<Embed-Dependency>!stax-api,!xercesImpl,!xml-apis,!groupId=org.springframework*,*;scope=compile|runtime;inline=false</Embed-Dependency>
 						<Spring-Context>*;timeout:=60</Spring-Context>
 						<_exportcontents>*</_exportcontents>
 						<_nouses>true</_nouses>

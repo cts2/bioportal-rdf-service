@@ -31,6 +31,7 @@ import org.springframework.beans.factory.InitializingBean;
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
 import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
+import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.profile.BaseQueryService;
 
 /**
@@ -60,7 +61,11 @@ public abstract class AbstractQueryService implements BaseQueryService, Initiali
 	
 	@Override
 	public Set<? extends MatchAlgorithmReference> getSupportedMatchAlgorithms() {
-		throw new UnsupportedOperationException();
+		HashSet<MatchAlgorithmReference> returnSet = new HashSet<MatchAlgorithmReference>();
+		
+		returnSet.add(StandardMatchAlgorithmReference.CONTAINS.getMatchAlgorithmReference());
+		
+		return returnSet;
 	}
 
 	@Override

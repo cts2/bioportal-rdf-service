@@ -3,5 +3,18 @@
 	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
+	<select id="getEntityDirectoryEntries" resultMap="entityDirectoryEntryResultMap">
+
+		SELECT  ?termURI ?prefLabel
+		
+		WHERE {
+		      ?termURI a owl:Class;
+		      skos:prefLabel ?prefLabel .
+		} 
+
+	    LIMIT  #{limit}
+	    OFFSET #{offset}
+	  
+	</select>
 	
 </sparqlMap>

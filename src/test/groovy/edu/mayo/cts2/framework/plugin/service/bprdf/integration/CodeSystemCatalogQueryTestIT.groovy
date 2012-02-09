@@ -28,4 +28,18 @@ class CodeSystemCatalogQueryTestIT extends BaseServiceTestITBase {
 		//not sure how many there will actually be...
 		assertTrue result.getEntryCount() > 10
 	}
+	
+	@Test void TestGetCodeSystemsWithDefaultFilter(){
+		
+		CodeSystemCatalogEntryDirectory result =
+			client.getCts2Resource(server + "codesystems?matchvalue=GO", CodeSystemCatalogEntryDirectory.class);
+			
+		assertNotNull result
+
+		assertTrue result.entry.length > 0
+		
+		result.entry.each { 
+			assertTrue it.codeSystemName, it.resourceSynopsis.value.content.toLowerCase().contains("GO".toLowerCase())
+		}
+	}
 }

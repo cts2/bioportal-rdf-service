@@ -70,7 +70,6 @@ abstract class BioportalRdfCodeSystemReadServiceTestITBase {
 		def cs = doRead()
 			
 		cs.property.each {
-			println it.predicate.namespace
 			assertFalse StringUtils.startsWith(it.predicate.namespace, "ns-")
 		}
 	}

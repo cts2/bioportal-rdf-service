@@ -107,7 +107,7 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 			results.remove(results.size() - 1);
 		}
 		
-		return new DirectoryResult<CodeSystemVersionCatalogEntrySummary>(results,!moreResults,false);
+		return new DirectoryResult<CodeSystemVersionCatalogEntrySummary>(results,!moreResults);
 	}
 	
 

@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
 	<perRowResultMap id="codeSystemCatalogEntrySummaryResultMap" 
-		
+		extends="common:resourceDescriptionDirectoryEntryResultMap"
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary"
 		afterMap="spring:codeSystemSummaryHrefCallback">
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
@@ -81,7 +81,7 @@
         SELECT DISTINCT ?s ?p ?o
         WHERE { 
                 
-				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata/> {
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata> {
 	
                        ?s a omv:Ontology ;
                           bpMetadata:id #{id} ;
@@ -102,7 +102,7 @@
         SELECT DISTINCT ?s ?p ?o
         WHERE { 
                 
-				GRAPH <#{uri}/metadata/> {
+				GRAPH <#{uri}/metadata> {
 	
                        ?s a omv:Ontology ;
                           bpMetadata:id #{id} ;

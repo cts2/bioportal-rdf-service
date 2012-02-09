@@ -24,6 +24,7 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile;
 
 import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
+import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
 
 /**
  * The Class VariableTiedModelAttributeReference.
@@ -35,6 +36,19 @@ public class VariableTiedModelAttributeReference extends ModelAttributeReference
 	private static final long serialVersionUID = 6302391653888781044L;
 	
 	private String variable;
+	
+	public VariableTiedModelAttributeReference(){
+		super();
+	}
+	
+	public VariableTiedModelAttributeReference(StandardModelAttributeReference ref, String variable){
+		super();
+		this.setContent(ref.getModelAttributeReference().getContent());
+		this.setHref(ref.getModelAttributeReference().getHref());
+		this.setUri(ref.getModelAttributeReference().getUri());
+		
+		this.variable = variable;
+	}
 
 	public String getVariable() {
 		return variable;
