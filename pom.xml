@@ -78,6 +78,8 @@
 							!joptsimple*,
 							!net.sf.cglib.*,
 							!org.apache.oro.*,
+							!org.apache.regexp,
+							!org.apache.regexp*,
 							javax.xml.namespace,
 							edu.mayo.cts2.framework.core.plugin,
 							edu.mayo.cts2.framework.service.provider,
