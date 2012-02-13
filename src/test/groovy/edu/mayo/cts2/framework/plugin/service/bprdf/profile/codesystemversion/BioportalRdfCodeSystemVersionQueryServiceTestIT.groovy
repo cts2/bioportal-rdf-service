@@ -30,7 +30,11 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 	
 	@Test
 	void TestGetResourceSummaries(){
-		def dir = query.getResourceSummaries([getRestrictions:{null}] as CodeSystemVersionQuery,null,new Page())
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{null},
+				getFilterComponent:{[] as Set}
+			] as CodeSystemVersionQuery,null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
@@ -39,7 +43,10 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 	@Test
 	void TestGetResourceSummariesValidXml(){
 		def dir = query.getResourceSummaries(
-			[getRestrictions:{null}] as CodeSystemVersionQuery,null,new Page())
+			[	
+				getRestrictions:{null},
+				getFilterComponent:{[] as Set}
+			] as CodeSystemVersionQuery,null,new Page())
 		
 		dir.entries.each {
 			marshaller.marshal(it, new StreamResult(new StringWriter()))
@@ -63,6 +70,10 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 		assertNotNull dir1
 		assertTrue dir1.getEntries().size() > 0
 		
+		dir1.entries.each {
+			assertTrue it.codeSystemVersionName.toLowerCase().contains("cpt")	
+		}
+		
 		def dir2 = query.getResourceSummaries(
 			[
 				getRestrictions:{null},
@@ -75,12 +86,20 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 				
 			] as CodeSystemVersionQuery,null,new Page())
 		
+		dir1.entries.each {
+			assertTrue it.codeSystemVersionName.toLowerCase().contains("cpt")
+		}
+		
 		assertEquals dir1.entries.size(), dir2.entries.size()
 	}
 	
 	@Test
 	void TestGetResourceSummariesHaveHrefs(){
-		def dir = query.getResourceSummaries([getRestrictions:{null}] as CodeSystemVersionQuery,null,new Page())
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{null},
+				getFilterComponent:{[] as Set}
+			] as CodeSystemVersionQuery,null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
@@ -98,8 +117,7 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 		def dir = query.getResourceSummaries(
 			[
 				getRestrictions:{ new  CodeSystemVersionQueryServiceRestrictions(codeSystem: ModelUtils.nameOrUriFromName("GO-1070"))},
-			
-				
+				getFilterComponent:{[] as Set}			
 			] as CodeSystemVersionQuery,null,new Page())
 		
 		assertNotNull dir
@@ -124,7 +142,11 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 	
 	@Test
 	void TestGetResourceSummariesVersionOf(){
-		def dir = query.getResourceSummaries([getRestrictions:{null}] as CodeSystemVersionQuery,null,new Page())
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{null},
+				getFilterComponent:{[] as Set}
+			] as CodeSystemVersionQuery,null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
@@ -139,7 +161,11 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 	
 	@Test
 	void TestGetResourceSummariesHaveNames(){
-		def dir = query.getResourceSummaries([getRestrictions:{null}] as CodeSystemVersionQuery,null,new Page())
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{null},
+				getFilterComponent:{[] as Set}
+			] as CodeSystemVersionQuery,null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0

@@ -3,6 +3,11 @@
 	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
+	<compositeResultMap id="entityDirectoryEntryResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.entity.NamedEntityDescription">
+		<tripleMap var="s" varType="localName" predicateUri="rdfs:type" beanProperty="entityID.name"/>
+	</compositeResultMap>
+	
 	<select id="getEntityDirectoryEntries" resultMap="entityDirectoryEntryResultMap">
 
 		SELECT  ?termURI ?prefLabel
@@ -15,6 +20,17 @@
 	    LIMIT  #{limit}
 	    OFFSET #{offset}
 	  
+	</select>
+	
+	<select id="getEntityByUri" resultMap="entityDescriptionResultMap">
+
+		SELECT  ?p ?o
+		FROM bpOntologies:#{ontologyId} 
+		WHERE {
+ 			<![CDATA[
+      		<#{uri}> ?p ?o .
+  			]]>
+		} 
 	</select>
 	
 </sparqlMap>

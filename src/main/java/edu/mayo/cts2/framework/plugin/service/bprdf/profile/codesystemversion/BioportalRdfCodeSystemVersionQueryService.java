@@ -36,13 +36,18 @@ import org.springframework.stereotype.Component;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary;
 import edu.mayo.cts2.framework.model.command.Page;
+import edu.mayo.cts2.framework.model.command.ResolvedFilter;
+import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder.VariableQuery;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem.CodeSystemName;
+import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQuery;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQueryService;
 
@@ -78,6 +83,22 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 		parameters.put(OFFSET, page.getStart());
 
 		String codeSystemVersionRestriction = "?codeSystemVersionRestriction";
+		
+		VariableQueryBuilder builder = new VariableQueryBuilder();
+		
+		if(query != null){
+			for(ResolvedFilter filter : query.getFilterComponent()){
+				ModelAttributeReference modelRef = filter.getModelAttributeReference();
+				
+				VariableTiedModelAttributeReference variableModelRef = this.findSupportedModelAttribute(modelRef);
+				
+				builder = builder.addQuery(variableModelRef.getVariable(), filter.getMatchValue());
+			}
+		}
+		
+		VariableQuery variableQuery = builder.build();
+		
+		parameters.put("filters", variableQuery);
 		
 		if(query != null && query.getRestrictions() != null) {
 			NameOrURI codeSystem = query.getRestrictions().getCodeSystem();
@@ -136,11 +157,21 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 	@Override
 	public void doAddSupportedModelAttributes(
 			Set<VariableTiedModelAttributeReference> set) {
-		VariableTiedModelAttributeReference name = new VariableTiedModelAttributeReference();
-		name.setContent("resourceName");
-		name.setVariable("acronym");
+		VariableTiedModelAttributeReference name = 
+				new VariableTiedModelAttributeReference(
+						StandardModelAttributeReference.RESOURCE_NAME, "acronym");
+		
+		VariableTiedModelAttributeReference description = 
+				new VariableTiedModelAttributeReference(
+						StandardModelAttributeReference.RESOURCE_SYNOPSIS, "description");
+		
+		VariableTiedModelAttributeReference about = 
+				new VariableTiedModelAttributeReference(
+						StandardModelAttributeReference.ABOUT, "id");
 
 		set.add(name);
+		set.add(description);
+		set.add(about);
 	}
 
 
