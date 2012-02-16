@@ -25,6 +25,7 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
 import java.util.Map;
 
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**

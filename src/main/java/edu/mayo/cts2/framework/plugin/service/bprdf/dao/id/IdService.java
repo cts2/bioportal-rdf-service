@@ -38,6 +38,8 @@ public interface IdService {
 	 */
 	public String getOntologyIdForId(String id);
 	
+	public CodeSystemVersionName getCodeSystemVersionNameForName(String codeSystemVersionName);
+
 	/**
 	 * Gets the ids for ontology id.
 	 *

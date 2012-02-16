@@ -21,33 +21,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.model.entity.Designation;
+import edu.mayo.cts2.framework.model.entity.types.DesignationRole;
+import edu.mayo.twinkql.result.callback.AfterResultBinding;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemNameCallback")
-public class CodeSystemNameSettingCallback extends AbstractCodeSystemNameSettingCallback<CodeSystemCatalogEntry> {
+@Component("preferredDesignationCallback")
+public class PreferredDesignationSetingCallback implements AfterResultBinding<Designation> {
 	
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
 	public void afterBinding(
-			CodeSystemCatalogEntry bindingResult, 
+			Designation bindingResult, 
 			Map<String,Object> callbackParams) {	
-		CodeSystemName name = this.getCodeSystemName(callbackParams);
-		
-		bindingResult.setCodeSystemName(name.toString());
+		bindingResult.setDesignationRole(DesignationRole.PREFERRED);
 	}
 
 }

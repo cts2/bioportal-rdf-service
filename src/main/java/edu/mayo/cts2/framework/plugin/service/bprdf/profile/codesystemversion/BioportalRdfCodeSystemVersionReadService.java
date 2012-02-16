@@ -36,8 +36,10 @@ import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
-import edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem.CodeSystemName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService;
 
 /**
@@ -46,7 +48,8 @@ import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersi
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
-public class BioportalRdfCodeSystemVersionReadService implements CodeSystemVersionReadService {
+public class BioportalRdfCodeSystemVersionReadService extends AbstractService
+	implements CodeSystemVersionReadService {
 
 	private final static String CODESYSTEMVERSION_NAMESPACE = "codeSystemVersion";
 	private final static String GET_CODESYSTEMVERSION_BY_URI = "getCodeSystemVersionByUri";

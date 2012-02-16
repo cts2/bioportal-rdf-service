@@ -3,34 +3,46 @@
 	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	
-	<compositeResultMap id="entityDirectoryEntryResultMap" 
-		resultClass="edu.mayo.cts2.framework.model.entity.NamedEntityDescription">
-		<tripleMap var="s" varType="localName" predicateUri="rdfs:type" beanProperty="entityID.name"/>
+	<compositeResultMap id="entityDescriptionResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.entity.EntityDescription">
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:notation" beanProperty="namedEntity.entityID.name"/>
+		<tripleMap var="s" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.about"/>
+		<tripleMap resultMapping="entity:designationResultMap1" predicateUri="->" beanProperty="namedEntity.designationAsReference[]"/>
+		<tripleMap resultMapping="entity:designationResultMap2" predicateUri="->" beanProperty="namedEntity.designationAsReference[]"/>
+		<if function="spring:isLiteral" param="o">
+			<tripleMap resultMapping="common:propertyResultMap" predicateUri="*" beanProperty="namedEntity.propertyAsReference[]" />	
+		</if>
 	</compositeResultMap>
 	
-	<select id="getEntityDirectoryEntries" resultMap="entityDirectoryEntryResultMap">
-
-		SELECT  ?termURI ?prefLabel
-		
-		WHERE {
-		      ?termURI a owl:Class;
-		      skos:prefLabel ?prefLabel .
-		} 
-
-	    LIMIT  #{limit}
-	    OFFSET #{offset}
-	  
-	</select>
+	<compositeResultMap id="designationResultMap1" 
+		resultClass="edu.mayo.cts2.framework.model.entity.Designation"
+		afterMap="spring:preferredDesignationCallback">
+		<tripleMap var="o" varType="literalValue" predicateUri="rdfs:label" beanProperty="value.content"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:prefLabel" beanProperty="value.content" />
+	</compositeResultMap>
 	
-	<select id="getEntityByUri" resultMap="entityDescriptionResultMap">
-
-		SELECT  ?p ?o
-		FROM bpOntologies:#{ontologyId} 
-		WHERE {
- 			<![CDATA[
+	<compositeResultMap id="designationResultMap2" 
+		resultClass="edu.mayo.cts2.framework.model.entity.Designation"
+		afterMap="spring:alternateDesignationCallback">
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:altLabel" beanProperty="value.content"/>
+	</compositeResultMap>
+	
+	<select id="getEntityDescriptionByUri" resultMap="entityDescriptionResultMap">
+		<![CDATA[
+		SELECT (<#{uri}> as ?s) ?p ?o
+		WHERE {		
       		<#{uri}> ?p ?o .
-  			]]>
 		} 
+		]]>
 	</select>
 	
+	<select id="getEntityDescriptionByNaame" resultMap="entityDescriptionResultMap">
+		<![CDATA[
+		SELECT (<http://purl.bioontology.org/ontology/#{namespace}/#{name}> as ?s) ?p ?o
+		WHERE {		
+      		http://purl.bioontology.org/ontology/#{namespace}/#{name} ?p ?o .
+		} 
+		]]>
+	</select>
+
 </sparqlMap>

@@ -6,13 +6,15 @@
 	<perRowResultMap id="idsResultMap" resultClass="edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdResult">
 		<rowMap var="id" varType="literalValue" beanProperty="id"/>
 		<rowMap var="ontologyId" varType="literalValue" beanProperty="ontologyId"/>
+		<rowMap var="acronym" varType="literalValue" beanProperty="acronym"/>
 	</perRowResultMap>
 	
 	<select id="getIds" resultMap="idsResultMap">
 		SELECT ?id ?ontologyId {
     		?ontology bpMetadata:hasVersion ?ontologyVersion ;
     			bpMetadata:id ?ontologyId .
-    		?ontologyVersion bpMetadata:id ?id .
+    		?ontologyVersion bpMetadata:id ?id ;
+    			omv:acronym ?acronym .
 		}
 	</select>
 </sparqlMap>

@@ -39,7 +39,8 @@ import edu.mayo.cts2.framework.service.profile.BaseQueryService;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public abstract class AbstractQueryService implements BaseQueryService, InitializingBean {
+public abstract class AbstractQueryService extends AbstractService
+	implements BaseQueryService, InitializingBean {
 
 	private Set<VariableTiedModelAttributeReference> modelAttributeReferences;
 	

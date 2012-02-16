@@ -32,17 +32,29 @@ public class IdResult {
 	
 	private String ontologyId;
 	private String id;
+	private String acronym;
 	
 	public String getOntologyId() {
 		return ontologyId;
 	}
+	
 	public void setOntologyId(String ontologyId) {
 		this.ontologyId = ontologyId;
 	}
+
 	public String getId() {
 		return id;
 	}
+	
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getAcronym() {
+		return acronym;
+	}
+	
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
 	}
 }

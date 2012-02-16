@@ -42,7 +42,9 @@ import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionReadService;
 import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId;
 
@@ -52,7 +54,8 @@ import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDesc
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
-public class BioportalRdfEntityDescriptionReadService implements EntityDescriptionReadService {
+public class BioportalRdfEntityDescriptionReadService extends AbstractService
+	implements EntityDescriptionReadService {
 
 	private final static String ENTITY_NAMESPACE = "entity";
 	private final static String GET_ENTITY_BY_URI = "getEntityDescriptionByUri";
@@ -72,24 +75,13 @@ public class BioportalRdfEntityDescriptionReadService implements EntityDescripti
 			ResolvedReadContext readContext) {
 		
 		if(identifier.getEntityName() != null){
-			throw new UnsupportedOperationException("Entity by name not implemented.");
+			throw new UnsupportedOperationException("Read by name not yet implemented - pending namespace service");
 		} else {
 			String uri = identifier.getUri();
-			String ontologyId = this.getOntologyIdFromUri(uri);
 			
-			if(StringUtils.isBlank(ontologyId)){
-				return null;
-			}
-
-			String id = this.idService.getCurrentIdForOntologyId(ontologyId);
-			
-			if(StringUtils.isBlank(id)){
-				return null;
-			}
 			
 			Map<String,Object> parameters = new HashMap<String,Object>();
 			parameters.put("uri", uri);
-			parameters.put("id", id);
 
 			return this.rdfDao.selectForObject(
 					ENTITY_NAMESPACE, 
@@ -99,14 +91,14 @@ public class BioportalRdfEntityDescriptionReadService implements EntityDescripti
 		}
 	}
 	
-	/**
-	 * Gets the ontology id from uri.
-	 *
-	 * @param uri the uri
-	 * @return the ontology id from uri
-	 */
-	private String getOntologyIdFromUri(String uri){
-		return StringUtils.substringAfterLast(uri, "/");
+	protected CodeSystemVersionName getCodeSystemVersionNameFromCodeSystemVersionNameOrUri(NameOrURI codeSystemVersion) {
+		if(StringUtils.isNotBlank(codeSystemVersion.getName())){
+			String csvName = codeSystemVersion.getName();
+			
+			return this.idService.getCodeSystemVersionNameForName(csvName);
+		} else {
+			throw new UnsupportedOperationException("CodeSytemVersion must be a Name, not a URI -- not implemented yet.");
+		}
 	}
 
 	/* (non-Javadoc)

@@ -31,8 +31,9 @@ import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
-import edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem.CodeSystemName;
 
 /**
  * The Class CodeSystemHrefSettingCallback.

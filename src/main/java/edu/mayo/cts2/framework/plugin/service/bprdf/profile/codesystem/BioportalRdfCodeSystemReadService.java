@@ -36,7 +36,9 @@ import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
 import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService;
 
 /**
@@ -45,7 +47,8 @@ import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService;
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
-public class BioportalRdfCodeSystemReadService implements CodeSystemReadService {
+public class BioportalRdfCodeSystemReadService extends AbstractService 
+	implements CodeSystemReadService {
 
 	private final static String CODESYSTEM_NAMESPACE = "codeSystem";
 	private final static String GET_CODESYSTEM_BY_URI = "getCodeSystemByUri";
