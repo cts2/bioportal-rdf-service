@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sparqlMap namespace="util"
 	xmlns="http://mayo.edu/twinkql" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
 	<perRowResultMap id="idsResultMap" resultClass="edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdResult">
 		<rowMap var="id" varType="literalValue" beanProperty="id"/>

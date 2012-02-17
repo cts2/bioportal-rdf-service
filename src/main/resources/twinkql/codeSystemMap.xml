@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sparqlMap namespace="codeSystem"
 	xmlns="http://mayo.edu/twinkql" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
 	<perRowResultMap id="codeSystemCatalogEntrySummaryResultMap" 
 		extends="common:resourceDescriptionDirectoryEntryResultMap"
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary"
 		afterMap="spring:codeSystemSummaryHrefCallback">
+		<nestedResultMap beanProperty="currentVersion" resultMap="codeSystem:codeSystemVersionReferenceResultMap"/>	
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
 		<rowMap var="ontologyId" varType="uri" beanProperty="about" />
 		<rowMap var="codeSystemName" varType="literalValue" beanProperty="codeSystemName" />
 		<rowMap var="codeSystemName" varType="literalValue" beanProperty="resourceName"/>
 		<rowMap var="id" varType="literalValue" callbackId="id" />
 		<rowMap var="virtualId" varType="literalValue" callbackId="virtualId"/>
-		<rowMap beanProperty="currentVersion" resultMapping="codeSystem:codeSystemVersionReferenceResultMap"/>	
 	</perRowResultMap>
 	
 	<perRowResultMap id="codeSystemVersionReferenceResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemVersionReference"
 		afterMap="spring:codeSystemVersionReferenceHrefCallback">
-		<rowMap beanProperty="version" resultMapping="codeSystem:currentVersionVersionNameAndMeaningReferenceResultMap"/>
-		<rowMap beanProperty="codeSystem" resultMapping="codeSystem:currentVersionCodeSystemNameAndMeaningReferenceResultMap"/>
+		<nestedResultMap beanProperty="version" resultMap="codeSystem:currentVersionVersionNameAndMeaningReferenceResultMap"/>
+		<nestedResultMap beanProperty="codeSystem" resultMap="codeSystem:currentVersionCodeSystemNameAndMeaningReferenceResultMap"/>
 	</perRowResultMap>
 	
 	<perRowResultMap id="currentVersionCodeSystemNameAndMeaningReferenceResultMap" 
@@ -48,6 +49,7 @@
         
        SELECT 
           ?s
+          ?acronym
           ?formalName
           ?description
           ?id

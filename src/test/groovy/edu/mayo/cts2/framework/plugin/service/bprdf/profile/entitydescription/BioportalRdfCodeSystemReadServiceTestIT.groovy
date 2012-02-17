@@ -34,7 +34,9 @@ class BioportalRdfCodeSystemReadServiceTestIT {
 	void TestReadByName() {
 	
 		def ed = read.read(new EntityDescriptionReadId("http://purl.bioontology.org/ontology/WHO/1313"), null)
-		
+	
+		println ed.namedEntity.property.size()
+
 		assertNotNull ed
 		
 	}

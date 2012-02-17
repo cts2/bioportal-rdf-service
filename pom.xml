@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>bioportal-rdf-service</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
+	<version>0.3.5-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<developers>
@@ -46,6 +46,10 @@
 			<url>scp://informatics.mayo.edu:/home/informatics/homes/cts2framework/public_html/sites/${project.artifactId}</url>
 		</site>
 	</distributionManagement>
+	
+	<properties>
+		<twinkqlVersion>0.2.0</twinkqlVersion>
+	</properties>
 
 	<build>
 		<extensions>
@@ -197,7 +201,7 @@
 		<dependency>
 			<groupId>edu.mayo</groupId>
 			<artifactId>twinkql</artifactId>
-			<version>0.1.3-SNAPSHOT</version>
+			<version>${twinkqlVersion}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.codehaus.castor</groupId>

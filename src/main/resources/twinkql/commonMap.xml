@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sparqlMap namespace="common"
 	xmlns="http://mayo.edu/twinkql" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
 	<perRowResultMap id="resourceDescriptionDirectoryEntryResultMap">
 		<rowMap var="description" varType="literalValue" beanProperty="resourceSynopsis.value.content"/>
@@ -16,9 +17,9 @@
 	</compositeResultMap>
 	
 	<compositeResultMap id="resourceDescriptionResultMap" >
+		<nestedResultMap resultMap="common:propertyResultMap" beanProperty="propertyAsReference[]"/>	
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:description" beanProperty="resourceSynopsis.value.content"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:name" beanProperty="formalName"/>
-		<tripleMap resultMapping="common:propertyResultMap" predicateUri="*" beanProperty="propertyAsReference[]"/>	
 	</compositeResultMap>
 	
 	<compositeResultMap id="propertyResultMap" resultClass="edu.mayo.cts2.framework.model.core.Property">

@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sparqlMap namespace="entity"
 	xmlns="http://mayo.edu/twinkql" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
 	<compositeResultMap id="entityDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.entity.EntityDescription">
-		<tripleMap var="o" varType="literalValue" predicateUri="skos:notation" beanProperty="namedEntity.entityID.name"/>
-		<tripleMap var="s" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.about"/>
-		<tripleMap resultMapping="entity:designationResultMap1" predicateUri="->" beanProperty="namedEntity.designationAsReference[]"/>
-		<tripleMap resultMapping="entity:designationResultMap2" predicateUri="->" beanProperty="namedEntity.designationAsReference[]"/>
+		<nestedResultMap resultMap="entity:designationResultMap1" beanProperty="namedEntity.designationAsReference[]"/>
+		<nestedResultMap resultMap="entity:designationResultMap2" beanProperty="namedEntity.designationAsReference[]"/>
 		<if function="spring:isLiteral" param="o">
-			<tripleMap resultMapping="common:propertyResultMap" predicateUri="*" beanProperty="namedEntity.propertyAsReference[]" />	
+			<nestedResultMap resultMap="common:propertyResultMap" beanProperty="namedEntity.propertyAsReference[]" />	
 		</if>
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:notation" beanProperty="namedEntity.entityID.name"/>
+		<tripleMap var="s" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.about"/>	
 	</compositeResultMap>
 	
 	<compositeResultMap id="designationResultMap1" 

@@ -2,7 +2,7 @@
 <twinkqlConfig
 	xmlns="http://mayo.edu/twinkql" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://mayo.edu/twinkql ../../../main/castor/twinkql.xsd ">
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
 	<namespace prefix="omv" uri="http://omv.ontoware.org/2005/05/ontology#"/>
 	<namespace prefix="bpMetadata" uri="http://bioportal.bioontology.org/metadata/def/"/>

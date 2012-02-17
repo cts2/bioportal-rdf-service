@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sparqlMap namespace="codeSystemVersion"
 	xmlns="http://mayo.edu/twinkql" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
 	<perRowResultMap id="codeSystemVersionCatalogEntrySummaryResultMap" 
 	    extends="common:resourceDescriptionDirectoryEntryResultMap"
 		resultClass="edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary"
 		afterMap="spring:codeSystemVersionSummaryHrefCallback">
+		<nestedResultMap resultMap="codeSystemVersion:versionOfResultMap" beanProperty="versionOf"/>
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
 		<rowMap var="versionId" varType="literalValue" callbackId="latestVersionId"/>
 		<rowMap var="id" varType="literalValue" callbackId="id"/>
@@ -14,7 +16,6 @@
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="codeSystemVersionName"/>
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="resourceName"/>
 		<rowMap var="s" varType="uri" beanProperty="documentURI" />
-		<rowMap resultMapping="codeSystemVersion:versionOfResultMap" beanProperty="versionOf"/>
 	</perRowResultMap>
 	
 	<perRowResultMap id="versionOfResultMap" 
@@ -28,11 +29,11 @@
 	 	extends="common:resourceVersionDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry"
 		afterMap="spring:codeSystemVersionNameCallback,spring:codeSystemVersionHrefCallback">
+		<nestedResultMap resultMap="codeSystemVersion:compositeVersionOfResultMap" beanProperty="versionOf"/>
 		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" callbackId="acronym"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
 		<tripleMap var="s" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="documentURI"/>
-		<tripleMap resultMapping="codeSystemVersion:compositeVersionOfResultMap" predicateUri="->" beanProperty="versionOf"/>
 	</compositeResultMap>
 	
 	<compositeResultMap id="compositeVersionOfResultMap" 
