@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMap namespace="association"
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
+	
+	<perRowResultMap id="associationDirectoryEntryResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.association.AssociationDirectoryEntry">
+		<rowMap var="s" varType="uri"  beanProperty="subject.uri"/>	
+		<rowMap var="s" varType="uri"  beanProperty="subject.href"/>	
+		<rowMap var="s" varType="localName" beanProperty="subject.name"/>	
+		<rowMap var="s" varType="namespace"  beanProperty="subject.namespace"/>	
+
+		<rowMap var="p" varType="uri"  beanProperty="predicate.uri"/>	
+		<rowMap var="p" varType="uri"  beanProperty="predicate.href"/>	
+		<rowMap var="p" varType="localName" beanProperty="predicate.name"/>	
+		<rowMap var="p" varType="namespace"  beanProperty="predicate.namespace"/>	
+
+		<rowMap var="o" varType="uri"  beanProperty="target.entity.uri"/>	
+		<rowMap var="o" varType="uri"  beanProperty="target.entity.href"/>	
+		<rowMap var="o" varType="localName" beanProperty="target.entity.name"/>	
+		<rowMap var="o" varType="namespace"  beanProperty="target.entity.namespace"/>	
+
+	</perRowResultMap>	
+	
+	
+	
+		<select id="getAssociationDirectoryEntrySummaries" resultMap="associationDirectoryEntryResultMap">
+		<![CDATA[
+		SELECT ?s ?p ?o
+		WHERE {	
+		GRAPH bpOntologies:1067 {	
+      		?s ?p ?o .
+      		FILTER (isIRI(?s))
+      		FILTER (isIRI(?p))
+      		FILTER (isIRI(?o))
+      		}
+      		
+		} 
+		LIMIT 10
+	    
+		
+		]]>
+	</select>
+</sparqlMap>
