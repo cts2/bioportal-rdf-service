@@ -23,9 +23,11 @@ import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.model.entity.EntityList;
+import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder.VariableQuery;
@@ -47,6 +49,8 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 
 	@Resource
 	private RdfDao rdfDao;
+	@Resource 
+	private IdService idService;
 
 
 
@@ -61,7 +65,6 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 		parameters.put(LIMIT, page.getMaxToReturn()+1);
 		parameters.put(OFFSET, page.getStart());
 
-		String codeSystemVersionRestriction = "?codeSystemVersionRestriction";
 		
 		VariableQueryBuilder builder = new VariableQueryBuilder();
 		
@@ -78,20 +81,28 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 		VariableQuery variableQuery = builder.build();
 		
 		parameters.put("filters", variableQuery);
+		String restrictToCodeSystemVersion =null;
+		
 		
 		if(query != null && query.getRestrictions() != null) {
-			NameOrURI codeSystem = query.getRestrictions().getCodeSystemVersion();
-		
-			if(codeSystem != null){
-				if(StringUtils.isNotBlank(codeSystem.getName())){
-					CodeSystemName name = CodeSystemName.parse(codeSystem.getName());
-					
-					codeSystemVersionRestriction = name.getOntologyId();
+		    AssociationQueryServiceRestrictions restrictions= query.getRestrictions();
+			NameOrURI codeSystemVersion = restrictions.getCodeSystemVersion();
+		   
+			if(codeSystemVersion != null){
+				if(StringUtils.isNotBlank(codeSystemVersion.getName())){
+					CodeSystemVersionName name = CodeSystemVersionName.parse(codeSystemVersion.getName());
+					restrictToCodeSystemVersion = idService.getOntologyIdForId(name.getId());
 				}
 			}
+			
+			addRestriction("restrictToSourceEntity", restrictions.getSourceEntity(), parameters);
+			addRestriction("restrictToTargetEntity", restrictions.getTargetEntity(), parameters);
+			addRestriction("restrictToPredicate", restrictions.getPredicate(), parameters);
+
 		}
 		
-		parameters.put("codeSystemVersionRestriction", codeSystemVersionRestriction);
+		parameters.put("restrictToCodeSystemVersion", restrictToCodeSystemVersion);
+		
 		
 		List<AssociationDirectoryEntry> results;
 		
@@ -111,6 +122,20 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 
 	}
 
+	private void addRestriction(String restrictionType, EntityNameOrURI restrictEntity, Map<String,Object> parameters) {
+		if(restrictEntity != null){
+			if(restrictEntity.getEntityName() != null && StringUtils.isNotBlank(restrictEntity.getEntityName().getName())){
+				String restrictionName = restrictEntity.getEntityName().getName();
+				parameters.put(restrictionType+"Name", restrictionName);
+			}
+			if(StringUtils.isNotBlank(restrictEntity.getUri())){
+				String restrictionUri = restrictEntity.getUri();
+				parameters.put(restrictionType+"Uri", restrictionUri);
+			}
+		}	
+	}
+	
+	
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#getResourceList(edu.mayo.cts2.framework.service.profile.ResourceQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
 	 */
@@ -265,20 +290,12 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 	@Override
 	public void doAddSupportedModelAttributes(
 			Set<edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference> set) {
-		VariableTiedModelAttributeReference name = 
-				new VariableTiedModelAttributeReference(
-						StandardModelAttributeReference.RESOURCE_NAME, "acronym");
-		
-		VariableTiedModelAttributeReference description = 
-				new VariableTiedModelAttributeReference(
-						StandardModelAttributeReference.RESOURCE_SYNOPSIS, "description");
-		
+			
 		VariableTiedModelAttributeReference about = 
 				new VariableTiedModelAttributeReference(
 						StandardModelAttributeReference.ABOUT, "ontologyId");
 
-		set.add(name);
-		set.add(description);
+
 		set.add(about);
 	}
 }

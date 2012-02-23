@@ -29,15 +29,36 @@
 		<![CDATA[
 		SELECT ?s ?p ?o
 		WHERE {	
-		GRAPH bpOntologies:1067 {	
-      		?s ?p ?o .
+		<isNotNull property="restrictToCodeSystemVersion">
+		    GRAPH bpOntologies:#{restrictToCodeSystemVersion} {	
+		    ?s ?p ?o .
       		FILTER (isIRI(?s))
       		FILTER (isIRI(?p))
       		FILTER (isIRI(?o))
       		}
-      		
+		</isNotNull>
+      	<isNotNull property="restrictToSourceEntityName">
+      		FILTER (CONTAINS( UCASE(str(?s)), UCASE( '#{restrictToSourceEntityName}')))
+		</isNotNull>	
+      	<isNotNull property="restrictToTargetEntityName">
+      		FILTER (CONTAINS( UCASE(str(?t)), UCASE( '#{restrictToTargetEntityName}')))
+		</isNotNull>	
+		<isNotNull property="restrictToPredicateName">
+      		FILTER (CONTAINS( UCASE(str(?p)), UCASE( '#{restrictToPredicateName}')))
+		</isNotNull>
+		<isNotNull property="restrictToSourceEntityUri">
+      		FILTER (?s = <#{restrictToSourceEntityUri}>)
+		</isNotNull>	
+      	<isNotNull property="restrictToTargetEntityUri">
+      		FILTER (?t = <#{restrictToTargetEntityUri}>)
+		</isNotNull>	
+		<isNotNull property="restrictToPredicateUri">
+      		FILTER (?p = <#{restrictToPredicateUri}>)
+		</isNotNull>		
 		} 
-		LIMIT 10
+		LIMIT  #{limit}
+	    OFFSET #{offset} 
+
 	    
 		
 		]]>
