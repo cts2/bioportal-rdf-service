@@ -25,7 +25,7 @@ class BaseServiceTestITBase {
 				throw new RuntimeException("Timeout waiting for service to start")
 			}
 			try {
-				client.getCts2Resource(server + "/codesystems", Object)
+				client.getCts2Resource(server + "codesystems", Object)
 				} catch (HttpStatusCodeException e){
 					if(e.getStatusCode().equals(HttpStatus.NOT_IMPLEMENTED)){
 						Thread.currentThread().sleep(5000)
