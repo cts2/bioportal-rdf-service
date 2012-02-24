@@ -27,7 +27,7 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	Cts2Marshaller marshaller
 	
 	@Test
-	void TestGetResourceSummaries(){
+	void testGetResourceSummaries(){
 		def dir = query.getResourceSummaries(
 			[
 				getRestrictions:{null},
@@ -39,7 +39,7 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	}
 	
 	@Test
-	void TestGetResourceSummariesWithCodeSystemVersionRestriction(){
+	void testGetResourceSummariesWithCodeSystemVersionAndSourceNameRestriction(){
 		def dir = query.getResourceSummaries(
 			[
 				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928"), 
@@ -54,7 +54,7 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	}
 	
 	@Test
-	void TestGetResourceSummariesWithCodeSystemVersionAndSourceEntityUriRestriction(){
+	void testGetResourceSummariesWithCodeSystemVersionAndSourceEntityUriRestriction(){
 		def dir = query.getResourceSummaries(
 			[
 				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928"),
@@ -67,4 +67,40 @@ class BioportalRdfAssociationQueryServiceTestIT {
 		
 
 	}
+	
+	@Test
+	void testGetResourceSummariesWithCodeSystemVersionAndSourceOrTargetEntityNameRestriction(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928"),
+																		  sourceOrTargetEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("GO_0000001", "") ))},
+				getFilterComponent:{[] as Set}
+			] as AssociationQuery,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+
+	}
+	@Test
+	void testGetResourceSummariesWithCodeSystemVersionAndSourceOrTargetEntityUriRestriction(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928"),
+																		  sourceOrTargetEntity: ModelUtils.entityNameOrUriFromUri("http://purl.obolibrary.org/obo/GO_0000001") )},
+				getFilterComponent:{[] as Set}
+			] as AssociationQuery,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+
+	}
+	
+	
+	
+	
+	
+	
+	
 }

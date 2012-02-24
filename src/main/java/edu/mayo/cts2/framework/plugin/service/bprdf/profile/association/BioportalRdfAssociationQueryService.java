@@ -98,6 +98,7 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 			addRestriction("restrictToSourceEntity", restrictions.getSourceEntity(), parameters);
 			addRestriction("restrictToTargetEntity", restrictions.getTargetEntity(), parameters);
 			addRestriction("restrictToPredicate", restrictions.getPredicate(), parameters);
+			addRestriction("restrictToSourceOrTarget", restrictions.getSourceOrTargetEntity(), parameters);
 
 		}
 		
