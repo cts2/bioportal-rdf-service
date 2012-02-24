@@ -1,14 +1,12 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
-import static org.junit.Assert.*
-
-import javax.annotation.Resource
+import javax.annotation.Resource;
 import javax.xml.transform.stream.StreamResult
+import static org.junit.Assert.*
+import org.junit.Test;
 
-import org.junit.Test
-
-import edu.mayo.cts2.framework.core.xml.Cts2Marshaller
-import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry
+import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
+import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
 import edu.mayo.cts2.framework.model.util.ModelUtils
 
 class BioportalRdfCodeSystemReadVersionServiceByVersionIdTestIT extends BioportalRdfCodeSystemVersionReadServiceTestITBase {

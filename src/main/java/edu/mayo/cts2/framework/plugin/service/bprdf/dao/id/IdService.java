@@ -23,6 +23,8 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.dao.id;
 
+import java.util.Set;
+
 /**
  * The Interface IdService.
  *
@@ -30,6 +32,7 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.dao.id;
  */
 public interface IdService {
 
+	public Set<String> getAllOntologyIds();
 	/**
 	 * Gets the ontology id for id.
 	 *
@@ -39,6 +42,8 @@ public interface IdService {
 	public String getOntologyIdForId(String id);
 	
 	public CodeSystemVersionName getCodeSystemVersionNameForName(String codeSystemVersionName);
+	
+	public CodeSystemVersionName getCodeSystemVersionNameForId(String id);
 
 	/**
 	 * Gets the ids for ontology id.

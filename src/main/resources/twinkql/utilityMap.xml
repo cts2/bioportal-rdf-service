@@ -10,12 +10,29 @@
 		<rowMap var="acronym" varType="literalValue" beanProperty="acronym"/>
 	</perRowResultMap>
 	
+	<perRowResultMap id="getDistinctNamespacesResultMap" resultClass="edu.mayo.cts2.framework.plugin.service.bprdf.dao.namespace.DistinctNamespaceResult">
+		<if function="spring:isNotLiteral" param="result">
+			<rowMap var="result" varType="namespace" beanProperty="namespace"/>
+		</if>
+	</perRowResultMap>
+	
 	<select id="getIds" resultMap="idsResultMap">
-		SELECT ?id ?ontologyId {
+		SELECT ?id ?ontologyId ?acronym {
     		?ontology bpMetadata:hasVersion ?ontologyVersion ;
     			bpMetadata:id ?ontologyId .
     		?ontologyVersion bpMetadata:id ?id ;
     			omv:acronym ?acronym .
 		}
+	</select>
+	
+	<select id="getDistinctNamespaces" resultMap="getDistinctNamespacesResultMap">
+		SELECT DISTINCT ( ?#{var} AS result )
+		WHERE 
+		{
+		    GRAPH bpOntologies:#{ontologyId} {
+		    	?s ?p ?o.
+		    	FILTER (ISURI(?#{var}) )    
+			} 
+	 	}
 	</select>
 </sparqlMap>

@@ -83,6 +83,10 @@ public class CodeSystemVersionName {
 	 */
 	@Override
 	public String toString() {
+		return this.getName();
+	}
+	
+	public String getName() {
 		return this.acronym + SEPARATOR + this.id;
 	}
 

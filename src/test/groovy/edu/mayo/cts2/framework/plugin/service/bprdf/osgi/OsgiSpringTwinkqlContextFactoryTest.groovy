@@ -1,11 +1,10 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.osgi;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test
+import org.junit.Test;
+import static org.junit.Assert.*
 import org.osgi.framework.BundleContext
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.osgi.io.OsgiBundleResourcePatternResolver;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
+import org.springframework.osgi.io.OsgiBundleResourcePatternResolver
 
 class OsgiSpringTwinkqlContextFactoryTest {
 

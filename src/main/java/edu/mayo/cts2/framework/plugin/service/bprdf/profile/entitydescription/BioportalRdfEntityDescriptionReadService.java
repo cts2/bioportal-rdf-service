@@ -24,14 +24,18 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.ncbo.stanford.bean.response.SuccessBean;
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.command.Page;
+import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.EntityReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
@@ -44,68 +48,113 @@ import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
+import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionReadService;
 import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId;
 
 /**
  * The Class BioportalRdfCodeSystemReadService.
- *
+ * 
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
 public class BioportalRdfEntityDescriptionReadService extends AbstractService
-	implements EntityDescriptionReadService {
+		implements EntityDescriptionReadService {
 
 	private final static String ENTITY_NAMESPACE = "entity";
 	private final static String GET_ENTITY_BY_URI = "getEntityDescriptionByUri";
-	private final static String GET_ENTITY_BY_NAME = "getEntityDescriptionByName";
 
 	@Resource
 	private RdfDao rdfDao;
-	
+
 	@Resource
 	private IdService idService;
 
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService#read(edu.mayo.cts2.framework.model.service.core.NameOrURI, edu.mayo.cts2.framework.model.command.ResolvedReadContext)
+	@Resource
+	private BioportalRestClient bioportalRestClient;
+
+	@Resource
+	private BioportalRestEntityDescriptionTransform bioportalRestTransform;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService
+	 * #read(edu.mayo.cts2.framework.model.service.core.NameOrURI,
+	 * edu.mayo.cts2.framework.model.command.ResolvedReadContext)
 	 */
 	@Override
 	public EntityDescription read(EntityDescriptionReadId identifier,
 			ResolvedReadContext readContext) {
 		
-		if(identifier.getEntityName() != null){
-			throw new UnsupportedOperationException("Read by name not yet implemented - pending namespace service");
-		} else {
-			String uri = identifier.getUri();
+		String ontologyId = null;
+		
+		if(identifier.getCodeSystemVersion() != null){
+			String csvName = identifier.getCodeSystemVersion().getName();
 			
+			String id = CodeSystemVersionName.parse(csvName).getId();
 			
-			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("uri", uri);
-
-			return this.rdfDao.selectForObject(
-					ENTITY_NAMESPACE, 
-					GET_ENTITY_BY_URI, 
-					parameters, 
-					EntityDescription.class);
+			ontologyId = this.idService.getOntologyIdForId(id);
 		}
+
+		String uri;
+
+		if (identifier.getEntityName() != null) {
+			String name = identifier.getEntityName().getName();
+
+			Set<ResolvedFilter> filters = new HashSet<ResolvedFilter>();
+			ResolvedFilter filter = new ResolvedFilter();
+			filter.setMatchAlgorithmReference(StandardMatchAlgorithmReference.EXACT_MATCH
+					.getMatchAlgorithmReference());
+			filter.setMatchValue(name);
+			filters.add(filter);
+
+			SuccessBean success = bioportalRestClient.searchEntities(null,
+					filters, new Page());
+
+			uri = this.bioportalRestTransform.successBeanToEntityUri(success);
+		} else {
+			uri = identifier.getUri();
+		}
+
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("uri", uri);
+		
+		if(StringUtils.isNotBlank(ontologyId)){
+			parameters.put("ontologyId", ontologyId);
+		}
+
+		return this.rdfDao.selectForObject(ENTITY_NAMESPACE, GET_ENTITY_BY_URI,
+				parameters, EntityDescription.class);
+
 	}
-	
-	protected CodeSystemVersionName getCodeSystemVersionNameFromCodeSystemVersionNameOrUri(NameOrURI codeSystemVersion) {
-		if(StringUtils.isNotBlank(codeSystemVersion.getName())){
+
+	protected CodeSystemVersionName getCodeSystemVersionNameFromCodeSystemVersionNameOrUri(
+			NameOrURI codeSystemVersion) {
+		if (StringUtils.isNotBlank(codeSystemVersion.getName())) {
 			String csvName = codeSystemVersion.getName();
-			
+
 			return this.idService.getCodeSystemVersionNameForName(csvName);
 		} else {
-			throw new UnsupportedOperationException("CodeSytemVersion must be a Name, not a URI -- not implemented yet.");
+			throw new UnsupportedOperationException(
+					"CodeSytemVersion must be a Name, not a URI -- not implemented yet.");
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService#exists(edu.mayo.cts2.framework.model.service.core.NameOrURI, edu.mayo.cts2.framework.model.service.core.ReadContext)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService
+	 * #exists(edu.mayo.cts2.framework.model.service.core.NameOrURI,
+	 * edu.mayo.cts2.framework.model.service.core.ReadContext)
 	 */
 	@Override
-	public boolean exists(EntityDescriptionReadId identifier, ReadContext readContext) {
+	public boolean exists(EntityDescriptionReadId identifier,
+			ReadContext readContext) {
 		throw new UnsupportedOperationException();
 	}
 

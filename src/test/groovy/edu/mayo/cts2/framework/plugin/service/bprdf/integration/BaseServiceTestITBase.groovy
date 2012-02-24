@@ -3,8 +3,8 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.integration;
 import org.junit.Before;
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.HttpStatusCodeException
-
-import edu.mayo.cts2.framework.core.client.Cts2RestClient
+import static org.junit.Assert.*
+import edu.mayo.cts2.framework.core.client.Cts2RestClient;
 
 
 class BaseServiceTestITBase {

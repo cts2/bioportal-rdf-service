@@ -32,16 +32,13 @@
 		<![CDATA[
 		SELECT (<#{uri}> as ?s) ?p ?o
 		WHERE {		
-      		<#{uri}> ?p ?o .
-		} 
-		]]>
-	</select>
-	
-	<select id="getEntityDescriptionByNaame" resultMap="entityDescriptionResultMap">
-		<![CDATA[
-		SELECT (<http://purl.bioontology.org/ontology/#{namespace}/#{name}> as ?s) ?p ?o
-		WHERE {		
-      		http://purl.bioontology.org/ontology/#{namespace}/#{name} ?p ?o .
+			<isNotNull property="ontologyId">
+      		GRAPH bpOntologies:#{ontologyId}
+      		</isNotNull>
+      			<#{uri}> ?p ?o .
+      		<isNotNull property="ontologyId">
+      		}
+      		</isNotNull>
 		} 
 		]]>
 	</select>

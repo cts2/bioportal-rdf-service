@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -53,6 +54,7 @@ public class DefaultIdService implements IdService, InitializingBean {
 	private Map<String,Integer> ontologyIdToLatestId = new HashMap<String,Integer>();
 	private Map<String,String> idToOntologyId = new HashMap<String,String>();
 	private Map<String,CodeSystemVersionName> csvNameToCsv = new HashMap<String,CodeSystemVersionName>();
+	private Map<String,CodeSystemVersionName> idToCsvName = new HashMap<String,CodeSystemVersionName>();
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -88,6 +90,7 @@ public class DefaultIdService implements IdService, InitializingBean {
 			
 			CodeSystemVersionName csvName = new CodeSystemVersionName(acronym, id);
 			this.csvNameToCsv.put(csvName.toString(), csvName);
+			this.idToCsvName.put(id, csvName);
 		}
 	}
 
@@ -126,6 +129,14 @@ public class DefaultIdService implements IdService, InitializingBean {
 		return this.csvNameToCsv.get(codeSystemVersionName);
 	}
 
+	@Override
+	public Set<String> getAllOntologyIds() {
+		return this.ontologyIdToLatestId.keySet();
+	}
 
-
+	@Override
+	public CodeSystemVersionName getCodeSystemVersionNameForId(String id) {
+		return this.idToCsvName.get(id);
+	}
+	
 }

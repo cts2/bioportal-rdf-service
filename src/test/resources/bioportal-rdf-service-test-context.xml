@@ -41,7 +41,7 @@
 		
 	<bean id="rdfDao" class="edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao"/>
 
-	<bean id="httpQueryExecutionProvider" class="edu.mayo.cts2.framework.plugin.service.bprdf.dao.HttpQueryExecutionProvider">
+	<bean id="apiKeyProvider" class="edu.mayo.cts2.framework.plugin.service.bprdf.dao.ApiKeyProvider">
 		<property name="apiKey" value="${apiKey}" />
 	</bean>
 	
