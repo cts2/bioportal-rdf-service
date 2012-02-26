@@ -5,14 +5,20 @@
 	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
 	<compositeResultMap id="entityDescriptionResultMap" 
-		resultClass="edu.mayo.cts2.framework.model.entity.EntityDescription">
+		resultClass="edu.mayo.cts2.framework.model.entity.EntityDescription"
+		afterMap="spring:entityDescriptionCallback">
 		<nestedResultMap resultMap="entity:designationResultMap1" beanProperty="namedEntity.designationAsReference[]"/>
 		<nestedResultMap resultMap="entity:designationResultMap2" beanProperty="namedEntity.designationAsReference[]"/>
 		<if function="spring:isLiteral" param="o">
 			<nestedResultMap resultMap="common:propertyResultMap" beanProperty="namedEntity.propertyAsReference[]" />	
 		</if>
-		<tripleMap var="o" varType="literalValue" predicateUri="skos:notation" beanProperty="namedEntity.entityID.name"/>
-		<tripleMap var="s" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.about"/>	
+		<tripleMap var="o" varType="localName" predicateUri="rdfs:type" beanProperty="namedEntity.entityID.name"/>
+		<tripleMap var="s" varType="namespace" predicateUri="rdfs:type" beanProperty="namedEntity.entityID.namespace" modifier="spring:namespaceModifier" />
+		<tripleMap var="s" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.about"/>
+		<tripleMap var="graph" varType="localName" predicateUri="rdfs:type" callbackId="graph"/>	
+		<tripleMap var="o" varType="localName" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].name"/>
+		<tripleMap var="o" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].uri"/>
+		<tripleMap var="o" varType="namespace" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].namespace" modifier="spring:namespaceModifier" />
 	</compositeResultMap>
 	
 	<compositeResultMap id="designationResultMap1" 
@@ -30,10 +36,10 @@
 	
 	<select id="getEntityDescriptionByUri" resultMap="entityDescriptionResultMap">
 		<![CDATA[
-		SELECT (<#{uri}> as ?s) ?p ?o
+		SELECT (<#{uri}> as ?s) ?p ?o ?graph
 		WHERE {		
 			<isNotNull property="ontologyId">
-      		GRAPH bpOntologies:#{ontologyId}
+      		GRAPH ?graph {
       		</isNotNull>
       			<#{uri}> ?p ?o .
       		<isNotNull property="ontologyId">

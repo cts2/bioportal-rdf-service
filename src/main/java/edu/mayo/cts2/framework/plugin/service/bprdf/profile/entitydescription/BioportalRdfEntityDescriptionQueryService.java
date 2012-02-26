@@ -23,6 +23,7 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -48,6 +49,8 @@ import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
 import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions;
+import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
+import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery;
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQueryService;
 
@@ -108,14 +111,21 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 
 	@Override
 	public Set<? extends MatchAlgorithmReference> getSupportedMatchAlgorithms() {
-		// TODO Auto-generated method stub
-		return null;
+		HashSet<MatchAlgorithmReference> returnSet = new HashSet<MatchAlgorithmReference>();
+		
+		returnSet.add(StandardMatchAlgorithmReference.CONTAINS.getMatchAlgorithmReference());
+		returnSet.add(StandardMatchAlgorithmReference.EXACT_MATCH.getMatchAlgorithmReference());
+
+		return returnSet;
 	}
 
 	@Override
 	public Set<? extends ModelAttributeReference> getSupportedModelAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+		HashSet<ModelAttributeReference> returnSet = new HashSet<ModelAttributeReference>();
+
+		returnSet.add(StandardModelAttributeReference.RESOURCE_SYNOPSIS.getModelAttributeReference());
+		
+		return returnSet;
 	}
 
 	@Override

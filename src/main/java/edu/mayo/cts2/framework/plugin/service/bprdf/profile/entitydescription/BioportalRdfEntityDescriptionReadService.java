@@ -107,12 +107,12 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 
 			Set<ResolvedFilter> filters = new HashSet<ResolvedFilter>();
 			ResolvedFilter filter = new ResolvedFilter();
-			filter.setMatchAlgorithmReference(StandardMatchAlgorithmReference.EXACT_MATCH
+			filter.setMatchAlgorithmReference(StandardMatchAlgorithmReference.CONTAINS
 					.getMatchAlgorithmReference());
 			filter.setMatchValue(name);
 			filters.add(filter);
 
-			SuccessBean success = bioportalRestClient.searchEntities(null,
+			SuccessBean success = bioportalRestClient.searchEntities(ontologyId,
 					filters, new Page());
 
 			uri = this.bioportalRestTransform.successBeanToEntityUri(success);

@@ -87,7 +87,7 @@ public class BioportalRestEntityDescriptionTransform {
 		return result;
 	}
 	
-	private String getEntityHref(String ontologyId, String id, String entityName){
+	protected String getEntityHref(String ontologyId, String id, String entityName){
 		CodeSystemVersionName codeSystemVersionName = this.idService.getCodeSystemVersionNameForId(id);
 		
 		//the triple store doesn't have all of these..
@@ -101,7 +101,7 @@ public class BioportalRestEntityDescriptionTransform {
 		return this.urlConstructor.createEntityUrl(codeSystemName, versionName, entityName);
 	}
 	
-	private CodeSystemVersionReference getCodeSystemVersionReference(String ontologyId, String id){
+	protected CodeSystemVersionReference getCodeSystemVersionReference(String ontologyId, String id){
 		CodeSystemVersionReference versionRef = new CodeSystemVersionReference();
 		
 		CodeSystemVersionName codeSystemVersionName = this.idService.getCodeSystemVersionNameForId(id);
