@@ -104,18 +104,21 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 
 		if (identifier.getEntityName() != null) {
 			String name = identifier.getEntityName().getName();
+			String namespace = identifier.getEntityName().getNamespace();
 
-			Set<ResolvedFilter> filters = new HashSet<ResolvedFilter>();
-			ResolvedFilter filter = new ResolvedFilter();
-			filter.setMatchAlgorithmReference(StandardMatchAlgorithmReference.CONTAINS
-					.getMatchAlgorithmReference());
-			filter.setMatchValue(name);
-			filters.add(filter);
-
-			SuccessBean success = bioportalRestClient.searchEntities(ontologyId,
-					filters, new Page());
-
-			uri = this.bioportalRestTransform.successBeanToEntityUri(success);
+			uri = this.getUriFromCode(ontologyId, name);
+			
+			if(StringUtils.isBlank(uri)){
+				uri = this.getUriFromCode(ontologyId, namespace + ":" + name);
+			}
+			
+			if(StringUtils.isBlank(uri)){
+				uri = this.getUriFromCode(ontologyId, namespace + "_" + name);
+			}
+			
+			if(StringUtils.isBlank(uri)){
+				return null;
+			}
 		} else {
 			uri = identifier.getUri();
 		}
@@ -130,6 +133,20 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 		return this.rdfDao.selectForObject(ENTITY_NAMESPACE, GET_ENTITY_BY_URI,
 				parameters, EntityDescription.class);
 
+	}
+	
+	private String getUriFromCode(String ontologyId, String code){
+		Set<ResolvedFilter> filters = new HashSet<ResolvedFilter>();
+		ResolvedFilter filter = new ResolvedFilter();
+		filter.setMatchAlgorithmReference(StandardMatchAlgorithmReference.EXACT_MATCH
+				.getMatchAlgorithmReference());
+		filter.setMatchValue(code);
+		filters.add(filter);
+
+		SuccessBean success = bioportalRestClient.searchEntities(ontologyId,
+				filters, new Page());
+
+		return this.bioportalRestTransform.successBeanToEntityUri(success);
 	}
 
 	protected CodeSystemVersionName getCodeSystemVersionNameFromCodeSystemVersionNameOrUri(
