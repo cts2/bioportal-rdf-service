@@ -33,6 +33,7 @@ import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
 import edu.mayo.cts2.framework.model.core.NameAndMeaningReference;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
@@ -54,10 +55,10 @@ public class CodeSystemVersionReferenceHrefSettingCallback implements AfterResul
 	@Override
 	public void afterBinding(
 			CodeSystemVersionReference bindingResult,
-			Map<String,Object> callbackParams) {
+			CallbackContext callbackContext) {
 		this.codeSystemReferenceHrefSettingCallback.afterBinding(
 				bindingResult.getCodeSystem(), 
-				callbackParams);
+				callbackContext);
 	
 		NameAndMeaningReference versionRef = bindingResult.getVersion();
 		versionRef.setHref(this.urlConstructor.createCodeSystemVersionUrl(

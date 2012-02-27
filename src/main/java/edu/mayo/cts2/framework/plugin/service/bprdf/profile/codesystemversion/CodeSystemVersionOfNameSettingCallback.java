@@ -23,12 +23,11 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.core.CodeSystemReference;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem.AbstractCodeSystemNameSettingCallback;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
@@ -44,9 +43,9 @@ public class CodeSystemVersionOfNameSettingCallback extends AbstractCodeSystemNa
 	@Override
 	public void afterBinding(
 			CodeSystemReference bindingResult, 
-			Map<String,Object> callbackParams) {
+			CallbackContext context) {
 		
-		bindingResult.setContent(this.getCodeSystemName(callbackParams).toString());
+		bindingResult.setContent(this.getCodeSystemName(context.getCallbackIds()).toString());
 	}
 
 }

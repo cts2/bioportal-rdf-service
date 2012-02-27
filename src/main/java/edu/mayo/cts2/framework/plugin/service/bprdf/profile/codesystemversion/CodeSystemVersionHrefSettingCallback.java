@@ -23,8 +23,6 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
@@ -34,6 +32,7 @@ import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogE
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
@@ -55,9 +54,9 @@ public class CodeSystemVersionHrefSettingCallback extends AbstractCodeSystemVers
 	@Override
 	public void afterBinding(
 			CodeSystemVersionCatalogEntry bindingResult, 
-			Map<String,Object> callbackParams) {
+			CallbackContext context) {
 
-		CodeSystemVersionName csvName = this.getCodeSystemVersionName(callbackParams);
+		CodeSystemVersionName csvName = this.getCodeSystemVersionName(context.getCallbackIds());
 		
 		String acronym = csvName.getAcronym();
 		

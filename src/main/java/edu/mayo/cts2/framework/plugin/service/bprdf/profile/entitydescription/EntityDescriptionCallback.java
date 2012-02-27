@@ -23,8 +23,6 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
@@ -33,6 +31,7 @@ import edu.mayo.cts2.framework.model.entity.EntityDescription;
 import edu.mayo.cts2.framework.model.entity.EntityDescriptionBase;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
@@ -54,9 +53,9 @@ public class EntityDescriptionCallback implements AfterResultBinding<EntityDescr
 	@Override
 	public void afterBinding(
 			EntityDescription bindingResult, 
-			Map<String,Object> callbackParams) {	
+			CallbackContext context) {	
 		
-		String ontologyId = (String) callbackParams.get("graph");
+		String ontologyId = (String) context.getCallbackIds().get("graph");
 		String id = idService.getCurrentIdForOntologyId(ontologyId);
 		
 		EntityDescriptionBase base = (EntityDescriptionBase) bindingResult.getChoiceValue();
