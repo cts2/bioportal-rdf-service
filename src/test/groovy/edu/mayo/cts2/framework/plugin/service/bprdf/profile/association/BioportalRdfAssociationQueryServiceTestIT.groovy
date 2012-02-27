@@ -3,6 +3,7 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.association
 import static org.junit.Assert.*
 
 import javax.annotation.Resource
+import javax.xml.transform.stream.StreamResult
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,14 +30,32 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	@Test
 	void testGetResourceSummaries(){
 		def dir = query.getResourceSummaries(
-			[
-				getRestrictions:{null},
+		   [
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928") )},
 				getFilterComponent:{[] as Set}
-			] as AssociationQuery,null,new Page())
+			] as AssociationQuery,
+		null,
+		new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
 	}
+	
+	@Test
+	void testGetResourceSummariesValid(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928"), 
+					                                                      sourceEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("GO_0000001", "") ))},
+				getFilterComponent:{[] as Set}
+			] as AssociationQuery,null,new Page())
+		
+		assertNotNull dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
+	}
+	
+	
 	
 	@Test
 	void testGetResourceSummariesWithCodeSystemVersionAndSourceNameRestriction(){
@@ -52,6 +71,10 @@ class BioportalRdfAssociationQueryServiceTestIT {
 		
 
 	}
+	
+	
+	
+	
 	
 	@Test
 	void testGetResourceSummariesWithCodeSystemVersionAndSourceEntityUriRestriction(){
