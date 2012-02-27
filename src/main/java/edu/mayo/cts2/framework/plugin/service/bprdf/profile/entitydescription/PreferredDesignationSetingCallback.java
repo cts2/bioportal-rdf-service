@@ -23,13 +23,12 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.entity.Designation;
 import edu.mayo.cts2.framework.model.entity.types.DesignationRole;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
@@ -45,7 +44,7 @@ public class PreferredDesignationSetingCallback implements AfterResultBinding<De
 	@Override
 	public void afterBinding(
 			Designation bindingResult, 
-			Map<String,Object> callbackParams) {	
+			CallbackContext context) {	
 		bindingResult.setDesignationRole(DesignationRole.PREFERRED);
 	}
 

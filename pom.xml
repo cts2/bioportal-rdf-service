@@ -48,7 +48,7 @@
 	</distributionManagement>
 
 	<properties>
-		<twinkqlVersion>0.2.5</twinkqlVersion>
+		<twinkqlVersion>0.2.6</twinkqlVersion>
 	</properties>
 
 	<build>

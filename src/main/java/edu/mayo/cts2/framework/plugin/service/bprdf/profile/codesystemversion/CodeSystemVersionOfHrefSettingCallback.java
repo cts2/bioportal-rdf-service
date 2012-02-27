@@ -23,8 +23,6 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
@@ -32,6 +30,7 @@ import org.springframework.stereotype.Component;
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.core.CodeSystemReference;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
@@ -50,7 +49,7 @@ public class CodeSystemVersionOfHrefSettingCallback implements AfterResultBindin
 	@Override
 	public void afterBinding(
 			CodeSystemReference bindingResult, 
-			Map<String,Object> callbackParams) {
+			CallbackContext context) {
 		
 		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getContent()));
 	}
