@@ -1,7 +1,5 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.association;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
@@ -10,6 +8,8 @@ import org.springframework.stereotype.Component;
 import edu.mayo.cts2.framework.model.association.AssociationDirectoryEntry;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.namespace.NamespaceLookupService;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.twinkql.result.callback.CallbackContext;
+
 @Component("associationEntityNamespaceCallback")
 public class AssociationEntityNamespaceSettingCallback implements AfterResultBinding<AssociationDirectoryEntry> {
     @Resource
@@ -20,10 +20,10 @@ public class AssociationEntityNamespaceSettingCallback implements AfterResultBin
 	@Override
 	public void afterBinding(
 			AssociationDirectoryEntry bindingResult, 
-			Map<String,Object> callbackParams) {
+			CallbackContext context) {
 		String codeSystemVersion= null;
-		if (callbackParams.get("restrictToCodeSystemVersion") != null) {
-			codeSystemVersion= callbackParams.get("restrictToCodeSystemVersion").toString();
+		if ((String) context.getQueryParams().get("restrictToCodeSystemVersion") != null) {
+			codeSystemVersion= (String) context.getQueryParams().get("restrictToCodeSystemVersion");
 		}
 		if (StringUtils.isNotBlank(codeSystemVersion)) {
 		    bindingResult.getSubject().setNamespace(codeSystemVersion);

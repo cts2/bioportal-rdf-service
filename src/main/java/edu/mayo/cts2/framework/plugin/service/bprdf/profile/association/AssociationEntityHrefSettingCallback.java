@@ -13,6 +13,7 @@ import edu.mayo.cts2.framework.model.core.URIAndEntityName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 @Component("associationEntityHrefCallback")
 public class AssociationEntityHrefSettingCallback implements AfterResultBinding<AssociationDirectoryEntry> {
     @Resource
@@ -26,10 +27,10 @@ public class AssociationEntityHrefSettingCallback implements AfterResultBinding<
 	@Override
 	public void afterBinding(
 			AssociationDirectoryEntry bindingResult, 
-			Map<String,Object> callbackParams) {
+			CallbackContext context) {
 		String codeSystemVersion= null;
-		if (callbackParams.get("restrictToCodeSystemVersion") != null) {
-			codeSystemVersion= callbackParams.get("restrictToCodeSystemVersion").toString();
+		if ((String) context.getQueryParams().get("restrictToCodeSystemVersion") != null) {
+			codeSystemVersion= (String) context.getQueryParams().get("restrictToCodeSystemVersion");
 		}
 		if (StringUtils.isNotBlank(codeSystemVersion)) {
 			CodeSystemVersionName csvn= idService.getCodeSystemVersionNameForName(codeSystemVersion);
