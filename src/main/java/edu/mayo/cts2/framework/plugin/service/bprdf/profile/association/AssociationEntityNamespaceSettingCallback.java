@@ -1,5 +1,7 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.association;
 
+import java.net.URLEncoder;
+
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,8 +32,16 @@ public class AssociationEntityNamespaceSettingCallback implements AfterResultBin
 		    bindingResult.getTarget().getEntity().setNamespace(codeSystemVersion);
 		    
 		}
-//		String predicatePrefix= namespaceService.getPreferredPrefixForUri(bindingResult.getPredicate().getNamespace());
-//		bindingResult.getPredicate().setNamespace(predicatePrefix);
+		try {
+		//String  encodedNsURL= URLEncoder.encode(bindingResult.getPredicate().getNamespace(), "UTF-8");
+		//String predicatePrefix= namespaceService.getPreferredPrefixForUri(encodedNsURL);
+		String predicatePrefix= namespaceService.getPreferredPrefixForUri(bindingResult.getPredicate().getNamespace());
+		bindingResult.getPredicate().setNamespace(predicatePrefix);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		
 	}
 
 }

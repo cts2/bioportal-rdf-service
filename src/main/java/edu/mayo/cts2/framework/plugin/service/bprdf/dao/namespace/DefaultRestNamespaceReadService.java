@@ -10,7 +10,7 @@ public class DefaultRestNamespaceReadService implements NamespaceReadService {
 	
 	private Cts2RestClient cts2RestClient;
 	
-	private String serviceUri = "http://informatics.mayo.edu/cts2/services/bioportal-rdf/namespace";
+	private String serviceUri = "http://informatics.mayo.edu/cts2/services/bioportal-rdf";
 
 	public DefaultRestNamespaceReadService(Cts2Marshaller cts2Marshaller) throws Exception {
 		this.cts2RestClient = new Cts2RestClient(cts2Marshaller);
