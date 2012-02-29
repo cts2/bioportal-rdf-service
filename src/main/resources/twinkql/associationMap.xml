@@ -6,7 +6,7 @@
 	
 	<perRowResultMap id="associationDirectoryEntryResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.association.AssociationDirectoryEntry"
-		afterMap="spring:associationEntityNamespaceCallback,spring:associationEntityHrefCallback">
+		afterMap="spring:associationEntityNamespaceCallback,spring:associationEntityHrefCallback,spring:associationAssertedByCallback">
 		<rowMap var="s" varType="uri"  beanProperty="subject.uri"/>	
 		<rowMap var="s" varType="uri"  beanProperty="subject.href" />	
 		<rowMap var="s" varType="localName" beanProperty="subject.name"/>	
