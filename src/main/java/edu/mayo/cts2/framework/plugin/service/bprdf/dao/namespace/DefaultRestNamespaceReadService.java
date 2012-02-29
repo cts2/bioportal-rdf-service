@@ -9,7 +9,7 @@ import edu.mayo.cts2.framework.service.namespace.NamespaceReadService;
 public class DefaultRestNamespaceReadService implements NamespaceReadService {
 	
 	private Cts2RestClient cts2RestClient;
-	
+
 	private String serviceUri = "http://informatics.mayo.edu/cts2/services/bioportal-rdf";
 
 	public DefaultRestNamespaceReadService(Cts2Marshaller cts2Marshaller) throws Exception {
@@ -18,9 +18,9 @@ public class DefaultRestNamespaceReadService implements NamespaceReadService {
 	
 	@Override
 	public DocumentedNamespaceReference readPreferredByUri(String uri) {
-		String url = this.serviceUri + "/namespacebyuri?uri="+uri;
+		String url = this.serviceUri + "/namespacebyuri?uri={uri}";
 		
-		return this.cts2RestClient.getCts2Resource(url, DocumentedNamespaceReference.class);
+		return this.cts2RestClient.getCts2Resource(url, DocumentedNamespaceReference.class, uri);
 	}
 
 	@Override
