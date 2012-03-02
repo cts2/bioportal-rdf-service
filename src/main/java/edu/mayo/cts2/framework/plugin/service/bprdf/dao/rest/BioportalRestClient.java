@@ -50,7 +50,6 @@ import com.thoughtworks.xstream.mapper.Mapper;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
 import edu.mayo.cts2.framework.model.core.URIAndEntityName;
-import edu.mayo.cts2.framework.model.core.types.TargetReferenceType;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.ApiKeyProvider;
 import edu.mayo.cts2.framework.service.constant.ExternalCts2Constants;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
@@ -159,18 +158,21 @@ public class BioportalRestClient implements InitializingBean {
 		return xml;
 	}
 	
-	private String getBioportalQueryStringForFilter(ResolvedFilter filter) {
-		StringBuffer sb = new StringBuffer();
-		
-		if(filter.getReferenceType().equals(TargetReferenceType.PROPERTY)){
-			URIAndEntityName target = filter.getPropertyReference();
-			
-			if(StringUtils.equals(target.getName(),DEFINITIONS_NAME)){
-				sb.append("&includedefinitions=true");
-			} else if(StringUtils.equals(target.getName(),PROPERTIES_NAME)){
-				sb.append("&includeproperties=true");
-			}
+	protected String getBioportalQueryStringForFilter(ResolvedFilter filter) {
+		if(filter == null || filter.getPropertyReference() == null){
+			return "";
 		}
+		
+		StringBuffer sb = new StringBuffer();
+
+		URIAndEntityName target = filter.getPropertyReference().getReferenceTarget();
+		
+		if(StringUtils.equals(target.getName(),DEFINITIONS_NAME)){
+			sb.append("&includedefinitions=true");
+		} else if(StringUtils.equals(target.getName(),PROPERTIES_NAME)){
+			sb.append("&includeproperties=true");
+		}
+			
 		return sb.toString();
 	}
 	

@@ -12,6 +12,8 @@ import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
 import edu.mayo.cts2.framework.model.command.ResolvedFilter
 import edu.mayo.cts2.framework.model.core.ModelAttributeReference
+import edu.mayo.cts2.framework.model.core.PropertyReference
+import edu.mayo.cts2.framework.model.core.URIAndEntityName
 import edu.mayo.cts2.framework.model.util.ModelUtils
 import edu.mayo.cts2.framework.service.command.restriction.CodeSystemVersionQueryServiceRestrictions
 import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQuery
@@ -59,7 +61,7 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 				getFilterComponent:{
 					[new ResolvedFilter(
 						matchValue:"CPT",
-						modelAttributeReference: new ModelAttributeReference(content:"resourceName")
+						propertyReference: new PropertyReference(referenceTarget: new URIAndEntityName(name:"resourceName"))
 						)] as Set
 				}
 				
@@ -78,7 +80,7 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 				getFilterComponent:{
 					[new ResolvedFilter(
 						matchValue:"cPt",
-						modelAttributeReference: new ModelAttributeReference(content:"resourceName")
+						propertyReference: new PropertyReference(referenceTarget: new URIAndEntityName(name:"resourceName"))
 						)] as Set
 				}
 				

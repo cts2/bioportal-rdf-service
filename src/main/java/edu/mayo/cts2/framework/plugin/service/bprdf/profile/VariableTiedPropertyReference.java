@@ -23,7 +23,7 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile;
 
-import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
+import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
 
 /**
@@ -31,21 +31,20 @@ import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public class VariableTiedModelAttributeReference extends ModelAttributeReference{
+public class VariableTiedPropertyReference extends PropertyReference {
 	
 	private static final long serialVersionUID = 6302391653888781044L;
 	
 	private String variable;
 	
-	public VariableTiedModelAttributeReference(){
+	public VariableTiedPropertyReference(){
 		super();
 	}
 	
-	public VariableTiedModelAttributeReference(StandardModelAttributeReference ref, String variable){
+	public VariableTiedPropertyReference(StandardModelAttributeReference ref, String variable){
 		super();
-		this.setContent(ref.getModelAttributeReference().getContent());
-		this.setHref(ref.getModelAttributeReference().getHref());
-		this.setUri(ref.getModelAttributeReference().getUri());
+		this.setReferenceTarget(ref.getPropertyReference().getReferenceTarget());
+		this.setReferenceType(ref.getPropertyReference().getReferenceType());
 		
 		this.variable = variable;
 	}

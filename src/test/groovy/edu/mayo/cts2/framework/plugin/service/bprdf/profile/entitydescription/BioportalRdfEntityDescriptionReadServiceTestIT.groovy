@@ -41,8 +41,8 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	@Test
 	void TestReadByName() {
 	
-		def name = new ScopedEntityName(name:"D001914")
-		def csv = ModelUtils.nameOrUriFromName("MSHFRE-42580")
+		def name = new ScopedEntityName(name:"Hospital")
+		def csv = ModelUtils.nameOrUriFromName("ICNP-45766")
 		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
 	
 		assertNotNull ed
@@ -52,8 +52,8 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	@Test
 	void TestReadByNameValid() {
 	
-		def name = new ScopedEntityName(name:"Heart")
-		def csv = ModelUtils.nameOrUriFromName("BIOA-46481")
+		def name = new ScopedEntityName(name:"Hospital")
+		def csv = ModelUtils.nameOrUriFromName("ICNP-45766")
 		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
 		
 		assertNotNull ed

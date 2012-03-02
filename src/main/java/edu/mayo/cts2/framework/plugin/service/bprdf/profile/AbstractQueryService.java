@@ -29,8 +29,7 @@ import java.util.Set;
 import org.springframework.beans.factory.InitializingBean;
 
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
-import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
-import edu.mayo.cts2.framework.model.core.PredicateReference;
+import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.profile.BaseQueryService;
 
@@ -42,14 +41,14 @@ import edu.mayo.cts2.framework.service.profile.BaseQueryService;
 public abstract class AbstractQueryService extends AbstractService
 	implements BaseQueryService, InitializingBean {
 
-	private Set<VariableTiedModelAttributeReference> modelAttributeReferences;
+	private Set<VariableTiedPropertyReference> modelAttributeReferences;
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.modelAttributeReferences = new HashSet<VariableTiedModelAttributeReference>();
+		this.modelAttributeReferences = new HashSet<VariableTiedPropertyReference>();
 		this.doAddSupportedModelAttributes(this.modelAttributeReferences);
 	}
 	
@@ -58,7 +57,7 @@ public abstract class AbstractQueryService extends AbstractService
 	 *
 	 * @param set the set
 	 */
-	public abstract void doAddSupportedModelAttributes(Set<VariableTiedModelAttributeReference> set);
+	public abstract void doAddSupportedModelAttributes(Set<VariableTiedPropertyReference> set);
 	
 	@Override
 	public Set<? extends MatchAlgorithmReference> getSupportedMatchAlgorithms() {
@@ -70,7 +69,7 @@ public abstract class AbstractQueryService extends AbstractService
 	}
 
 	@Override
-	public Set<VariableTiedModelAttributeReference> getSupportedModelAttributes() {
+	public Set<VariableTiedPropertyReference> getSupportedSearchReferences() {
 		return this.modelAttributeReferences;
 	}
 	
@@ -80,9 +79,9 @@ public abstract class AbstractQueryService extends AbstractService
 	 * @param refToLookFor the ref to look for
 	 * @return the variable tied model attribute reference
 	 */
-	public VariableTiedModelAttributeReference findSupportedModelAttribute(ModelAttributeReference refToLookFor) {
-		for(VariableTiedModelAttributeReference ref : this.modelAttributeReferences){
-			if(ref.getContent().equals(refToLookFor.getContent())){
+	public VariableTiedPropertyReference findSupportedModelAttribute(PropertyReference refToLookFor) {
+		for(VariableTiedPropertyReference ref : this.modelAttributeReferences){
+			if(ref.getReferenceTarget().getName().equals(refToLookFor.getReferenceTarget().getName())){
 				return ref;
 			}
 		}
@@ -90,11 +89,5 @@ public abstract class AbstractQueryService extends AbstractService
 		return null;
 	}
 
-	@Override
-	public Set<? extends PredicateReference> getSupportedProperties() {
-		throw new UnsupportedOperationException();
-	}
-
-	
 
 }
