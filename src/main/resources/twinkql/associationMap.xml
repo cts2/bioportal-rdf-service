@@ -25,6 +25,14 @@
 	</perRowResultMap>	
 	
 	
+	<perRowResultMap id="entityDirectoryEntryResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry"
+		afterMap="spring:entityDirectoryEntryCallback">
+		<rowMap var="s" varType="uri"  beanProperty="about" />	
+		<rowMap var="s" varType="localName" beanProperty="name.name"/>
+		<rowMap var="s" varType="localName" beanProperty="resourceName"/>	
+		<rowMap var="s" varType="namespace"  beanProperty="name.namespace"/>	
+	</perRowResultMap>	
 	
 		<select id="getAssociationDirectoryEntrySummaries" resultMap="associationDirectoryEntryResultMap">
 		<![CDATA[
@@ -42,7 +50,7 @@
       		FILTER (CONTAINS( UCASE(str(?s)), UCASE( '#{restrictToSourceEntityName}')))
 		</isNotNull>	
       	<isNotNull property="restrictToTargetEntityName">
-      		FILTER (CONTAINS( UCASE(str(?t)), UCASE( '#{restrictToTargetEntityName}')))
+      		FILTER (CONTAINS( UCASE(str(?o)), UCASE( '#{restrictToTargetEntityName}')))
 		</isNotNull>	
 		<isNotNull property="restrictToPredicateName">
       		FILTER (CONTAINS( UCASE(str(?p)), UCASE( '#{restrictToPredicateName}')))
@@ -57,7 +65,7 @@
       		FILTER (?s = <#{restrictToSourceEntityUri}>)
 		</isNotNull>	
       	<isNotNull property="restrictToTargetEntityUri">
-      		FILTER (?t = <#{restrictToTargetEntityUri}>)
+      		FILTER (?o = <#{restrictToTargetEntityUri}>)
 		</isNotNull>	
 		<isNotNull property="restrictToPredicateUri">
       		FILTER (?p = <#{restrictToPredicateUri}>)
@@ -76,4 +84,39 @@
 		
 		]]>
 	</select>
+	
+	
+	
+		<select id="getChildrenAssociationsOfEntity" resultMap="entityDirectoryEntryResultMap">
+		<![CDATA[
+		SELECT ?s ?p ?o
+		WHERE {	
+		<isNotNull property="restrictToGraph">
+		    GRAPH bpOntologies:#{restrictToGraph} {	
+		    ?s ?p ?o .
+      		FILTER (isIRI(?s))
+      		FILTER (?p= rdfs:subClassOf)
+      		FILTER (isIRI(?o))
+      		}
+		</isNotNull>
+      		
+      	<isNotNull property="restrictToEntityName">
+      		FILTER (CONTAINS( UCASE(str(?o)), UCASE( '#{restrictToEntityName}')))
+		</isNotNull>	
+		
+		
+      	<isNotNull property="restrictToEntityUri">
+      		FILTER (?o = <#{restrictToEntityUri}>)
+		</isNotNull>	
+		
+				
+		} 
+		LIMIT  #{limit}
+	    OFFSET #{offset} 
+
+	    
+		
+		]]>
+	</select>	
+	
 </sparqlMap>
