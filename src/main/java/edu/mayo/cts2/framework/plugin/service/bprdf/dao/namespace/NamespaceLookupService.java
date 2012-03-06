@@ -4,9 +4,12 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
 import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
+import edu.mayo.cts2.framework.model.service.core.DocumentedNamespaceReference;
 import edu.mayo.cts2.framework.service.namespace.NamespaceMaintenanceService;
 import edu.mayo.cts2.framework.service.namespace.NamespaceReadService;
 
@@ -38,7 +41,21 @@ public class NamespaceLookupService implements InitializingBean {
 	}
 	
 	public String getPreferredPrefixForUri(String uri){
-		return this.namespaceReadService.readPreferredByUri(uri).getContent();
+		try {
+			DocumentedNamespaceReference namespace = this.namespaceReadService.readPreferredByUri(uri);
+			if(namespace != null){
+				return this.namespaceReadService.readPreferredByUri(uri)
+						.getContent();
+			} else {
+				return null;
+			}
+		} catch (HttpClientErrorException e) {
+			if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+				return null;
+			} else {
+				throw e;
+			}
+		}
 	}
 	
 	public void addUriAndPrefix(String prefix, String uri){

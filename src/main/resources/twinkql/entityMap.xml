@@ -9,6 +9,8 @@
 		afterMap="spring:entityDescriptionCallback">
 		<nestedResultMap resultMap="entity:designationResultMap1" beanProperty="namedEntity.designationAsReference[]"/>
 		<nestedResultMap resultMap="entity:designationResultMap2" beanProperty="namedEntity.designationAsReference[]"/>
+		<nestedResultMap resultMap="entity:definitionResultMap" beanProperty="namedEntity.definitionAsReference[]"/>
+		<nestedResultMap resultMap="entity:noteResultMap" beanProperty="namedEntity.noteAsReference[]"/>
 		<if function="spring:isLiteral" param="o">
 			<nestedResultMap resultMap="common:propertyResultMap" beanProperty="namedEntity.propertyAsReference[]" />	
 		</if>
@@ -19,6 +21,16 @@
 		<tripleMap var="o" varType="localName" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].name"/>
 		<tripleMap var="o" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].uri"/>
 		<tripleMap var="o" varType="namespace" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].namespace" modifier="spring:namespaceModifier" />
+	</compositeResultMap>
+	
+	<compositeResultMap id="definitionResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.Definition">
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:definition" beanProperty="value.content" />
+	</compositeResultMap>
+	
+	<compositeResultMap id="noteResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.Comment">
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:notation" beanProperty="value.content" />
 	</compositeResultMap>
 	
 	<compositeResultMap id="designationResultMap1" 

@@ -21,12 +21,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.valueset;
 
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.ValueSetName;
 import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
@@ -34,21 +34,21 @@ import edu.mayo.twinkql.result.callback.CallbackContext;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryNameCallback")
-public class CodeSystemSummaryNameSettingCallback extends AbstractCodeSystemNameSettingCallback<CodeSystemCatalogEntrySummary> {
+@Component("valueSetNameCallback")
+public class ValueSetNameSettingCallback extends AbstractValueSetNameSettingCallback<ValueSetCatalogEntry> {
 	
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
 	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult, 
+			ValueSetCatalogEntry bindingResult, 
 			CallbackContext context) {
-		CodeSystemName name = this.getCodeSystemName(context.getCallbackIds());
+		ValueSetName name = this.getValueSetName(context.getCallbackIds());
 
 		String toStringName = name.toString();
-		bindingResult.setCodeSystemName(toStringName);
-		bindingResult.setResourceName(toStringName);
+		bindingResult.setValueSetName(toStringName);
+		bindingResult.setValueSetName(toStringName);
 	}
 
 }

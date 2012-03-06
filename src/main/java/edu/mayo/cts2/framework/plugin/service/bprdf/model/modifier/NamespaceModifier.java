@@ -28,9 +28,13 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.namespace.NamespaceLookupService;
 import edu.mayo.twinkql.context.TwinkqlContext;
 import edu.mayo.twinkql.model.NamespaceDefinition;
 import edu.mayo.twinkql.model.TwinkqlConfig;
@@ -45,10 +49,15 @@ import edu.mayo.twinkql.result.callback.Modifier;
 @Component("namespaceModifier")
 public class NamespaceModifier implements Modifier<String>, InitializingBean {
 	
+	protected final Log log = LogFactory.getLog(getClass().getName());
+	
 	private Map<String,String> knownNamespaces;
 	
 	@Resource
 	private TwinkqlContext twinkqlContext;
+	
+	@Resource
+	private NamespaceLookupService namespaceLookupService;
 
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -75,19 +84,29 @@ public class NamespaceModifier implements Modifier<String>, InitializingBean {
 	 * @return the namespace
 	 */
 	protected String getNamespace(String uri){
-		
+
 		if(! this.knownNamespaces.containsKey(uri)){
-			String hashString = Integer.toString(uri.hashCode());
+
+			String prefix = 
+					this.namespaceLookupService.getPreferredPrefixForUri(uri);
 			
-			hashString = "ns"+hashString;
-			
-			this.knownNamespaces.put(uri, hashString);
+			if(StringUtils.isNotBlank(prefix)){
+				this.knownNamespaces.put(uri, prefix);
+
+			} else {
+				String hashString = Integer.toString(uri.hashCode());
+				
+				hashString = "ns"+hashString;
+				
+				this.knownNamespaces.put(uri, hashString);
+				
+				log.warn("Generating prefix for Namespace URI: " + uri);
+			}
 		}
 		
 		return this.knownNamespaces.get(uri);
 	}
-	
-	//need to externalize this with a Namespace service
+
 	/**
 	 * Sets the up default known namespaces.
 	 *

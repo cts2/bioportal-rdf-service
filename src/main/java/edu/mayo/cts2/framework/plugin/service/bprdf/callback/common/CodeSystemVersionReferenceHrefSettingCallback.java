@@ -23,8 +23,6 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.callback.common;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
