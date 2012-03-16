@@ -21,49 +21,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.dao;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.resolvedvalueset;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-
-import edu.mayo.twinkql.context.QueryExecutionProvider;
+import edu.mayo.cts2.framework.model.core.EntitySynopsis;
+import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
- * The Class HttpQueryExecutionProvider.
+ * The Class EntitySynopsisHrefSettingCallback.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("httpQueryExecutionProvider")
-public class HttpQueryExecutionProvider implements QueryExecutionProvider, InitializingBean {
-
-	private String sparqlService = "http://alphasparql.bioontology.org/sparql/";
-	
-	private String apiKey;
+@Component("entitySynopsisHrefCallback")
+public class EntitySynopsisHrefSettingCallback implements AfterResultBinding<EntitySynopsis> {
 
 	@Resource
-	private ApiKeyProvider apiKeyProvider;
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.apiKey = this.apiKeyProvider.getApiKey();
-	}
+	private EntitySynopsisHrefBuilder entitySynopsisHrefBuilder;
 	
 	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.context.QueryExecutionProvider#provideQueryExecution(com.hp.hpl.jena.query.Query)
+	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
-	public QueryExecution provideQueryExecution(String query) {
-		QueryEngineHTTP qexec = new QueryEngineHTTP(
-				this.sparqlService, query);
-
-		qexec.addParam("apikey", this.apiKey);
+	public void afterBinding(
+			EntitySynopsis bindingResult,
+			CallbackContext context) {
+		String ontologyId = (String) context.getCallbackIds().get("codeSystemId");
+		String id = (String) context.getCallbackIds().get("codeSystemVersionId");
 		
-		return qexec;
+		bindingResult.setHref(this.entitySynopsisHrefBuilder.buildHref(
+				ontologyId, 
+				id, 
+				bindingResult.getName()));
 	}
 
 }

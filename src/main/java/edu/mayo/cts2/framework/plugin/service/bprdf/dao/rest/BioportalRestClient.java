@@ -115,7 +115,7 @@ public class BioportalRestClient implements InitializingBean {
 	}
 	
 	public SuccessBean searchEntities(String ontologyId, Set<ResolvedFilter> filters, edu.mayo.cts2.framework.model.command.Page page){
-		if(filters.size() != 1){
+		if(CollectionUtils.isEmpty(filters) || filters.size() > 1){
 			throw new RuntimeException("Search Filter Set must have ONE Filter.");
 		}
 		

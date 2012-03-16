@@ -12,7 +12,8 @@
 	<namespace prefix="metrics" uri="http://protege.stanford.edu/ontologies/metrics/metrics.rdfs#"/>
 	<namespace prefix="xsd" uri="http://www.w3.org/2001/XMLSchema#" />
 	<namespace prefix="skos" uri="http://www.w3.org/2004/02/skos/core#" />
-	<namespace prefix="rdf" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#" />
-	<namespace prefix="rdfs" uri="http://www.w3.org/2000/01/rdf-schema#" />
+	<namespace prefix="rdfs1999" uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#" />
+	<namespace prefix="rdfs2000" uri="http://www.w3.org/2000/01/rdf-schema#" />
+
 
 </twinkqlConfig>

@@ -1,7 +1,5 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.association;
 
-import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;

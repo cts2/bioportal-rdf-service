@@ -33,7 +33,6 @@ import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
-import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
@@ -126,7 +125,7 @@ public class BioportalRdfValueSetReadService extends AbstractService
 	 * @see edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService#exists(edu.mayo.cts2.framework.model.service.core.NameOrURI, edu.mayo.cts2.framework.model.service.core.ReadContext)
 	 */
 	@Override
-	public boolean exists(NameOrURI identifier, ReadContext readContext) {
+	public boolean exists(NameOrURI identifier, ResolvedReadContext readContext) {
 		throw new UnsupportedOperationException();
 	}
 

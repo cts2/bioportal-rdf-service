@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>edu.mayo.cts2.framework</groupId>
 		<artifactId>base-service-plugin</artifactId>
-		<version>0.6.0-SNAPSHOT</version>
+		<version>0.6.5-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>bioportal-rdf-service</artifactId>
-	<version>0.3.5-SNAPSHOT</version>
+	<version>0.3.6-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<developers>
@@ -48,7 +48,7 @@
 	</distributionManagement>
 
 	<properties>
-		<twinkqlVersion>0.2.6</twinkqlVersion>
+		<twinkqlVersion>0.2.7</twinkqlVersion>
 	</properties>
 
 	<build>
@@ -99,6 +99,7 @@
 							edu.mayo.cts2.framework.core.plugin,
 							edu.mayo.cts2.framework.service.provider,
 							edu.mayo.cts2.framework.core.xml,
+							org.springframework.web.client,
 							edu.mayo.cts2.framework.plugin.namespace.service;resolution:=optional,
 							*;resolution:=optional
 						</Import-Package>

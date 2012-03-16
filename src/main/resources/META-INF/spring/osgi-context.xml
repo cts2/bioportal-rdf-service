@@ -11,9 +11,17 @@
 	
 	<osgi:reference id="cts2Marshaller" interface="edu.mayo.cts2.framework.core.xml.Cts2Marshaller"/>
 	
-	<osgi:reference id="namespaceReadService" interface="edu.mayo.cts2.framework.service.namespace.NamespaceReadService" cardinality="0..1" />
+	<osgi:reference id="namespaceReadService" 
+		interface="edu.mayo.cts2.framework.service.namespace.NamespaceReadService" 
+		cardinality="0..1" timeout="-1">
+		<osgi:listener ref="namespaceLookupService" />
+	</osgi:reference>
 	
-	<osgi:reference id="namespaceMaintenanceService" interface="edu.mayo.cts2.framework.service.namespace.NamespaceMaintenanceService" cardinality="0..1" />
+	<osgi:reference id="namespaceMaintenanceService" 
+		interface="edu.mayo.cts2.framework.service.namespace.NamespaceMaintenanceService" 
+		cardinality="0..1" timeout="-1">
+		<osgi:listener ref="namespaceLookupService" />
+	</osgi:reference>
 	
 	<osgi:service ref="bioportalRdfServiceProvider" interface="edu.mayo.cts2.framework.service.provider.ServiceProvider"/>
 	 

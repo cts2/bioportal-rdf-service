@@ -28,6 +28,7 @@ class BaseServiceTestITBase {
 				client.getCts2Resource(server + "codesystems", Object)
 				} catch (HttpStatusCodeException e){
 					if(e.getStatusCode().equals(HttpStatus.NOT_IMPLEMENTED)){
+						System.out.println("Waiting for OSGi Plugin to start...");
 						Thread.currentThread().sleep(5000)
 						continue
 					} else {

@@ -21,49 +21,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.dao;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.resolvedvalueset;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-
-import edu.mayo.twinkql.context.QueryExecutionProvider;
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 
 /**
- * The Class HttpQueryExecutionProvider.
+ * The Class EntitySynopsisHrefSettingCallback.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("httpQueryExecutionProvider")
-public class HttpQueryExecutionProvider implements QueryExecutionProvider, InitializingBean {
-
-	private String sparqlService = "http://alphasparql.bioontology.org/sparql/";
-	
-	private String apiKey;
+@Component
+public class EntitySynopsisHrefBuilder {
 
 	@Resource
-	private ApiKeyProvider apiKeyProvider;
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.apiKey = this.apiKeyProvider.getApiKey();
-	}
+	private UrlConstructor urlConstructor;
+	
+	@Resource
+	private IdService idService;
 	
 	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.context.QueryExecutionProvider#provideQueryExecution(com.hp.hpl.jena.query.Query)
+	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
-	@Override
-	public QueryExecution provideQueryExecution(String query) {
-		QueryEngineHTTP qexec = new QueryEngineHTTP(
-				this.sparqlService, query);
+	public String buildHref(String ontologyId, String id, String entityName) {
 
-		qexec.addParam("apikey", this.apiKey);
+		CodeSystemVersionName codeSystemVersionName = this.idService.getCodeSystemVersionNameForId(id);
+
+		CodeSystemName codeSystemName = new CodeSystemName(codeSystemVersionName.getAcronym(), ontologyId);
 		
-		return qexec;
+		return this.urlConstructor.createEntityUrl(
+						codeSystemName.getName(), 
+						codeSystemVersionName.getName(), 
+						entityName);
 	}
 
 }

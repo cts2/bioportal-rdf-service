@@ -21,49 +21,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.dao;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.resolvedvalueset;
 
 import javax.annotation.Resource;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
-
-import edu.mayo.twinkql.context.QueryExecutionProvider;
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetDirectoryEntry;
+import edu.mayo.twinkql.result.callback.AfterResultBinding;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
- * The Class HttpQueryExecutionProvider.
+ * The Class CodeSystemHrefSettingCallback.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("httpQueryExecutionProvider")
-public class HttpQueryExecutionProvider implements QueryExecutionProvider, InitializingBean {
-
-	private String sparqlService = "http://alphasparql.bioontology.org/sparql/";
-	
-	private String apiKey;
+@Component("resolvedValueSetDirectoryEntryHrefCallback")
+public class ResolvedValueSetDirectoryEntryHrefSettingCallback implements AfterResultBinding<ResolvedValueSetDirectoryEntry> {
 
 	@Resource
-	private ApiKeyProvider apiKeyProvider;
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.apiKey = this.apiKeyProvider.getApiKey();
-	}
+	private UrlConstructor urlConstructor;
 	
 	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.context.QueryExecutionProvider#provideQueryExecution(com.hp.hpl.jena.query.Query)
+	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
-	public QueryExecution provideQueryExecution(String query) {
-		QueryEngineHTTP qexec = new QueryEngineHTTP(
-				this.sparqlService, query);
-
-		qexec.addParam("apikey", this.apiKey);
+	public void afterBinding(
+			ResolvedValueSetDirectoryEntry bindingResult,
+			CallbackContext context) {
+		String valueSetName = (String) context.getCallbackIds().get("valueSetName");
+		String valueSetDefinitionName = (String) context.getCallbackIds().get("valueSetDefinitionName");
+		String resolvedValueSetLocalName = (String) context.getCallbackIds().get("resolvedValueSetLocalName");
 		
-		return qexec;
+		bindingResult.setHref(this.urlConstructor.createResolvedValueSetUrl(
+				valueSetName, 
+				valueSetDefinitionName, 
+				resolvedValueSetLocalName));
 	}
 
 }

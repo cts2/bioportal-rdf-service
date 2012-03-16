@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMap namespace="resolvedValueSet"
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
+	
+	<perRowResultMap id="resolvedValueSetDirectoryEntryResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetDirectoryEntry"
+		afterMap="spring:resolvedValueSetDirectoryEntryHrefCallback">
+		<nestedResultMap resultMap="resolvedValueSet:resolvedValueSetHeaderResultMap" beanProperty="resolvedHeader"/>
+		<rowMap var="resolvedValueSetLocalName" varType="literalValue" beanProperty="resourceName" callbackId="resolvedValueSetLocalName"/>	
+		<rowMap var="resolvedValueSetUri" varType="literalValue" beanProperty="resolvedValueSetURI" />
+	</perRowResultMap>
+	
+	<perRowResultMap id="resolvedValueSetHeaderResultMap" resultClass="edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader">
+		<nestedResultMap resultMap="resolvedValueSet:resolutionOfResultMap" beanProperty="resolutionOf" />
+		<nestedResultMap resultMap="codeSystem:codeSystemVersionReferenceResultMap" beanProperty="resolvedUsingCodeSystemAsReference[0]" />
+	</perRowResultMap>
+	
+	<perRowResultMap id="resolutionOfResultMap" resultClass="edu.mayo.cts2.framework.model.core.ValueSetDefinitionReference">
+		<nestedResultMap resultMap="resolvedValueSet:valueSetReferenceResultMap" beanProperty="valueSet"/>
+		<nestedResultMap resultMap="resolvedValueSet:valueSetDefinitionReferenceResultMap" beanProperty="valueSetDefinition" />
+	</perRowResultMap>
+	
+	<perRowResultMap id="valueSetDefinitionReferenceResultMap" resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
+		<rowMap varType="literalValue" var="valueSetDefinitionName" beanProperty="content" callbackId="valueSetDefinitionName"/>
+		<rowMap varType="uri" var="resolvedValueSet" beanProperty="uri"/>
+	</perRowResultMap>
+	
+	<perRowResultMap id="valueSetReferenceResultMap" resultClass="edu.mayo.cts2.framework.model.core.ValueSetReference">
+		<rowMap varType="literalValue" var="valueSetName" beanProperty="content" callbackId="valueSetName"/>
+		<rowMap varType="uri" var="valueSet" beanProperty="uri"/>
+	</perRowResultMap>
+	
+	<perRowResultMap id="entitySynonpsisResultMap" resultClass="edu.mayo.cts2.framework.model.core.EntitySynopsis"
+		afterMap="spring:entitySynopsisHrefCallback">
+		<rowMap varType="literalValue" var="label" beanProperty="designation" />
+		<rowMap varType="uri" var="s" beanProperty="uri"/>
+		<rowMap varType="localName" var="s" beanProperty="name"/>
+		<rowMap varType="literalValue" var="codeSystemId" callbackId="codeSystemId"/>
+		<rowMap varType="literalValue" var="codeSystemVersionId" callbackId="codeSystemVersionId"/>
+		<rowMap varType="namespace" var="s" beanProperty="namespace" modifier="spring:namespaceModifier" />
+	</perRowResultMap>
+
+	<select id="getResolvedValueSetSummaries" resultMap="resolvedValueSetDirectoryEntryResultMap">
+        
+       SELECT 
+          	?resolvedValueSet
+          	?resolvedValueSetLocalName
+          	?valueSet
+          	?definitionLocalName
+          	?defintionOfCodeSystemVersion
+          	?definitionOfCodeSystem
+          	( ?resolvedValueSetId as ?resolvedValueSetLocalName)
+          	( CONCAT( ?acronym, "-", ?valueSetId ) as ?valueSetName ) 
+          	( CONCAT( ?acronym, "-", ?resolvedValueSetId ) as ?valueSetDefinitionName ) 
+          	( CONCAT( ?codeSystemVersionAcronym, "-", ?codeSystemId ) as ?codeSystemName )
+          	( CONCAT( ?codeSystemVersionAcronym, "-", ?codeSystemVersionId ) as ?codeSystemVersionName )
+          	( CONCAT( ?resolvedValueSet, "/", "resolution" ) as ?resolvedValueSetUri )
+	   WHERE {
+	      ?resolvedValueSet a bpMetadata:OntologyView;
+	          bpMetadata:id ?resolvedValueSetId ;
+	     	  omv:acronym ?acronym ;
+	          bpMetadata:isVersionOfVirtualOntology ?valueSet ;
+              bpMetadata:isViewOnOntologyVersion ?defintionOfCodeSystemVersion .
+           ?valueSet bpMetadata:id ?valueSetId .
+           ?defintionOfCodeSystemVersion omv:acronym ?codeSystemVersionAcronym ;
+           		bpMetadata:id ?codeSystemVersionId ;
+                bpMetadata:isVersionOfVirtualOntology ?definitionOfCodeSystem .
+           ?definitionOfCodeSystem bpMetadata:id ?codeSystemId .
+	    }
+
+	    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
+	   	    CONTAINS( UCASE( ?#{item.var} ), UCASE( '#{item.text}' ) ) 
+	    </iterator>
+
+	    LIMIT  #{limit}
+	    OFFSET #{offset}
+	  
+	</select>
+	
+	<select id="getResolvedValueSetHeader" resultMap="resolvedValueSetHeaderResultMap">
+        
+       SELECT 
+          	?resolvedValueSet
+          	?resolvedValueSetLocalName
+          	?valueSet
+          	?definitionLocalName
+          	?defintionOfCodeSystemVersion
+          	?definitionOfCodeSystem
+          	( ?resolvedValueSetId as ?resolvedValueSetLocalName)
+          	( CONCAT( ?acronym, "-", ?valueSetId ) as ?valueSetName ) 
+          	( CONCAT( ?acronym, "-", ?resolvedValueSetId ) as ?valueSetDefinitionName ) 
+          	( CONCAT( ?codeSystemVersionAcronym, "-", ?codeSystemId ) as ?codeSystemName )
+          	( CONCAT( ?codeSystemVersionAcronym, "-", ?codeSystemVersionId ) as ?codeSystemVersionName )
+          	( CONCAT( ?resolvedValueSet, "/", "resolution" ) as ?resolvedValueSetUri )
+	   WHERE {
+	      ?resolvedValueSet a bpMetadata:OntologyView;
+	          bpMetadata:id ?resolvedValueSetId ;
+	          bpMetadata:id '#{id}'^^xsd:integer ;
+	     	  omv:acronym ?acronym ;
+	          bpMetadata:isVersionOfVirtualOntology ?valueSet ;
+              bpMetadata:isViewOnOntologyVersion ?defintionOfCodeSystemVersion .
+           ?valueSet bpMetadata:id ?valueSetId .    
+           ?defintionOfCodeSystemVersion omv:acronym ?codeSystemVersionAcronym ;
+           		bpMetadata:id ?codeSystemVersionId ;
+                bpMetadata:isVersionOfVirtualOntology ?definitionOfCodeSystem .
+           ?definitionOfCodeSystem bpMetadata:id ?codeSystemId .
+	    }
+	  
+	</select>
+	
+	<select id="getAllEntitySynonpsisOfValueSet" resultMap="entitySynonpsisResultMap">
+        <![CDATA[
+        SELECT DISTINCT ?s ?label ?codeSystemId ?codeSystemVersionId
+              WHERE { 
+                
+		  		 <http://bioportal.bioontology.org/ontologies/#{id}> bpMetadata:isVersionOfVirtualOntology  ?virtualView ;      
+			         bpMetadata:id ?codeSystemVersionId ;
+			         bpMetadata:isVersionOfVirtualOntology ?definitionOfCodeSystem .
+			     ?definitionOfCodeSystem bpMetadata:id ?codeSystemId .
+          
+                 GRAPH ?virtualView {
+			        ?s a owl:Class ;
+			             rdfs2000:label ?label .
+                 }
+                         
+        }
+        LIMIT  #{limit}
+	    OFFSET #{offset}
+        ]]>
+	</select>
+	
+</sparqlMap>
