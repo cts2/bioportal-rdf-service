@@ -122,7 +122,7 @@
           
                  GRAPH ?virtualView {
 			        ?s a owl:Class ;
-			             rdfs2000:label ?label .
+			             rdfs:label ?label .
                  }
                          
         }
