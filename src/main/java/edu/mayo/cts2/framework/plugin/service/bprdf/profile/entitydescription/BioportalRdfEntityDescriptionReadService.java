@@ -173,7 +173,8 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 	}
 
 	@Override
-	public EntityReference availableDescriptions(EntityNameOrURI entityId,
+	public EntityReference availableDescriptions(
+			EntityNameOrURI entityId,
 			ResolvedReadContext readContext) {
 		throw new UnsupportedOperationException();
 	}
@@ -185,7 +186,8 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 	}
 
 	@Override
-	public EntityList readEntityDescriptions(EntityNameOrURI entityId,
+	public EntityList readEntityDescriptions(
+			EntityNameOrURI entityId,
 			ResolvedReadContext readContext) {
 		throw new UnsupportedOperationException();
 	}

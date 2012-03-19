@@ -36,6 +36,7 @@
 	<compositeResultMap id="designationResultMap1" 
 		resultClass="edu.mayo.cts2.framework.model.entity.Designation"
 		afterMap="spring:preferredDesignationCallback">
+		<tripleMap var="o" varType="literalValue" predicateUri="rdfs:label" beanProperty="value.content"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="rdfs1999:label" beanProperty="value.content"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="skos:prefLabel" beanProperty="value.content" />
 		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:prefLabel" beanProperty="value.content" />
