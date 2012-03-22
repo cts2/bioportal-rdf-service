@@ -32,7 +32,7 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	void testGetResourceSummaries(){
 		def dir = query.getResourceSummaries(
 		   [
-				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928") )},
+				getRestrictions:{ erynew  AssociationQuServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928") )},
 				getFilterComponent:{[] as Set}
 			] as AssociationQuery,
 		null,
@@ -134,6 +134,17 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	}
 	
 	
-	
+	@Test
+	void testGetSourceEntitiesValidate(){
+		def dir = query.getSourceEntities(
+			new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928"), 
+					                                 sourceEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("GO_0000001", "") ))
+			, null, null,new Page())
+		
+		assertNotNull dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
+	}
+
 	
 }

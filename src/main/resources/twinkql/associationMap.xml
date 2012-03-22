@@ -119,4 +119,56 @@
 		]]>
 	</select>	
 	
+		<select id="getSourceEntities" resultMap="entityDirectoryEntryResultMap">
+		<![CDATA[
+		SELECT ?s ?p ?o
+		WHERE {	
+		<isNotNull property="restrictToGraph">
+		    GRAPH bpOntologies:#{restrictToGraph} {	
+		    ?s ?p ?o .
+      		FILTER (isIRI(?s))
+      		FILTER (isIRI(?p))
+      		FILTER (isIRI(?o))
+      		}
+		</isNotNull>
+      	<isNotNull property="restrictToSourceEntityName">
+      		FILTER (CONTAINS( UCASE(str(?s)), UCASE( '#{restrictToSourceEntityName}')))
+		</isNotNull>	
+      	<isNotNull property="restrictToTargetEntityName">
+      		FILTER (CONTAINS( UCASE(str(?o)), UCASE( '#{restrictToTargetEntityName}')))
+		</isNotNull>	
+		<isNotNull property="restrictToPredicateName">
+      		FILTER (CONTAINS( UCASE(str(?p)), UCASE( '#{restrictToPredicateName}')))
+		</isNotNull>
+		<isNotNull property="restrictToSourceOrTargetName">
+		    FILTER (
+		           CONTAINS( UCASE(str(?s)), UCASE( '#{restrictToSourceOrTargetUri}')) ||
+		           CONTAINS( UCASE(str(?o)), UCASE( '#{restrictToSourceOrTargetUri}')) 
+		           )
+		</isNotNull>
+		<isNotNull property="restrictToSourceEntityUri">
+      		FILTER (?s = <#{restrictToSourceEntityUri}>)
+		</isNotNull>	
+      	<isNotNull property="restrictToTargetEntityUri">
+      		FILTER (?o = <#{restrictToTargetEntityUri}>)
+		</isNotNull>	
+		<isNotNull property="restrictToPredicateUri">
+      		FILTER (?p = <#{restrictToPredicateUri}>)
+		</isNotNull>
+		<isNotNull property="restrictToSourceOrTargetUri">
+		 { <#{restrictToSourceOrTargetUri}> ?p ?o }
+         UNION
+         { ?s ?p <#{restrictToSourceOrTargetUri}> }
+		</isNotNull>
+				
+		} 
+		LIMIT  #{limit}
+	    OFFSET #{offset} 
+
+	    
+		
+		]]>
+	</select>
+	
+	
 </sparqlMap>

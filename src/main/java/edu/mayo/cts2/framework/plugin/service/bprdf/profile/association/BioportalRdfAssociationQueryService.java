@@ -44,6 +44,7 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 	private final static String ASSOCIATION_NAMESPACE = "association";
 	private final static String GET_ASSOCIATION_SUMMARIES = "getAssociationDirectoryEntrySummaries";
 	private final static String GET_CHILDREN_ASSOCIATION_OF_ENTITY = "getChildrenAssociationsOfEntity";
+	private final static String GET_SOURCE_ENTITIES = "getSourceEntities";
 	
 	private final static String LIMIT = "limit";
 	private final static String OFFSET = "offset";
@@ -228,7 +229,46 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 			EntityDescriptionQueryServiceRestrictions entityRestrictions,
 			ResolvedReadContext readContext, Page page) {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Map<String,Object> parameters = new HashMap<String,Object>();
+		parameters.put(LIMIT, page.getMaxToReturn()+1);
+		parameters.put(OFFSET, page.getStart());
+
+		
+		NameOrURI codeSystemVersion = associationRestrictions.getCodeSystemVersion();
+		   
+		if(codeSystemVersion != null){
+			if(StringUtils.isNotBlank(codeSystemVersion.getName())){
+				CodeSystemVersionName name = CodeSystemVersionName.parse(codeSystemVersion.getName());
+				String ontologyId = idService.getOntologyIdForId(name.getId());
+				parameters.put("restrictToGraph", ontologyId);
+				parameters.put("restrictToCodeSystemVersion", codeSystemVersion.getName());
+
+			}
+		}
+		addRestriction("restrictToSourceEntity", associationRestrictions.getSourceEntity(), parameters);
+		addRestriction("restrictToTargetEntity", associationRestrictions.getTargetEntity(), parameters);
+		addRestriction("restrictToPredicate", associationRestrictions.getPredicate(), parameters);
+		addRestriction("restrictToSourceOrTarget", associationRestrictions.getSourceOrTargetEntity(), parameters);
+
+		
+		
+
+		
+		List<EntityDirectoryEntry> results;
+		
+		results = rdfDao.selectForList(
+				ASSOCIATION_NAMESPACE, 
+				GET_SOURCE_ENTITIES,
+				parameters,
+				EntityDirectoryEntry.class);
+	
+	boolean moreResults = results.size() > page.getMaxToReturn();
+	
+	if(moreResults){
+		results.remove(results.size() - 1);
+	}
+	return new DirectoryResult<EntityDirectoryEntry>(results,!moreResults);
+
 	}
 
 	/* (non-Javadoc)
