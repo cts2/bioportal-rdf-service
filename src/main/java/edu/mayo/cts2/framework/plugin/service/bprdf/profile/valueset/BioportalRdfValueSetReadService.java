@@ -21,7 +21,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.valueset;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,14 +31,14 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
+import edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
-import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService;
+import edu.mayo.cts2.framework.service.profile.valueset.ValueSetReadService;
 
 /**
  * The Class BioportalRdfCodeSystemReadService.
@@ -46,12 +46,12 @@ import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService;
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
-public class BioportalRdfCodeSystemReadService extends AbstractService 
-	implements CodeSystemReadService {
+public class BioportalRdfValueSetReadService extends AbstractService 
+	implements ValueSetReadService {
 
-	private final static String CODESYSTEM_NAMESPACE = "codeSystem";
-	private final static String GET_CODESYSTEM_BY_URI = "getCodeSystemByUri";
-	private final static String GET_CODESYSTEM_BY_NAME = "getCodeSystemByName";
+	private final static String VALUESET_NAMESPACE = "valueSet";
+	private final static String GET_VALUESET_BY_URI = "getValueSetByUri";
+	private final static String GET_VALUESET_BY_NAME = "getValueSetByName";
 
 	@Resource
 	private RdfDao rdfDao;
@@ -63,7 +63,7 @@ public class BioportalRdfCodeSystemReadService extends AbstractService
 	 * @see edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService#read(edu.mayo.cts2.framework.model.service.core.NameOrURI, edu.mayo.cts2.framework.model.command.ResolvedReadContext)
 	 */
 	@Override
-	public CodeSystemCatalogEntry read(NameOrURI identifier,
+	public ValueSetCatalogEntry read(NameOrURI identifier,
 			ResolvedReadContext readContext) {
 		
 		if(StringUtils.isNotBlank(identifier.getName())){
@@ -81,10 +81,10 @@ public class BioportalRdfCodeSystemReadService extends AbstractService
 			parameters.put("ontologyId", name.getOntologyId());
 
 			return this.rdfDao.selectForObject(
-					CODESYSTEM_NAMESPACE, 
-					GET_CODESYSTEM_BY_NAME, 
+					VALUESET_NAMESPACE, 
+					GET_VALUESET_BY_NAME, 
 					parameters, 
-					CodeSystemCatalogEntry.class);
+					ValueSetCatalogEntry.class);
 		} else {
 			String uri = identifier.getUri();
 			String ontologyId = this.getOntologyIdFromUri(uri);
@@ -104,10 +104,10 @@ public class BioportalRdfCodeSystemReadService extends AbstractService
 			parameters.put("id", id);
 
 			return this.rdfDao.selectForObject(
-					CODESYSTEM_NAMESPACE, 
-					GET_CODESYSTEM_BY_URI, 
+					VALUESET_NAMESPACE, 
+					GET_VALUESET_BY_URI, 
 					parameters, 
-					CodeSystemCatalogEntry.class);
+					ValueSetCatalogEntry.class);
 		}
 	}
 	

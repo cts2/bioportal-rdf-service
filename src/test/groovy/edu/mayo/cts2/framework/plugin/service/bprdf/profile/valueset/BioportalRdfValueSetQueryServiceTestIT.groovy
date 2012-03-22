@@ -1,4 +1,4 @@
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.valueset
 
 import javax.annotation.Resource;
 import javax.xml.transform.stream.StreamResult
@@ -12,26 +12,25 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
 import edu.mayo.cts2.framework.model.command.ResolvedFilter
-import edu.mayo.cts2.framework.model.core.ModelAttributeReference
 import edu.mayo.cts2.framework.model.core.PropertyReference
 import edu.mayo.cts2.framework.model.core.URIAndEntityName
 import edu.mayo.cts2.framework.service.profile.ResourceQuery
+import edu.mayo.cts2.framework.service.profile.valueset.ValueSetQuery
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(value="classpath:/bioportal-rdf-service-test-context.xml")
-
-class BioportalRdfCodeSystemQueryServiceTestIT {
+class BioportalRdfValueSetQueryServiceTestIT {
 	
 	@Resource
 	Cts2Marshaller marshaller
 	
 	@Resource
-	BioportalRdfCodeSystemQueryService query
+	BioportalRdfValueSetQueryService query
 	
 	@Test
 	void TestGetResourceSummaries(){
 		def dir = query.getResourceSummaries(
-			null,null,new Page())
+			null as ValueSetQuery,null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
@@ -40,7 +39,7 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 	@Test
 	void TestGetResourceSummariesValidXml(){
 		def dir = query.getResourceSummaries(
-			null,null,new Page())
+			null as ValueSetQuery,null,new Page())
 		
 		dir.entries.each {
 			marshaller.marshal(it, new StreamResult(new StringWriter()))
@@ -50,33 +49,13 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 	@Test
 	void TestGetResourceSummariesHasDescritpion(){
 		def dir = query.getResourceSummaries(
-			null,null,new Page())
+			null as ValueSetQuery,null,new Page())
 		
 		dir.entries.each {
 			assertTrue StringUtils.isNotBlank(it.resourceSynopsis.value.content)
 		}
 	}
 	
-	@Test
-	void TestCurrentVersion(){
-		def dir = query.getResourceSummaries(
-			null,null,new Page())
-		
-		assertNotNull dir
-		dir.entries.each {
-			assertNotNull "1",it.currentVersion
-			
-			assertNotNull "2",it.currentVersion.codeSystem
-			assertNotNull "3",it.currentVersion.codeSystem.content
-			assertNotNull "4",it.currentVersion.codeSystem.uri
-			assertNotNull "5",it.currentVersion.codeSystem.href
-			
-			assertNotNull "6",it.currentVersion.version
-			assertNotNull "7",it.currentVersion.version.content
-			assertNotNull "8",it.currentVersion.version.uri
-			assertNotNull "9",it.currentVersion.version.href
-		}
-	}
 	
 	@Test
 	void TestGetResourceSummariesFilteredContains(){
@@ -85,18 +64,18 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 				getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(
-						matchValue:"CPT",
+						matchValue:"BRO",
 						propertyReference: new PropertyReference(referenceTarget: new URIAndEntityName(name:"resourceName"))
 						)] as Set
 				}
 				
-			] as ResourceQuery,null,new Page())
+			] as ValueSetQuery,null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
 		
 		dir.entries.each { 
-			assertTrue it.codeSystemName, it.codeSystemName.contains("CPT")
+			assertTrue it.valueSetName, it.valueSetName.contains("BRO")
 		}
 	}
 	
@@ -107,12 +86,12 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 				getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(
-						matchValue:"Mouse",
+						matchValue:"Economic",
 						propertyReference: new PropertyReference(referenceTarget: new URIAndEntityName(name:"resourceSynopsis"))
 						)] as Set
 				}
 				
-			] as ResourceQuery,null,new Page())
+			] as ValueSetQuery,null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
@@ -120,7 +99,7 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 		dir.entries.each {
 			assertTrue it.resourceSynopsis.value.content,
 				StringUtils.containsIgnoreCase(
-					it.resourceSynopsis.value.content, "Mouse")
+					it.resourceSynopsis.value.content, "Economic")
 		}
 	}
 
@@ -131,12 +110,12 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 				getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(
-						matchValue:"CPT",
+						matchValue:"BRO",
 						propertyReference: new PropertyReference(referenceTarget: new URIAndEntityName(name:"resourceName"))
 						)] as Set
 				}
 				
-			] as ResourceQuery,null,new Page())
+			] as ValueSetQuery,null,new Page())
 		
 		assertNotNull dir1
 		assertTrue dir1.getEntries().size() > 0
@@ -146,19 +125,19 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 				getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(
-						matchValue:"cPt",
+						matchValue:"bRo",
 						propertyReference: new PropertyReference(referenceTarget: new URIAndEntityName(name:"resourceName"))
 						)] as Set
 				}
 				
-			] as ResourceQuery,null,new Page())
+			] as ValueSetQuery,null,new Page())
 		
 		assertEquals dir1.entries.size(), dir2.entries.size()
 	}
 	
 	@Test
 	void TestGetResourceSummariesHaveHrefs(){
-		def dir = query.getResourceSummaries(null,null,new Page())
+		def dir = query.getResourceSummaries(null as ValueSetQuery,null,new Page())
 		
 		dir.entries.each {
 			

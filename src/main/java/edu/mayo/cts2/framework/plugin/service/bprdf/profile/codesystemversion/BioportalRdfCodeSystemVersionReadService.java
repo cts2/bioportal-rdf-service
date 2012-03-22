@@ -24,6 +24,7 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -33,8 +34,8 @@ import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
+import edu.mayo.cts2.framework.model.core.VersionTagReference;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
-import edu.mayo.cts2.framework.model.service.core.ReadContext;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
@@ -109,33 +110,35 @@ public class BioportalRdfCodeSystemVersionReadService extends AbstractService
 					CodeSystemVersionCatalogEntry.class);
 		}
 	}
-	
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemReadService#exists(edu.mayo.cts2.framework.model.service.core.NameOrURI, edu.mayo.cts2.framework.model.service.core.ReadContext)
 	 */
 	@Override
-	public boolean exists(NameOrURI identifier, ReadContext readContext) {
+	public boolean exists(NameOrURI identifier, ResolvedReadContext readContext) {
 		throw new UnsupportedOperationException();
 	}
 
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#existsCodeSystemVersionForCodeSystem(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String)
-	 */
 	@Override
-	public boolean existsCodeSystemVersionForCodeSystem(NameOrURI codeSystem,
-			String tagName) {
-		throw new UnsupportedOperationException();
+	public CodeSystemVersionCatalogEntry readByTag(NameOrURI parentIdentifier,
+			VersionTagReference tag, ResolvedReadContext readContext) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#getCodeSystemVersionForCodeSystem(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String)
-	 */
+
 	@Override
-	public CodeSystemVersionCatalogEntry getCodeSystemVersionForCodeSystem(
-			NameOrURI codeSystem, String tagName) {
-		throw new UnsupportedOperationException();
+	public boolean existsByTag(NameOrURI parentIdentifier,
+			VersionTagReference tag, ResolvedReadContext readContext) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public List<VersionTagReference> getSupportedTags() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
@@ -147,18 +150,6 @@ public class BioportalRdfCodeSystemVersionReadService extends AbstractService
 			String officialResourceVersionId) {
 		throw new UnsupportedOperationException();
 	}
-
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#getCodeSystemVersionForCodeSystem(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String, edu.mayo.cts2.framework.model.command.ResolvedReadContext)
-	 */
-	@Override
-	public CodeSystemVersionCatalogEntry getCodeSystemVersionForCodeSystem(
-			NameOrURI codeSystem, String tagName,
-			ResolvedReadContext readContext) {
-		throw new UnsupportedOperationException();
-	}
-
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionReadService#getCodeSystemByVersionId(edu.mayo.cts2.framework.model.service.core.NameOrURI, java.lang.String, edu.mayo.cts2.framework.model.command.ResolvedReadContext)

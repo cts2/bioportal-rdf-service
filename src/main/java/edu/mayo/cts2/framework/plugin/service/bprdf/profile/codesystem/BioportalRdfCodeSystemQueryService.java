@@ -36,14 +36,15 @@ import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry;
 import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
-import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
+import edu.mayo.cts2.framework.model.core.PredicateReference;
+import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder.VariableQuery;
-import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedPropertyReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
 import edu.mayo.cts2.framework.service.profile.ResourceQuery;
 import edu.mayo.cts2.framework.service.profile.codesystem.CodeSystemQueryService;
@@ -83,9 +84,9 @@ public class BioportalRdfCodeSystemQueryService extends AbstractQueryService imp
 		
 		if(query != null){
 			for(ResolvedFilter filter : query.getFilterComponent()){
-				ModelAttributeReference modelRef = filter.getModelAttributeReference();
+				PropertyReference modelRef = filter.getPropertyReference();
 				
-				VariableTiedModelAttributeReference variableModelRef = this.findSupportedModelAttribute(modelRef);
+				VariableTiedPropertyReference variableModelRef = this.findSupportedModelAttribute(modelRef);
 				
 				builder = builder.addQuery(variableModelRef.getVariable(), filter.getMatchValue());
 			}
@@ -137,21 +138,31 @@ public class BioportalRdfCodeSystemQueryService extends AbstractQueryService imp
 	 */
 	@Override
 	public void doAddSupportedModelAttributes(
-			Set<edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedModelAttributeReference> set) {
-		VariableTiedModelAttributeReference name = 
-				new VariableTiedModelAttributeReference(
+			Set<VariableTiedPropertyReference> set) {
+		VariableTiedPropertyReference name = 
+				new VariableTiedPropertyReference(
 						StandardModelAttributeReference.RESOURCE_NAME, "acronym");
 		
-		VariableTiedModelAttributeReference description = 
-				new VariableTiedModelAttributeReference(
+		VariableTiedPropertyReference description = 
+				new VariableTiedPropertyReference(
 						StandardModelAttributeReference.RESOURCE_SYNOPSIS, "description");
 		
-		VariableTiedModelAttributeReference about = 
-				new VariableTiedModelAttributeReference(
+		VariableTiedPropertyReference about = 
+				new VariableTiedPropertyReference(
 						StandardModelAttributeReference.ABOUT, "ontologyId");
 
 		set.add(name);
 		set.add(description);
 		set.add(about);
+	}
+
+	@Override
+	public Set<? extends PropertyReference> getSupportedSortReferences() {
+		return null;
+	}
+
+	@Override
+	public Set<PredicateReference> getKnownProperties() {
+		return null;
 	}	
 }

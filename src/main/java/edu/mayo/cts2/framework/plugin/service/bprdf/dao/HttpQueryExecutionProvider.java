@@ -60,7 +60,7 @@ public class HttpQueryExecutionProvider implements QueryExecutionProvider, Initi
 	public QueryExecution provideQueryExecution(String query) {
 		QueryEngineHTTP qexec = new QueryEngineHTTP(
 				this.sparqlService, query);
-		
+
 		qexec.addParam("apikey", this.apiKey);
 		
 		return qexec;

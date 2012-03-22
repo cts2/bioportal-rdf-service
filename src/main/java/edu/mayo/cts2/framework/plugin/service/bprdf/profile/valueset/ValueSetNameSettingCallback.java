@@ -1,5 +1,5 @@
 /*
- * Copyright: (c) 2004-2012 Mayo Foundation for Medical Education and 
+ * Copyright: (c) 2004-2011 Mayo Foundation for Medical Education and 
  * Research (MFMER). All rights reserved. MAYO, MAYO CLINIC, and the
  * triple-shield Mayo logo are trademarks and service marks of MFMER.
  *
@@ -21,40 +21,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.valueset;
 
-import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
-import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
+import org.springframework.stereotype.Component;
+
+import edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.ValueSetName;
+import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
- * The Class VariableTiedModelAttributeReference.
+ * The Class CodeSystemHrefSettingCallback.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-public class VariableTiedModelAttributeReference extends ModelAttributeReference{
+@Component("valueSetNameCallback")
+public class ValueSetNameSettingCallback extends AbstractValueSetNameSettingCallback<ValueSetCatalogEntry> {
 	
-	private static final long serialVersionUID = 6302391653888781044L;
-	
-	private String variable;
-	
-	public VariableTiedModelAttributeReference(){
-		super();
-	}
-	
-	public VariableTiedModelAttributeReference(StandardModelAttributeReference ref, String variable){
-		super();
-		this.setContent(ref.getModelAttributeReference().getContent());
-		this.setHref(ref.getModelAttributeReference().getHref());
-		this.setUri(ref.getModelAttributeReference().getUri());
-		
-		this.variable = variable;
+	/* (non-Javadoc)
+	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
+	 */
+	@Override
+	public void afterBinding(
+			ValueSetCatalogEntry bindingResult, 
+			CallbackContext context) {
+		ValueSetName name = this.getValueSetName(context.getCallbackIds());
+
+		String toStringName = name.toString();
+		bindingResult.setValueSetName(toStringName);
+		bindingResult.setValueSetName(toStringName);
 	}
 
-	public String getVariable() {
-		return variable;
-	}
-
-	public void setVariable(String variable) {
-		this.variable = variable;
-	}
 }

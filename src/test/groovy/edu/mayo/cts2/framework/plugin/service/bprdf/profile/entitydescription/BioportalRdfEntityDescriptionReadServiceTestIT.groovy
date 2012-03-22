@@ -26,14 +26,18 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	
 	@Test
 	void TestReadByUri() {
-		def ed = read.read(new EntityDescriptionReadId("http://purl.bioontology.org/ontology/WHO/1313"), null)
+		def ed = read.read(new EntityDescriptionReadId(
+			"http://www.icn.ch/icnp#Hospital",
+			ModelUtils.nameOrUriFromName("ICNP-45766")), null)
 
 		assertNotNull ed
 	}
 	
 	@Test
 	void TestReadByUriValid() {
-		def ed = read.read(new EntityDescriptionReadId("http://purl.bioontology.org/ontology/WHO/1313"), null)
+		def ed = read.read(new EntityDescriptionReadId(
+			"http://www.icn.ch/icnp#Hospital",
+			ModelUtils.nameOrUriFromName("ICNP-45766")), null)
 
 		marshaller.marshal(read, new StreamResult(new StringWriter()))
 	}
@@ -41,8 +45,8 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	@Test
 	void TestReadByName() {
 	
-		def name = new ScopedEntityName(name:"D001914")
-		def csv = ModelUtils.nameOrUriFromName("MSHFRE-42580")
+		def name = new ScopedEntityName(name:"Hospital")
+		def csv = ModelUtils.nameOrUriFromName("ICNP-45766")
 		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
 	
 		assertNotNull ed
@@ -52,13 +56,55 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	@Test
 	void TestReadByNameValid() {
 	
-		def name = new ScopedEntityName(name:"Heart")
-		def csv = ModelUtils.nameOrUriFromName("BIOA-46481")
+		def name = new ScopedEntityName(name:"Hospital")
+		def csv = ModelUtils.nameOrUriFromName("ICNP-45766")
 		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
 		
 		assertNotNull ed
 	
 		marshaller.marshal(ed, new StreamResult(new StringWriter()))
+		
+	}
+	
+	@Test
+	void TestReadByNameValidDescribingCodeSystemVersion() {
+	
+		def name = new ScopedEntityName(name:"Hospital")
+		def csv = ModelUtils.nameOrUriFromName("ICNP-45766")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertNotNull ed
+	
+		assertNotNull ed.namedEntity.describingCodeSystemVersion
+		
+		assertNotNull ed.namedEntity.describingCodeSystemVersion.codeSystem
+		
+		assertNotNull ed.namedEntity.describingCodeSystemVersion.version
+		
+		assertNotNull ed.namedEntity.describingCodeSystemVersion.codeSystem.content
+		
+		assertNotNull ed.namedEntity.describingCodeSystemVersion.version.content
+		
+	}
+	
+	@Test
+	void TestReadByUriValidDescribingCodeSystemVersion() {
+	
+		def ed = read.read(new EntityDescriptionReadId(
+			"http://www.icn.ch/icnp#Hospital",
+			ModelUtils.nameOrUriFromName("ICNP-45766")), null)
+		
+		assertNotNull ed
+	
+		assertNotNull ed.namedEntity.describingCodeSystemVersion
+		
+		assertNotNull ed.namedEntity.describingCodeSystemVersion.codeSystem
+		
+		assertNotNull ed.namedEntity.describingCodeSystemVersion.version
+		
+		assertNotNull ed.namedEntity.describingCodeSystemVersion.codeSystem.content
+		
+		assertNotNull ed.namedEntity.describingCodeSystemVersion.version.content
 		
 	}
 	

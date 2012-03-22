@@ -21,12 +21,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.resolvedvalueset;
+
+import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetDirectoryEntry;
+import edu.mayo.twinkql.result.callback.AfterResultBinding;
 import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
@@ -34,21 +37,27 @@ import edu.mayo.twinkql.result.callback.CallbackContext;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryNameCallback")
-public class CodeSystemSummaryNameSettingCallback extends AbstractCodeSystemNameSettingCallback<CodeSystemCatalogEntrySummary> {
+@Component("resolvedValueSetDirectoryEntryHrefCallback")
+public class ResolvedValueSetDirectoryEntryHrefSettingCallback implements AfterResultBinding<ResolvedValueSetDirectoryEntry> {
+
+	@Resource
+	private UrlConstructor urlConstructor;
 	
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
 	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult, 
+			ResolvedValueSetDirectoryEntry bindingResult,
 			CallbackContext context) {
-		CodeSystemName name = this.getCodeSystemName(context.getCallbackIds());
-
-		String toStringName = name.toString();
-		bindingResult.setCodeSystemName(toStringName);
-		bindingResult.setResourceName(toStringName);
+		String valueSetName = (String) context.getCallbackIds().get("valueSetName");
+		String valueSetDefinitionName = (String) context.getCallbackIds().get("valueSetDefinitionName");
+		String resolvedValueSetLocalName = (String) context.getCallbackIds().get("resolvedValueSetLocalName");
+		
+		bindingResult.setHref(this.urlConstructor.createResolvedValueSetUrl(
+				valueSetName, 
+				valueSetDefinitionName, 
+				resolvedValueSetLocalName));
 	}
 
 }

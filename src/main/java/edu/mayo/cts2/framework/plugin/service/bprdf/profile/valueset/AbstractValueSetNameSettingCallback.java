@@ -21,37 +21,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.valueset;
+
+import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.ValueSetName;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
-import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
  *
+ * @param <T> the generic type
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
-
-	@Resource
-	private UrlConstructor urlConstructor;
+@Component
+public abstract class AbstractValueSetNameSettingCallback<T> implements AfterResultBinding<T> {
 	
-	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
+	@Resource
+	private IdService idService;
+	
+	/**
+	 * Gets the code system name.
+	 *
+	 * @param callbackParams the callback params
+	 * @return the code system name
 	 */
-	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
-			CallbackContext context) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
+	protected ValueSetName getValueSetName(Map<String,Object> callbackParams) {
+		String acronym = (String) callbackParams.get("acronym");
+		String id = (String) callbackParams.get("id");
+		
+		String ontologyId = this.idService.getOntologyIdForId(id);
+		
+		ValueSetName name = new ValueSetName(acronym,ontologyId);
+		
+		return name;
 	}
 
 }

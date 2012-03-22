@@ -21,7 +21,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystemversion;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.valueset;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,60 +30,55 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
-import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary;
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
-import edu.mayo.cts2.framework.model.service.core.NameOrURI;
+import edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry;
+import edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntrySummary;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder.VariableQuery;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableTiedPropertyReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
-import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQuery;
-import edu.mayo.cts2.framework.service.profile.codesystemversion.CodeSystemVersionQueryService;
+import edu.mayo.cts2.framework.service.profile.valueset.ValueSetQuery;
+import edu.mayo.cts2.framework.service.profile.valueset.ValueSetQueryService;
 
 /**
- * The Class BioportalRdfCodeSystemVersionQueryService.
+ * The Class BioportalRdfCodeSystemQueryService.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
-public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryService implements
-		CodeSystemVersionQueryService {
+public class BioportalRdfValueSetQueryService extends AbstractQueryService implements
+		ValueSetQueryService {
 	
-	private final static String CODESYSTEMVERSION_NAMESPACE = "codeSystemVersion";
-	private final static String GET_CODESYSTEMVERSION_SUMMARIES = "getCodeSystemVersionCatalogSummaries";
+	private final static String VALUESET_NAMESPACE = "valueSet";
+	private final static String GET_VALUESET_SUMMARIES = "getValueSetCatalogSummaries";
 	
 	private final static String LIMIT = "limit";
 	private final static String OFFSET = "offset";
-
+	
 	@Resource
 	private RdfDao rdfDao;
-	
+
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#getResourceSummaries(edu.mayo.cts2.framework.service.profile.ResourceQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
 	 */
 	@Override
-	public DirectoryResult<CodeSystemVersionCatalogEntrySummary> getResourceSummaries(
-			CodeSystemVersionQuery query, 
+	public DirectoryResult<ValueSetCatalogEntrySummary> getResourceSummaries(
+			ValueSetQuery query, 
 			SortCriteria sortCriteria, 
 			Page page) {
-		
+			
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put(LIMIT, page.getMaxToReturn()+1);
 		parameters.put(OFFSET, page.getStart());
-
-		String codeSystemVersionRestriction = "?codeSystemVersionRestriction";
 		
 		VariableQueryBuilder builder = new VariableQueryBuilder();
 		
@@ -101,27 +96,11 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 		
 		parameters.put("filters", variableQuery);
 		
-		if(query != null && query.getRestrictions() != null) {
-			NameOrURI codeSystem = query.getRestrictions().getCodeSystem();
-		
-			if(codeSystem != null){
-				if(StringUtils.isNotBlank(codeSystem.getName())){
-					CodeSystemName name = CodeSystemName.parse(codeSystem.getName());
-					
-					codeSystemVersionRestriction = name.getOntologyId();
-				}
-			}
-		}
-		
-		parameters.put("codeSystemVersionRestriction", codeSystemVersionRestriction);
-		
-		List<CodeSystemVersionCatalogEntrySummary> results;
-		
-			results = rdfDao.selectForList(
-					CODESYSTEMVERSION_NAMESPACE, 
-					GET_CODESYSTEMVERSION_SUMMARIES,
+		List<ValueSetCatalogEntrySummary> results = rdfDao.selectForList(
+					VALUESET_NAMESPACE, 
+					GET_VALUESET_SUMMARIES,
 					parameters,
-					CodeSystemVersionCatalogEntrySummary.class);
+					ValueSetCatalogEntrySummary.class);
 		
 		boolean moreResults = results.size() > page.getMaxToReturn();
 		
@@ -129,18 +108,15 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 			results.remove(results.size() - 1);
 		}
 		
-		return new DirectoryResult<CodeSystemVersionCatalogEntrySummary>(results,!moreResults);
+		return new DirectoryResult<ValueSetCatalogEntrySummary>(results,!moreResults);
 	}
-	
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#getResourceList(edu.mayo.cts2.framework.service.profile.ResourceQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
 	 */
 	@Override
-	public DirectoryResult<CodeSystemVersionCatalogEntry> getResourceList(
-			CodeSystemVersionQuery query, 
-			SortCriteria sortCriteria, 
-			Page page) {
+	public DirectoryResult<ValueSetCatalogEntry> getResourceList(
+			ValueSetQuery query, SortCriteria sortCriteria, Page page) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -148,10 +124,11 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#count(edu.mayo.cts2.framework.service.profile.ResourceQuery)
 	 */
 	@Override
-	public int count(CodeSystemVersionQuery query) {
+	public int count(ValueSetQuery query) {
 		throw new UnsupportedOperationException();
 	}
 
+	
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService#doAddSupportedModelAttributes(java.util.Set)
 	 */
@@ -166,26 +143,17 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 				new VariableTiedPropertyReference(
 						StandardModelAttributeReference.RESOURCE_SYNOPSIS, "description");
 		
-		VariableTiedPropertyReference about = 
-				new VariableTiedPropertyReference(
-						StandardModelAttributeReference.ABOUT, "id");
-
 		set.add(name);
 		set.add(description);
-		set.add(about);
 	}
-
 
 	@Override
 	public Set<? extends PropertyReference> getSupportedSortReferences() {
 		return null;
 	}
 
-
 	@Override
 	public Set<PredicateReference> getKnownProperties() {
 		return null;
-	}
-
-
+	}	
 }

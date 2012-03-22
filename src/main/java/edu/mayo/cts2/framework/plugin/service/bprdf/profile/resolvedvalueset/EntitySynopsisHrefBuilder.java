@@ -21,37 +21,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.resolvedvalueset;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
-import edu.mayo.twinkql.result.callback.AfterResultBinding;
-import edu.mayo.twinkql.result.callback.CallbackContext;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 
 /**
- * The Class CodeSystemHrefSettingCallback.
+ * The Class EntitySynopsisHrefSettingCallback.
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
+@Component
+public class EntitySynopsisHrefBuilder {
 
 	@Resource
 	private UrlConstructor urlConstructor;
 	
+	@Resource
+	private IdService idService;
+	
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
-	@Override
-	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
-			CallbackContext context) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
+	public String buildHref(String ontologyId, String id, String entityName) {
+
+		CodeSystemVersionName codeSystemVersionName = this.idService.getCodeSystemVersionNameForId(id);
+
+		CodeSystemName codeSystemName = new CodeSystemName(codeSystemVersionName.getAcronym(), ontologyId);
+		
+		return this.urlConstructor.createEntityUrl(
+						codeSystemName.getName(), 
+						codeSystemVersionName.getName(), 
+						entityName);
 	}
 
 }

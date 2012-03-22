@@ -21,14 +21,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.mayo.cts2.framework.plugin.service.bprdf.profile.codesystem;
+package edu.mayo.cts2.framework.plugin.service.bprdf.profile.valueset;
 
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary;
+import edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntrySummary;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 import edu.mayo.twinkql.result.callback.CallbackContext;
 
@@ -37,8 +37,8 @@ import edu.mayo.twinkql.result.callback.CallbackContext;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("codeSystemSummaryHrefCallback")
-public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<CodeSystemCatalogEntrySummary> {
+@Component("valueSetSummaryHrefCallback")
+public class ValueSetSummaryHrefSettingCallback implements AfterResultBinding<ValueSetCatalogEntrySummary> {
 
 	@Resource
 	private UrlConstructor urlConstructor;
@@ -48,10 +48,9 @@ public class CodeSystemSummaryHrefSettingCallback implements AfterResultBinding<
 	 */
 	@Override
 	public void afterBinding(
-			CodeSystemCatalogEntrySummary bindingResult,
-			CallbackContext context) {
-		bindingResult.setVersions(this.urlConstructor.createVersionsOfCodeSystemUrl(bindingResult.getCodeSystemName()));
-		bindingResult.setHref(this.urlConstructor.createCodeSystemUrl(bindingResult.getCodeSystemName()));
+			ValueSetCatalogEntrySummary bindingResult, 
+			CallbackContext callbackContext) {
+		bindingResult.setHref(this.urlConstructor.createValueSetUrl(bindingResult.getValueSetName()));
 	}
 
 }

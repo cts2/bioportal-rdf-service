@@ -9,23 +9,37 @@
 		afterMap="spring:entityDescriptionCallback">
 		<nestedResultMap resultMap="entity:designationResultMap1" beanProperty="namedEntity.designationAsReference[]"/>
 		<nestedResultMap resultMap="entity:designationResultMap2" beanProperty="namedEntity.designationAsReference[]"/>
+		<nestedResultMap resultMap="entity:definitionResultMap" beanProperty="namedEntity.definitionAsReference[]"/>
+		<nestedResultMap resultMap="entity:noteResultMap" beanProperty="namedEntity.noteAsReference[]"/>
 		<if function="spring:isLiteral" param="o">
 			<nestedResultMap resultMap="common:propertyResultMap" beanProperty="namedEntity.propertyAsReference[]" />	
 		</if>
-		<tripleMap var="o" varType="localName" predicateUri="rdfs:type" beanProperty="namedEntity.entityID.name"/>
-		<tripleMap var="s" varType="namespace" predicateUri="rdfs:type" beanProperty="namedEntity.entityID.namespace" modifier="spring:namespaceModifier" />
-		<tripleMap var="s" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.about"/>
-		<tripleMap var="graph" varType="localName" predicateUri="rdfs:type" callbackId="graph"/>	
-		<tripleMap var="o" varType="localName" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].name"/>
-		<tripleMap var="o" varType="uri" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].uri"/>
-		<tripleMap var="o" varType="namespace" predicateUri="rdfs:type" beanProperty="namedEntity.entityTypeAsReference[0].namespace" modifier="spring:namespaceModifier" />
+		<tripleMap var="o" varType="localName" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityID.name"/>
+		<tripleMap var="s" varType="namespace" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityID.namespace" modifier="spring:namespaceModifier" />
+		<tripleMap var="s" varType="uri" predicateUri="rdfs1999:type" beanProperty="namedEntity.about"/>
+		<tripleMap var="graph" varType="localName" predicateUri="rdfs1999:type" callbackId="graph"/>	
+		<tripleMap var="o" varType="localName" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityTypeAsReference[0].name"/>
+		<tripleMap var="o" varType="uri" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityTypeAsReference[0].uri"/>
+		<tripleMap var="o" varType="namespace" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityTypeAsReference[0].namespace" modifier="spring:namespaceModifier" />
+	</compositeResultMap>
+	
+	<compositeResultMap id="definitionResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.Definition">
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:definition" beanProperty="value.content" />
+	</compositeResultMap>
+	
+	<compositeResultMap id="noteResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.Comment">
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:notation" beanProperty="value.content" />
 	</compositeResultMap>
 	
 	<compositeResultMap id="designationResultMap1" 
 		resultClass="edu.mayo.cts2.framework.model.entity.Designation"
 		afterMap="spring:preferredDesignationCallback">
 		<tripleMap var="o" varType="literalValue" predicateUri="rdfs:label" beanProperty="value.content"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="rdfs1999:label" beanProperty="value.content"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="skos:prefLabel" beanProperty="value.content" />
+		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:prefLabel" beanProperty="value.content" />
 	</compositeResultMap>
 	
 	<compositeResultMap id="designationResultMap2" 

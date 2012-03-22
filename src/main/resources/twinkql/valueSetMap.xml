@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMap namespace="valueSet"
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
+	
+	<perRowResultMap id="valueSetCatalogEntrySummaryResultMap" 
+		extends="common:resourceDescriptionDirectoryEntryResultMap"
+		resultClass="edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntrySummary"
+		afterMap="spring:valueSetSummaryHrefCallback">
+		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
+		<rowMap var="ontologyId" varType="uri" beanProperty="about" />
+		<rowMap var="valueSetName" varType="literalValue" beanProperty="resourceName" />
+		<rowMap var="valueSetName" varType="literalValue" beanProperty="valueSetName" />
+		<rowMap var="id" varType="literalValue" callbackId="id" />
+		<rowMap var="virtualId" varType="literalValue" callbackId="virtualId"/>
+	</perRowResultMap>
+	
+	
+	<compositeResultMap id="valueSetCatalogEntryResultMap"
+	 	extends="common:resourceDescriptionResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry"
+		afterMap="spring:valueSetNameCallback">
+		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" callbackId="acronym"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
+	</compositeResultMap>
+	
+	<select id="getValueSetCatalogSummaries" resultMap="valueSetCatalogEntrySummaryResultMap">
+        
+       SELECT 
+          ?s
+          ?acronym
+          ?formalName
+          ?description
+          ?id
+          ?ontologyId
+          ( CONCAT( ?acronym, "-", ?virtualId ) as ?valueSetName )
+    
+	   WHERE {
+	   ?s a bpMetadata:OntologyView;
+	      omv:acronym ?acronym ;
+	      omv:name ?formalName ;
+	      bpMetadata:id ?id ;
+	      omv:description ?description ;
+	      bpMetadata:isVersionOfVirtualOntology ?ontologyId .
+	   ?ontologyId bpMetadata:id ?virtualId ;
+		
+		    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
+		   	    CONTAINS( UCASE( ?#{item.var} ), UCASE( '#{item.text}' ) ) 
+		    </iterator>
+	    }
+	    
+	    GROUP BY ?ontologyId
+ 
+	    LIMIT  #{limit}
+	    OFFSET #{offset}
+	  
+	</select>
+	
+	<select id="getValueSetByName" resultMap="valueSetCatalogEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT ?s ?p ?o
+        WHERE { 
+                
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata> {
+	
+                       ?s a bpMetadata:OntologyView ;
+                          bpMetadata:id #{id} ;
+                          ?p ?o  
+                          
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses 
+		               )       
+                 }
+        }
+        ]]>
+	</select>
+	
+	<select id="getValueSetByUri" resultMap="valueSetCatalogEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT ?s ?p ?o
+        WHERE { 
+                
+				GRAPH <#{uri}/metadata> {
+	
+                       ?s a bpMetadata:OntologyView ;
+                          bpMetadata:id #{id} ;
+                          ?p ?o  
+                          
+                       FILTER ( 
+			              ?p != metrics:classesWithSingleSubclass
+			              &&
+			              ?p != metrics:classesWithMoreThanXSubclasses
+		               )       
+                 }
+        }
+        ]]>
+	</select>
+</sparqlMap>

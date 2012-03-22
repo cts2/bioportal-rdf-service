@@ -19,8 +19,10 @@ class CodeSystemCatalogReadTestIT extends BaseServiceTestITBase {
 	@Test void TestGetCodeSystemByUri(){
 		
 		CodeSystemCatalogEntryMsg result = 
-			client.getCts2Resource(server + "codesystembyuri?uri=http://bioportal.bioontology.org/ontologies/1000", CodeSystemCatalogEntryMsg.class);
+			client.getCts2Resource(server + "codesystembyuri?uri=http://bioportal.bioontology.org/ontologies/1083", CodeSystemCatalogEntryMsg.class);
 			
 		assertNotNull result
+		
+		assertEquals "NPO-1083", result.codeSystemCatalogEntry.codeSystemName
 	}
 }

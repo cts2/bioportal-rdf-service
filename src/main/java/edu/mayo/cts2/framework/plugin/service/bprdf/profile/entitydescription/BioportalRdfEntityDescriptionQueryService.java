@@ -35,8 +35,8 @@ import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.EntityReferenceList;
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
-import edu.mayo.cts2.framework.model.core.ModelAttributeReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
+import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.core.VersionTagReference;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
@@ -120,19 +120,14 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 	}
 
 	@Override
-	public Set<? extends ModelAttributeReference> getSupportedModelAttributes() {
-		HashSet<ModelAttributeReference> returnSet = new HashSet<ModelAttributeReference>();
+	public Set<? extends PropertyReference> getSupportedSearchReferences() {
+		HashSet<PropertyReference> returnSet = new HashSet<PropertyReference>();
 
-		returnSet.add(StandardModelAttributeReference.RESOURCE_SYNOPSIS.getModelAttributeReference());
+		returnSet.add(StandardModelAttributeReference.RESOURCE_SYNOPSIS.getPropertyReference());
 		
 		return returnSet;
 	}
 
-	@Override
-	public Set<? extends PredicateReference> getSupportedProperties() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public boolean isEntityInSet(EntityNameOrURI entity, Query query,
@@ -166,7 +161,16 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 
 	@Override
 	public Set<? extends VersionTagReference> getSupportedTags() {
-		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<? extends PropertyReference> getSupportedSortReferences() {
+		return null;
+	}
+
+	@Override
+	public Set<PredicateReference> getKnownProperties() {
 		return null;
 	}
 

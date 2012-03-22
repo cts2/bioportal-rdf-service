@@ -28,7 +28,7 @@ class BioportalRestClientTestIT {
 	void TestSearchEntities(){
 		def filter = new ResolvedFilter(
 			matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
-			modelAttributeReference: StandardModelAttributeReference.RESOURCE_SYNOPSIS.modelAttributeReference,
+			propertyReference: StandardModelAttributeReference.RESOURCE_SYNOPSIS.propertyReference,
 			matchValue: "software"
 		)
 		def result = client.searchEntities("1104", [filter] as Set, new Page())

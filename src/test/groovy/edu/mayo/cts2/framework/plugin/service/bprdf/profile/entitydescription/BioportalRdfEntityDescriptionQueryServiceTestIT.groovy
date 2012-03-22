@@ -39,10 +39,14 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 				}
 			] as EntityDescriptionQuery,
 		null,
-		new Page())
+		new Page(maxToReturn:10))
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			assertTrue it.knownEntityDescription[0].designation, it.knownEntityDescription[0].designation.toLowerCase().contains("software")
+		}
 	}
 	
 	
