@@ -32,7 +32,7 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	void testGetResourceSummaries(){
 		def dir = query.getResourceSummaries(
 		   [
-				getRestrictions:{ erynew  AssociationQuServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928") )},
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928") )},
 				getFilterComponent:{[] as Set}
 			] as AssociationQuery,
 		null,
