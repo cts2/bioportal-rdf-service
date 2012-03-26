@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sparqlMap namespace="reasoning"
+	xmlns="http://mayo.edu/twinkql" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
+	
+	<select id="reason">	
+		CONSTRUCT {
+                  ?s ?p ?o
+                  }
+		
+		WHERE 
+		{
+		<![CDATA[
+			GRAPH bpOntologies:globals {
+   				?s ?p ?o .
+   			}
+   		]]>
+		} 
+	</select>
+</sparqlMap>

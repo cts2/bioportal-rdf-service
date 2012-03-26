@@ -25,7 +25,9 @@
 	
 	<compositeResultMap id="definitionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.Definition">
-		<tripleMap var="o" varType="literalValue" predicateUri="skos:definition" beanProperty="value.content" />
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:definition" beanProperty="value.content">
+			<reasoner id="jena" />
+		</tripleMap>
 	</compositeResultMap>
 	
 	<compositeResultMap id="noteResultMap" 
@@ -36,16 +38,17 @@
 	<compositeResultMap id="designationResultMap1" 
 		resultClass="edu.mayo.cts2.framework.model.entity.Designation"
 		afterMap="spring:preferredDesignationCallback">
-		<tripleMap var="o" varType="literalValue" predicateUri="rdfs:label" beanProperty="value.content"/>
-		<tripleMap var="o" varType="literalValue" predicateUri="rdfs1999:label" beanProperty="value.content"/>
-		<tripleMap var="o" varType="literalValue" predicateUri="skos:prefLabel" beanProperty="value.content" />
-		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:prefLabel" beanProperty="value.content" />
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:prefLabel" beanProperty="value.content">
+			<reasoner id="jena" />
+		</tripleMap>
 	</compositeResultMap>
 	
 	<compositeResultMap id="designationResultMap2" 
 		resultClass="edu.mayo.cts2.framework.model.entity.Designation"
 		afterMap="spring:alternateDesignationCallback">
-		<tripleMap var="o" varType="literalValue" predicateUri="skos:altLabel" beanProperty="value.content"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="skos:altLabel" beanProperty="value.content">
+			<reasoner id="jena" />
+		</tripleMap>
 	</compositeResultMap>
 	
 	<select id="getEntityDescriptionByUri" resultMap="entityDescriptionResultMap">
