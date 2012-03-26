@@ -16,7 +16,7 @@
 		<property name="queryExecutionProvider" ref="httpQueryExecutionProvider"/>
 	</bean>
 	
-	<bean class="edu.mayo.twinkql.template.TwinkqlTemplateFactory">
+	<bean class="edu.mayo.cts2.framework.plugin.service.bprdf.osgi.OsgiTwinkqlTemplateFactory">
 		<property name="twinkqlContext" ref="springTwinkqlContextFactory"/>
 	</bean>
 	

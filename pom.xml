@@ -49,7 +49,7 @@
 
 	<properties>
 		<twinkqlVersion>0.3.0-SNAPSHOT</twinkqlVersion>
-		<webapp.port>8120</webapp.port>
+		<webapp.port>1999</webapp.port>
 	</properties>
 
 	<build>

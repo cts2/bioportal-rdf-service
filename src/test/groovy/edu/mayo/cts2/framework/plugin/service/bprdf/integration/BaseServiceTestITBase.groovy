@@ -11,7 +11,7 @@ class BaseServiceTestITBase {
 	
 	public Cts2RestClient client = new Cts2RestClient()
 	
-	public String server = "http://localhost:8120/webapp-rest/"
+	public String server = "http://localhost:1999/webapp-rest/"
 	
 	//Wait until OSGi service installs itself and becomes available
 	@Before
