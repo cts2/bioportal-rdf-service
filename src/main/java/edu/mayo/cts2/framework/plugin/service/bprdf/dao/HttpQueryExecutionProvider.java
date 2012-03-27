@@ -41,7 +41,7 @@ import edu.mayo.twinkql.context.QueryExecutionProvider;
 @Component("httpQueryExecutionProvider")
 public class HttpQueryExecutionProvider implements QueryExecutionProvider, InitializingBean {
 
-	private String sparqlService = "http://alphasparql.bioontology.org/sparql/";
+	private String sparqlService = "http://sparql.bioontology.org/sparql/";
 	
 	private String apiKey;
 
