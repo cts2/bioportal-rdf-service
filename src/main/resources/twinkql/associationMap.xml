@@ -37,15 +37,14 @@
 		<select id="getAssociationDirectoryEntrySummaries" resultMap="associationDirectoryEntryResultMap">
 		<![CDATA[
 		SELECT ?s ?p ?o
-		WHERE {	
 		<isNotNull property="restrictToGraph">
-		    GRAPH bpOntologies:#{restrictToGraph} {	
+		    FROM bpOntologies:#{restrictToGraph} 
+		</isNotNull>
+		WHERE {	
 		    ?s ?p ?o .
       		FILTER (isIRI(?s))
       		FILTER (isIRI(?p))
       		FILTER (isIRI(?o))
-      		}
-		</isNotNull>
       	<isNotNull property="restrictToSourceEntityName">
       		FILTER (CONTAINS( UCASE(str(?s)), UCASE( '#{restrictToSourceEntityName}')))
 		</isNotNull>	
@@ -89,48 +88,38 @@
 	
 		<select id="getChildrenAssociationsOfEntity" resultMap="entityDirectoryEntryResultMap">
 		<![CDATA[
-		SELECT ?s ?p ?o
-		WHERE {	
+		SELECT ?s ?p ?o	
 		<isNotNull property="restrictToGraph">
-		    GRAPH bpOntologies:#{restrictToGraph} {	
+		    FROM  bpOntologies:#{restrictToGraph} 
+		</isNotNull>
+		WHERE {	
 		    ?s ?p ?o .
       		FILTER (isIRI(?s))
       		FILTER (?p= rdfs:subClassOf)
       		FILTER (isIRI(?o))
-      		}
-		</isNotNull>
-      		
       	<isNotNull property="restrictToEntityName">
       		FILTER (CONTAINS( UCASE(str(?o)), UCASE( '#{restrictToEntityName}')))
 		</isNotNull>	
-		
-		
       	<isNotNull property="restrictToEntityUri">
       		FILTER (?o = <#{restrictToEntityUri}>)
-		</isNotNull>	
-		
-				
+		</isNotNull>					
 		} 
 		LIMIT  #{limit}
-	    OFFSET #{offset} 
-
-	    
-		
+	    OFFSET #{offset} 		
 		]]>
 	</select>	
 	
 		<select id="getSourceEntities" resultMap="entityDirectoryEntryResultMap">
 		<![CDATA[
 		SELECT ?s ?p ?o
-		WHERE {	
 		<isNotNull property="restrictToGraph">
-		    GRAPH bpOntologies:#{restrictToGraph} {	
+		    FROM bpOntologies:#{restrictToGraph} 
+		</isNotNull>
+		WHERE {	
 		    ?s ?p ?o .
       		FILTER (isIRI(?s))
       		FILTER (isIRI(?p))
       		FILTER (isIRI(?o))
-      		}
-		</isNotNull>
       	<isNotNull property="restrictToSourceEntityName">
       		FILTER (CONTAINS( UCASE(str(?s)), UCASE( '#{restrictToSourceEntityName}')))
 		</isNotNull>	
