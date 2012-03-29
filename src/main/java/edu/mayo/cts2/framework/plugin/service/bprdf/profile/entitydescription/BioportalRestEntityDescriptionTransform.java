@@ -20,7 +20,6 @@ import edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem;
 import edu.mayo.cts2.framework.model.core.NameAndMeaningReference;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 
@@ -96,7 +95,7 @@ public class BioportalRestEntityDescriptionTransform {
 		}
 		
 		String versionName = codeSystemVersionName.getName();
-		String codeSystemName = new CodeSystemName(codeSystemVersionName.getAcronym(), ontologyId).getName();
+		String codeSystemName = codeSystemVersionName.getAcronym();
 		
 		return this.urlConstructor.createEntityUrl(codeSystemName, versionName, entityName);
 	}
@@ -112,7 +111,7 @@ public class BioportalRestEntityDescriptionTransform {
 		}
 		
 		String versionName = codeSystemVersionName.getName();
-		String codeSystemName = new CodeSystemName(codeSystemVersionName.getAcronym(), ontologyId).getName();
+		String codeSystemName = codeSystemVersionName.getAcronym();
 		
 		NameAndMeaningReference ref = new NameAndMeaningReference();
 		ref.setContent(versionName);

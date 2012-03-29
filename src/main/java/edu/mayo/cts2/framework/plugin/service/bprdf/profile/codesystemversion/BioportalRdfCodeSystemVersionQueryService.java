@@ -43,7 +43,7 @@ import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractQueryService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.VariableQueryBuilder.VariableQuery;
@@ -69,6 +69,9 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 
 	@Resource
 	private RdfDao rdfDao;
+	
+	@Resource
+	private IdService idService;
 	
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#getResourceSummaries(edu.mayo.cts2.framework.service.profile.ResourceQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
@@ -106,9 +109,9 @@ public class BioportalRdfCodeSystemVersionQueryService extends AbstractQueryServ
 		
 			if(codeSystem != null){
 				if(StringUtils.isNotBlank(codeSystem.getName())){
-					CodeSystemName name = CodeSystemName.parse(codeSystem.getName());
+					String codeSystemName = codeSystem.getName();
 					
-					codeSystemVersionRestriction = name.getOntologyId();
+					codeSystemVersionRestriction = this.idService.getOntologyIdForAcronym(codeSystemName);
 				}
 			}
 		}

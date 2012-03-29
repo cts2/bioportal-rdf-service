@@ -39,9 +39,9 @@
 	<compositeResultMap id="codeSystemCatalogEntryResultMap"
 	 	extends="common:resourceDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry"
-		afterMap="spring:codeSystemNameCallback,spring:codeSystemHrefCallback">
+		afterMap="spring:codeSystemHrefCallback">
 		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
-		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" callbackId="acronym"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="codeSystemName"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
 	</compositeResultMap>
 	
@@ -54,7 +54,7 @@
           ?description
           ?id
           ?ontologyId
-          ( CONCAT( ?acronym, "-", ?virtualId ) as ?codeSystemName )
+          ( ?acronym as ?codeSystemName )
           ( CONCAT( ?acronym, "-", ?id ) as ?codeSystemVersionName )
     
 	   WHERE {

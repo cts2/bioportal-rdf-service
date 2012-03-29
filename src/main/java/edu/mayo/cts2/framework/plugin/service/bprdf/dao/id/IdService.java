@@ -51,7 +51,7 @@ public interface IdService {
 	 * @param OntologyId the ontology id
 	 * @return the ids for ontology id
 	 */
-	public Iterable<String> getIdsForOntologyId(String OntologyId);
+	public Iterable<String> getIdsForOntologyId(String ontologyId);
 	
 	/**
 	 * Gets the current id for ontology id.
@@ -59,5 +59,9 @@ public interface IdService {
 	 * @param OntologyId the ontology id
 	 * @return the current id for ontology id
 	 */
-	public String getCurrentIdForOntologyId(String OntologyId);
+	public String getCurrentIdForOntologyId(String ontologyId);
+	
+	public String getOntologyIdForAcronym(String acronym);
+	
+	public String getAcronymForOntologyId(String ontologyId);
 }

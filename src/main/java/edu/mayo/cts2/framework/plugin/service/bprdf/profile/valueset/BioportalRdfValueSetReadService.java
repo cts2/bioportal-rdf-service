@@ -35,7 +35,6 @@ import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
 import edu.mayo.cts2.framework.service.profile.valueset.ValueSetReadService;
@@ -67,9 +66,10 @@ public class BioportalRdfValueSetReadService extends AbstractService
 			ResolvedReadContext readContext) {
 		
 		if(StringUtils.isNotBlank(identifier.getName())){
-			CodeSystemName name = CodeSystemName.parse(identifier.getName());
+			String name = identifier.getName();
 			
-			String id = this.idService.getCurrentIdForOntologyId(name.getOntologyId());
+			String ontologyId = this.idService.getOntologyIdForAcronym(name);
+			String id = this.idService.getCurrentIdForOntologyId(ontologyId);
 			
 			if(StringUtils.isBlank(id)){
 				//not found
@@ -78,7 +78,7 @@ public class BioportalRdfValueSetReadService extends AbstractService
 			
 			Map<String,Object> parameters = new HashMap<String,Object>();
 			parameters.put("id", id);
-			parameters.put("ontologyId", name.getOntologyId());
+			parameters.put("ontologyId", ontologyId);
 
 			return this.rdfDao.selectForObject(
 					VALUESET_NAMESPACE, 

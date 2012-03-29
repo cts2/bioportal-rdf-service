@@ -120,7 +120,7 @@
 			         bpMetadata:isVersionOfVirtualOntology ?definitionOfCodeSystem .
 			     ?definitionOfCodeSystem bpMetadata:id ?codeSystemId .
           
-                 GRAPH ?virtualView {
+                 GRAPH bpOntologies:#{acronym} {
 			        ?s a owl:Class ;
 			             rdfs:label ?label .
                  }

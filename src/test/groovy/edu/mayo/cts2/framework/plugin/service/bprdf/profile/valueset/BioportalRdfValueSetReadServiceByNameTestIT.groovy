@@ -15,7 +15,7 @@ class BioportalRdfValueSetReadServiceByNameTestIT extends BioportalRdfValueSetRe
 	
 	@Override
 	public doRead() {
-		def cs = read.read(ModelUtils.nameOrUriFromName("Organism-2021"), null)
+		def cs = read.read(ModelUtils.nameOrUriFromName("Organism"), null)
 		
 		cs
 	}

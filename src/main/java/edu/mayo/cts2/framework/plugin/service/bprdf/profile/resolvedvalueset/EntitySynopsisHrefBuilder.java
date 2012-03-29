@@ -28,7 +28,6 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 
@@ -53,10 +52,10 @@ public class EntitySynopsisHrefBuilder {
 
 		CodeSystemVersionName codeSystemVersionName = this.idService.getCodeSystemVersionNameForId(id);
 
-		CodeSystemName codeSystemName = new CodeSystemName(codeSystemVersionName.getAcronym(), ontologyId);
+		String codeSystemName = codeSystemVersionName.getAcronym();
 		
 		return this.urlConstructor.createEntityUrl(
-						codeSystemName.getName(), 
+				codeSystemName, 
 						codeSystemVersionName.getName(), 
 						entityName);
 	}

@@ -29,9 +29,7 @@ import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
@@ -44,9 +42,6 @@ public class CodeSystemVersionHrefSettingCallback extends AbstractCodeSystemVers
 
 	@Resource
 	private UrlConstructor urlConstructor;
-	
-	@Resource
-	private IdService idService;
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
@@ -60,11 +55,9 @@ public class CodeSystemVersionHrefSettingCallback extends AbstractCodeSystemVers
 		
 		String acronym = csvName.getAcronym();
 		
-		CodeSystemName csName = new CodeSystemName(acronym, this.idService.getOntologyIdForId(csvName.getId()));
-		
 		bindingResult.setEntityDescriptions(
 				this.urlConstructor.createEntitiesOfCodeSystemVersionUrl(
-						csName.toString(), 
+						acronym, 
 						csvName.toString()));
 	}
 

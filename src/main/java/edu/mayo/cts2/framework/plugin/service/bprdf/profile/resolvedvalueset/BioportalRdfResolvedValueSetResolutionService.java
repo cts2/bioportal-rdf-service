@@ -88,11 +88,13 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 		
 		String id = identifier.getLocalName();
 		String ontologyId = this.idService.getOntologyIdForId(identifier.getLocalName());
+		String acronym = identifier.getValueSet().getName();
 		
 		if(CollectionUtils.isEmpty(filterComponent)){
 			
 			Map<String,Object> parameters = new HashMap<String,Object>();
 			parameters.put("id", id);
+			parameters.put("acronym", acronym);
 			
 			ProfileUtils.setLimitOffsetParams(parameters, page);
 			
@@ -102,6 +104,10 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 						GET_RESOLVEDVALUESET_ENTITYSYNOPSIS, 
 						parameters, 
 						EntitySynopsis.class);
+			
+			if(results == null){
+				return null;
+			}
 			
 			boolean moreResults = results.size() > page.getMaxToReturn();
 			

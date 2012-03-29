@@ -31,6 +31,8 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +46,8 @@ import edu.mayo.twinkql.template.TwinkqlTemplate;
 @Component
 public class DefaultIdService implements IdService, InitializingBean {
 	
+	protected final Log log = LogFactory.getLog(getClass().getName());
+	
 	private final static String UTILITY_NAMESPACE = "util";
 	private final static String GET_IDS = "getIds";
 	
@@ -55,6 +59,8 @@ public class DefaultIdService implements IdService, InitializingBean {
 	private Map<String,String> idToOntologyId = new HashMap<String,String>();
 	private Map<String,CodeSystemVersionName> csvNameToCsv = new HashMap<String,CodeSystemVersionName>();
 	private Map<String,CodeSystemVersionName> idToCsvName = new HashMap<String,CodeSystemVersionName>();
+	private Map<String,String> acronymToOntologyId = new HashMap<String,String>();
+	private Map<String,String> ontologyIdToAcronym = new HashMap<String,String>();
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -70,6 +76,28 @@ public class DefaultIdService implements IdService, InitializingBean {
 			String id = idResult.getId();
 			String ontologyId = idResult.getOntologyId();
 			String acronym = idResult.getAcronym();
+			
+			if(! this.acronymToOntologyId.containsKey(acronym)){
+				this.acronymToOntologyId.put(acronym, ontologyId);
+			} else {
+				String foundOntologyId = 
+					this.acronymToOntologyId.get(acronym);
+				
+				if(! ontologyId.equals(foundOntologyId)){
+						log.warn("Found multiple OntologyIds ("+foundOntologyId+","+ontologyId+") for the same acronym ("+acronym+").");
+				}
+			}
+			
+			if(! this.ontologyIdToAcronym.containsKey(ontologyId)){
+				this.ontologyIdToAcronym.put(ontologyId, acronym);
+			} else {
+				String foundAcronym = 
+					this.ontologyIdToAcronym.get(acronym);
+				
+				if(! acronym.equals(foundAcronym)){
+						log.warn("Found multiple Acronyms ("+foundAcronym+","+acronym+") for the same ontologyId ("+ontologyId+").");
+				}
+			}
 			
 			if(! this.ontologyIdToIds.containsKey(ontologyId)){
 				this.ontologyIdToIds.put(ontologyId, new ArrayList<String>());
@@ -100,6 +128,16 @@ public class DefaultIdService implements IdService, InitializingBean {
 	@Override
 	public String getOntologyIdForId(String id) {
 		return this.idToOntologyId.get(id);
+	}
+
+	@Override
+	public String getOntologyIdForAcronym(String acronym) {
+		return this.acronymToOntologyId.get(acronym);
+	}
+	
+	@Override
+	public String getAcronymForOntologyId(String ontologyId) {
+		return this.ontologyIdToAcronym.get(ontologyId);
 	}
 
 	/* (non-Javadoc)

@@ -55,7 +55,8 @@ public class EntityDescriptionCallback implements AfterResultBinding<EntityDescr
 			EntityDescription bindingResult, 
 			CallbackContext context) {	
 		
-		String ontologyId = (String) context.getCallbackIds().get("graph");
+		String acronym = (String) context.getCallbackIds().get("graph");
+		String ontologyId = this.idService.getOntologyIdForAcronym(acronym);
 		String id = idService.getCurrentIdForOntologyId(ontologyId);
 		
 		EntityDescriptionBase base = (EntityDescriptionBase) bindingResult.getChoiceValue();

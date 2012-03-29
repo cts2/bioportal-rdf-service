@@ -38,8 +38,9 @@
 	
 	<compositeResultMap id="compositeVersionOfResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference"
-		afterMap="spring:codeSystemVersionOfNameCallback,spring:codeSystemReferenceHrefCallback">
+		afterMap="spring:codeSystemReferenceHrefCallback">
 		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="uri"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="content"/>
 	</compositeResultMap>
 	
 	<select id="getCodeSystemVersionCatalogSummaries" resultMap="codeSystemVersionCatalogEntrySummaryResultMap">
@@ -50,7 +51,7 @@
           ?description
           ?id
           ?ontologyId
-          ( CONCAT( ?acronym, "-", ?virtualId ) as ?codeSystemName )
+          ( ?acronym as ?codeSystemName )
           ( CONCAT( ?acronym, "-", ?id ) as ?codeSystemVersionName )
 
 	   WHERE {

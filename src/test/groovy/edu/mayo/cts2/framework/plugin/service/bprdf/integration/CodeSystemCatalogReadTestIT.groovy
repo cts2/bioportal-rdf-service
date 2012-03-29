@@ -10,7 +10,7 @@ class CodeSystemCatalogReadTestIT extends BaseServiceTestITBase {
 	@Test void TestGetCodeSystemByName(){
 		
 		CodeSystemCatalogEntryMsg result = 
-			client.getCts2Resource(server + "codesystem/GO-1070", CodeSystemCatalogEntryMsg.class);
+			client.getCts2Resource(server + "codesystem/GO", CodeSystemCatalogEntryMsg.class);
 			
 		assertNotNull result
 	}
@@ -23,6 +23,6 @@ class CodeSystemCatalogReadTestIT extends BaseServiceTestITBase {
 			
 		assertNotNull result
 		
-		assertEquals "NPO-1083", result.codeSystemCatalogEntry.codeSystemName
+		assertEquals "NPO", result.codeSystemCatalogEntry.codeSystemName
 	}
 }

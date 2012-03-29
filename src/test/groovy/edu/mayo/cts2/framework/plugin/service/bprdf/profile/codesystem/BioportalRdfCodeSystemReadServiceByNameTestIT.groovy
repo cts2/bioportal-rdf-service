@@ -16,18 +16,18 @@ class BioportalRdfCodeSystemReadServiceByNameTestIT extends BioportalRdfCodeSyst
 	
 	@Override
 	public CodeSystemCatalogEntry doRead() {
-		def cs = read.read(ModelUtils.nameOrUriFromName("GO-1070"), null)
+		def cs = read.read(ModelUtils.nameOrUriFromName("GO"), null)
 		
 		cs
 	}
 	
 	@Test
 	void TestCodeSystemWithHyhpenName() {
-		def cs = read.read(ModelUtils.nameOrUriFromName("FDA-MedDevice-1576"), null)
+		def cs = read.read(ModelUtils.nameOrUriFromName("FDA-MedDevice"), null)
 		
 		assertNotNull cs
 		
-		assertEquals cs.codeSystemName, "FDA-MedDevice-1576"
+		assertEquals cs.codeSystemName, "FDA-MedDevice"
 	}
 
 	@Test

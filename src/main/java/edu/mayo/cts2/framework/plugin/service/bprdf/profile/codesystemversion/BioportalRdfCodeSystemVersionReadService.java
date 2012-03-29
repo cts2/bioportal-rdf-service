@@ -37,7 +37,6 @@ import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.VersionTagReference;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
@@ -161,9 +160,9 @@ public class BioportalRdfCodeSystemVersionReadService extends AbstractService
 			ResolvedReadContext readContext) {
 		
 		if(StringUtils.isNotBlank(codeSystem.getName())){
-			CodeSystemName name = CodeSystemName.parse(codeSystem.getName());
+			String name = codeSystem.getName();
 			
-			String ontologyId = name.getOntologyId();
+			String ontologyId = this.idService.getOntologyIdForAcronym(name);
 			
 			if(StringUtils.isBlank(ontologyId)){
 				//not found
