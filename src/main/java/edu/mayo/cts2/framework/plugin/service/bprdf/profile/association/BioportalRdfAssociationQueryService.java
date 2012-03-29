@@ -94,8 +94,7 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 			if(codeSystemVersion != null){
 				if(StringUtils.isNotBlank(codeSystemVersion.getName())){
 					CodeSystemVersionName name = CodeSystemVersionName.parse(codeSystemVersion.getName());
-					String ontologyId = idService.getOntologyIdForId(name.getId());
-					parameters.put("restrictToGraph", ontologyId);
+					parameters.put("restrictToGraph", name.getAcronym());
 					parameters.put("restrictToCodeSystemVersion", codeSystemVersion.getName());
 
 				}
@@ -180,8 +179,8 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 		if(codeSystemVersion != null){
 			if(StringUtils.isNotBlank(codeSystemVersion.getName())){
 				CodeSystemVersionName name = CodeSystemVersionName.parse(codeSystemVersion.getName());
-				String ontologyId = idService.getOntologyIdForId(name.getId());
-				parameters.put("restrictToGraph", ontologyId);
+				
+				parameters.put("restrictToGraph", name.getAcronym());
 				parameters.put("restrictToCodeSystemVersion", codeSystemVersion.getName());
 
 			}
@@ -240,8 +239,7 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 		if(codeSystemVersion != null){
 			if(StringUtils.isNotBlank(codeSystemVersion.getName())){
 				CodeSystemVersionName name = CodeSystemVersionName.parse(codeSystemVersion.getName());
-				String ontologyId = idService.getOntologyIdForId(name.getId());
-				parameters.put("restrictToGraph", ontologyId);
+				parameters.put("restrictToGraph", name.getAcronym());
 				parameters.put("restrictToCodeSystemVersion", codeSystemVersion.getName());
 
 			}
