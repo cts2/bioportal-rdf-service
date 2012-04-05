@@ -64,7 +64,8 @@ public class EntityDirectoryEntryCallback implements
 	public void afterBinding(EntityDirectoryEntry bindingResult,
 			CallbackContext context) {
 
-		String ontologyId = (String) context.getQueryParams().get("restrictToGraph");
+		String acronym = (String) context.getQueryParams().get("restrictToGraph");
+		String ontologyId = idService.getOntologyIdForAcronym(acronym);
 		String codeSystemVersion_name= (String) context.getQueryParams().get("restrictToCodeSystemVersion");
 		String id = idService.getCurrentIdForOntologyId(ontologyId);
 		bindingResult.addKnownEntityDescription(getDescriptionInCodeSystem(ontologyId, id, codeSystemVersion_name));
