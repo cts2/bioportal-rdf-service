@@ -23,7 +23,6 @@ import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
-import edu.mayo.cts2.framework.model.entity.EntityList;
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
@@ -52,11 +51,9 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 
 	@Resource
 	private RdfDao rdfDao;
+	
 	@Resource 
 	private IdService idService;
-
-
-
 
 	/* (non-Javadoc)
 	 * @see edu.mayo.cts2.framework.service.profile.QueryService#getResourceSummaries(edu.mayo.cts2.framework.service.profile.ResourceQuery, edu.mayo.cts2.framework.model.core.SortCriteria, edu.mayo.cts2.framework.model.command.Page)
@@ -64,6 +61,7 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 	@Override
 	public DirectoryResult<AssociationDirectoryEntry> getResourceSummaries(
 			AssociationQuery query, SortCriteria sortCriteria, Page page) {
+		
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put(LIMIT, page.getMaxToReturn()+1);
 		parameters.put(OFFSET, page.getStart());
@@ -106,9 +104,7 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 			addRestriction("restrictToSourceOrTarget", restrictions.getSourceOrTargetEntity(), parameters);
 
 		}
-		
-		
-		
+
 		List<AssociationDirectoryEntry> results;
 		
 			results = rdfDao.selectForList(
@@ -147,8 +143,7 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 	@Override
 	public DirectoryResult<Association> getResourceList(AssociationQuery query,
 			SortCriteria sortCriteria, Page page) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/* (non-Javadoc)
@@ -156,15 +151,9 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 	 */
 	@Override
 	public int count(AssociationQuery query) {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new UnsupportedOperationException();
 	}
 	
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getChildrenAssociationsOfEntity(edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId, edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
 	public DirectoryResult<EntityDirectoryEntry> getChildrenAssociationsOfEntity(
 			EntityDescriptionReadId entity, EntityDescriptionQuery query,
 			ResolvedReadContext readContext, Page page) {
@@ -209,21 +198,6 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getChildrenAssociationsOfEntityList(edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId, edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityDirectoryEntry> getChildrenAssociationsOfEntityList(
-			EntityDescriptionReadId entity, EntityDescriptionQuery query,
-			ResolvedReadContext readContext, Page page) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getSourceEntities(edu.mayo.cts2.framework.service.command.restriction.AssociationQueryServiceRestrictions, edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
 	public DirectoryResult<EntityDirectoryEntry> getSourceEntities(
 			AssociationQueryServiceRestrictions associationRestrictions,
 			EntityDescriptionQueryServiceRestrictions entityRestrictions,
@@ -249,10 +223,6 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 		addRestriction("restrictToPredicate", associationRestrictions.getPredicate(), parameters);
 		addRestriction("restrictToSourceOrTarget", associationRestrictions.getSourceOrTargetEntity(), parameters);
 
-		
-		
-
-		
 		List<EntityDirectoryEntry> results;
 		
 		results = rdfDao.selectForList(
@@ -268,90 +238,6 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService im
 	}
 	return new DirectoryResult<EntityDirectoryEntry>(results,!moreResults);
 
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getSourceEntitiesList(edu.mayo.cts2.framework.service.command.restriction.AssociationQueryServiceRestrictions, edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityList> getSourceEntitiesList(
-			AssociationQueryServiceRestrictions associationRestrictions,
-			EntityDescriptionQueryServiceRestrictions entityRestrictions,
-			ResolvedReadContext readContext, Page page) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getTargetEntities(edu.mayo.cts2.framework.service.profile.association.AssociationQuery, edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityDirectoryEntry> getTargetEntities(
-			AssociationQuery associationQuery,
-			EntityDescriptionQuery entityDescriptionQuery,
-			ResolvedReadContext readContext, Page page) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getTargetEntitiesList(edu.mayo.cts2.framework.service.profile.association.AssociationQuery, edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityList> getTargetEntitiesList(
-			AssociationQuery associationQuery,
-			EntityDescriptionQuery entityDescriptionQuery,
-			ResolvedReadContext readContext, Page page) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getAllSourceAndTargetEntities(edu.mayo.cts2.framework.service.profile.association.AssociationQuery, edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityDirectoryEntry> getAllSourceAndTargetEntities(
-			AssociationQuery associationQuery,
-			EntityDescriptionQuery entityDescriptionQuery,
-			ResolvedReadContext readContext, Page page) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getAllSourceAndTargetEntitiesList(edu.mayo.cts2.framework.service.profile.association.AssociationQuery, edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityList> getAllSourceAndTargetEntitiesList(
-			AssociationQuery associationQuery,
-			EntityDescriptionQuery entityDescriptionQuery,
-			ResolvedReadContext readContext, Page page) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getPredicates(edu.mayo.cts2.framework.service.profile.association.AssociationQuery, edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityDirectoryEntry> getPredicates(
-			AssociationQuery associationQuery,
-			EntityDescriptionQuery entityDescriptionQuery,
-			ResolvedReadContext readContext, Page page) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.service.profile.association.AssociationQueryService#getPredicatesList(edu.mayo.cts2.framework.service.profile.association.AssociationQuery, edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery, edu.mayo.cts2.framework.model.command.ResolvedReadContext, edu.mayo.cts2.framework.model.command.Page)
-	 */
-	@Override
-	public DirectoryResult<EntityList> getPredicatesList(
-			AssociationQuery associationQuery,
-			EntityDescriptionQuery entityDescriptionQuery,
-			ResolvedReadContext readContext, Page page) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/* (non-Javadoc)

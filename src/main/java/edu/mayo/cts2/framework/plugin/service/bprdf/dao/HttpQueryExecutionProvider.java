@@ -26,7 +26,6 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.dao;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.sparql.engine.http.QueryEngineHTTP;
@@ -38,7 +37,6 @@ import edu.mayo.twinkql.context.QueryExecutionProvider;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("httpQueryExecutionProvider")
 public class HttpQueryExecutionProvider implements QueryExecutionProvider, InitializingBean {
 
 	private String sparqlService = "http://sparql.bioontology.org/sparql/";

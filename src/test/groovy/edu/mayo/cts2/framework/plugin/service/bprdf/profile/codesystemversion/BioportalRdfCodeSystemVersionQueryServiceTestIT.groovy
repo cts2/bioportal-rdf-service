@@ -116,7 +116,7 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 	void TestGetResourceSummariesWithCodeSystemRestriction(){
 		def dir = query.getResourceSummaries(
 			[
-				getRestrictions:{ new  CodeSystemVersionQueryServiceRestrictions(codeSystem: ModelUtils.nameOrUriFromName("GO-1070"))},
+				getRestrictions:{ new  CodeSystemVersionQueryServiceRestrictions(codeSystem: ModelUtils.nameOrUriFromName("GO"))},
 				getFilterComponent:{[] as Set}			
 			] as CodeSystemVersionQuery,null,new Page())
 		

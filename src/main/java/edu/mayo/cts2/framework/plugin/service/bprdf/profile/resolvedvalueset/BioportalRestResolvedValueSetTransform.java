@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import org.ncbo.stanford.bean.response.SuccessBean;
 import org.ncbo.stanford.bean.search.OntologyHitBean;
 import org.ncbo.stanford.bean.search.SearchBean;
+import org.ncbo.stanford.bean.search.SearchResultListBean;
 import org.ncbo.stanford.util.paginator.impl.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -29,39 +30,43 @@ public class BioportalRestResolvedValueSetTransform {
 		
 		List<Page> pages = (List) successBean.getData();
 		for(Page p : pages){
-			Iterator<List> itr = p.getContents().iterator();
+			SearchResultListBean searchResults = (SearchResultListBean) p.getContents();
+			
+			List<Object> contents = (List<Object>) searchResults.get(0);
+			
+			Iterator<Object> itr = contents.iterator();
+			
 			while(itr.hasNext()){
-				List bean = itr.next();
-				for(Object hit : bean){
-					EntitySynopsis entry = new EntitySynopsis();
-					
-					SearchBean searchBean = (SearchBean)hit;
-					if(searchBean == null || searchBean instanceof OntologyHitBean){
-						continue;
-					}
-					
-					String ontologyId = Integer.toString(searchBean.getOntologyId());
-					String id = Integer.toString(searchBean.getOntologyVersionId());
-					String entityName = searchBean.getConceptIdShort();
-					
-					String about = searchBean.getConceptId();
-					
-					Assert.hasText(about, "Entity:" + searchBean.getConceptIdShort() + " has no URI.");
+				SearchBean searchBean = (SearchBean) itr.next();
 
-					entry.setUri(about);
-					entry.setName(entityName);
-					entry.setNamespace("ns");
-					
-					entry.setDesignation(searchBean.getPreferredName());
-					
-					entry.setHref(
-							this.entitySynopsisHrefBuilder.buildHref(
-									ontologyId, 
-									id, 
-									entityName));
-					
-					returnList.add(entry);
+				EntitySynopsis entry = new EntitySynopsis();
+
+				if(searchBean == null || searchBean instanceof OntologyHitBean){
+					continue;
 				}
+				
+				String ontologyId = Integer.toString(searchBean.getOntologyId());
+				String id = Integer.toString(searchBean.getOntologyVersionId());
+				String entityName = searchBean.getConceptIdShort();
+				
+				String about = searchBean.getConceptId();
+				
+				Assert.hasText(about, "Entity:" + searchBean.getConceptIdShort() + " has no URI.");
+
+				entry.setUri(about);
+				entry.setName(entityName);
+				entry.setNamespace("ns");
+				
+				entry.setDesignation(searchBean.getPreferredName());
+				
+				entry.setHref(
+						this.entitySynopsisHrefBuilder.buildHref(
+								ontologyId, 
+								id, 
+								entityName));
+				
+				returnList.add(entry);
+
 			}
 		}
 		

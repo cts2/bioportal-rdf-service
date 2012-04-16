@@ -6,9 +6,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.xerces.util.XMLChar;
 import org.ncbo.stanford.bean.response.SuccessBean;
 import org.ncbo.stanford.bean.search.OntologyHitBean;
 import org.ncbo.stanford.bean.search.SearchBean;
+import org.ncbo.stanford.bean.search.SearchResultListBean;
 import org.ncbo.stanford.util.paginator.impl.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -18,6 +21,7 @@ import edu.mayo.cts2.framework.model.core.CodeSystemReference;
 import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
 import edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem;
 import edu.mayo.cts2.framework.model.core.NameAndMeaningReference;
+import edu.mayo.cts2.framework.model.core.ScopedEntityName;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
@@ -40,50 +44,99 @@ public class BioportalRestEntityDescriptionTransform {
 		
 		List<Page> pages = (List) successBean.getData();
 		for(Page p : pages){
-			Iterator<List> itr = p.getContents().iterator();
+			SearchResultListBean searchResults = (SearchResultListBean) p.getContents();
+			
+			List<Object> contents = (List<Object>) searchResults.get(0);
+			
+			Iterator<Object> itr = contents.iterator();
+			
 			while(itr.hasNext()){
-				List bean = itr.next();
-				for(Object hit : bean){
-					EntityDirectoryEntry entry = new EntityDirectoryEntry();
-					
-					SearchBean searchBean = (SearchBean)hit;
-					if(searchBean == null || searchBean instanceof OntologyHitBean){
-						continue;
-					}
-					
-					String ontologyId = Integer.toString(searchBean.getOntologyId());
-					String id = Integer.toString(searchBean.getOntologyVersionId());
-					String entityName = searchBean.getConceptIdShort();
-					
-					String about = searchBean.getConceptId();
-					
-					Assert.hasText(about, "Entity:" + searchBean.getConceptIdShort() + " has no URI.");
-					
-					entry.setAbout(about);
-					entry.setHref(this.getEntityHref(ontologyId, id, entityName));
-					
-					DescriptionInCodeSystem description = new DescriptionInCodeSystem();
-					
-					CodeSystemVersionReference ref = this.getCodeSystemVersionReference(ontologyId, id);
-					
-					//If this is null, no info was found about that id in the triple store.
-					//Probably a REST/Triplestore content mismatch.
-					if(ref == null){
-						continue;
-					}
-					
-					description.setDescribingCodeSystemVersion(ref);
-					entry.addKnownEntityDescription(description);
-					entry.getKnownEntityDescription(0).setDesignation(searchBean.getPreferredName());
-					
-					returnList.add(entry);
+				SearchBean searchBean = (SearchBean) itr.next();
+				
+				EntityDirectoryEntry entry = new EntityDirectoryEntry();
+
+				if(searchBean == null || searchBean instanceof OntologyHitBean){
+					continue;
 				}
+				
+				String ontologyId = Integer.toString(searchBean.getOntologyId());
+				String id = Integer.toString(searchBean.getOntologyVersionId());
+				String shortId = searchBean.getConceptIdShort();
+				
+				String about = searchBean.getConceptId();
+				
+				Assert.hasText(about, "Entity:" + searchBean.getConceptIdShort() + " has no URI.");
+				
+				entry.setAbout(about);
+				
+				DescriptionInCodeSystem description = new DescriptionInCodeSystem();
+				
+				CodeSystemVersionReference ref = this.getCodeSystemVersionReference(ontologyId, id);
+				
+				//If this is null, no info was found about that id in the triple store.
+				//Probably a REST/Triplestore content mismatch.
+				if(ref == null){
+					continue;
+				}
+				
+				description.setDescribingCodeSystemVersion(ref);
+				entry.addKnownEntityDescription(description);
+				entry.getKnownEntityDescription(0).setDesignation(searchBean.getPreferredName());
+				
+				String codeSystemName = description.getDescribingCodeSystemVersion().getCodeSystem().getContent();
+				
+				ScopedEntityName scopedEntityName = this.buildScopedEntityName(shortId, codeSystemName);
+				
+				entry.setHref(this.getEntityHref(ontologyId, id, scopedEntityName.getName()));
+				
+				entry.setName(scopedEntityName);
+				
+				returnList.add(entry);
 			}
 		}
 		
 		DirectoryResult<EntityDirectoryEntry> result = new DirectoryResult<EntityDirectoryEntry>(returnList, true);
 		
 		return result;
+	}
+	
+	protected ScopedEntityName buildScopedEntityName(String name, String codeSystemName){
+		ScopedEntityName scopedName = new ScopedEntityName();
+
+		String[] namePartsColon = StringUtils.split(name, ':');
+		String[] namePartsHash = StringUtils.split(name, '#');
+
+		String[] nameParts;
+		if(namePartsColon.length > namePartsHash.length){
+			nameParts = namePartsColon;
+		} else {
+			nameParts = namePartsHash;
+		}
+
+		if(nameParts.length == 1){
+			scopedName.setName(nameParts[0]);
+			scopedName.setNamespace(codeSystemName);
+		} else {
+			boolean isNamespaceValidNCName = 
+					XMLChar.isValidNCName(nameParts[0]);
+			if(isNamespaceValidNCName){
+				scopedName.setNamespace(nameParts[0]);
+			} else {
+				scopedName.setNamespace(codeSystemName);
+			}
+			scopedName.setName(nameParts[1]);	
+		}
+
+		return this.sanitizeNcNameNamespace(scopedName);
+	}
+
+	private ScopedEntityName sanitizeNcNameNamespace(ScopedEntityName scopedName) {
+		if(! XMLChar.isValidNCName(scopedName.getNamespace())){
+			scopedName.setNamespace("ns" + Integer.toString(
+				scopedName.getNamespace().hashCode()));
+		}
+		
+		return scopedName;
 	}
 	
 	protected String getEntityHref(String ontologyId, String id, String entityName){

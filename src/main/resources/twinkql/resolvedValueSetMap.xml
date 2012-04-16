@@ -113,6 +113,10 @@
 	<select id="getAllEntitySynonpsisOfValueSet" resultMap="entitySynonpsisResultMap">
         <![CDATA[
         SELECT DISTINCT ?s ?label ?codeSystemId ?codeSystemVersionId
+        
+        FROM <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata>
+        FROM bpOntologies:globals
+        
               WHERE { 
                 
 		  		 <http://bioportal.bioontology.org/ontologies/#{id}> bpMetadata:isVersionOfVirtualOntology  ?virtualView ;      
@@ -120,10 +124,8 @@
 			         bpMetadata:isVersionOfVirtualOntology ?definitionOfCodeSystem .
 			     ?definitionOfCodeSystem bpMetadata:id ?codeSystemId .
           
-                 GRAPH bpOntologies:#{acronym} {
-			        ?s a owl:Class ;
-			             rdfs:label ?label .
-                 }
+			     ?s a owl:Class ;
+			         rdfs:label ?label .
                          
         }
         LIMIT  #{limit}

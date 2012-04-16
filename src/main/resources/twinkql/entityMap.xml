@@ -53,15 +53,26 @@
 	
 	<select id="getEntityDescriptionByUri" resultMap="entityDescriptionResultMap">
 		<![CDATA[
-		SELECT (<#{uri}> as ?s) ?p ?o ?graph
+		SELECT 
+			(<#{uri}> as ?s) 
+			?p 
+			?o 
+		<test testType="IS_NULL" property="acronym">
+      		?graph
+      	</test>
+      	<test testType="IS_NOT_NULL" property="acronym">
+      		( <http://bioportal.bioontology.org/ontologies/#{acronym}> as ?graph) 
+      		
+      		FROM bpOntologies:#{acronym}
+      	</test>
+      		
 		WHERE {		
-			<isNotNull property="ontologyId">
-      		GRAPH ?graph {
-      		</isNotNull>
+			<test testType="IS_NULL" property="acronym">
+      		GRAPH ?graph
+      		</test>
+      		{
       			<#{uri}> ?p ?o .
-      		<isNotNull property="ontologyId">
       		}
-      		</isNotNull>
 		} 
 		]]>
 	</select>

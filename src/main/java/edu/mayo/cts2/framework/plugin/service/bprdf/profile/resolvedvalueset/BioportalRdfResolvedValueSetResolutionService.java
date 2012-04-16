@@ -89,10 +89,17 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 		String id = identifier.getLocalName();
 		String ontologyId = this.idService.getOntologyIdForId(identifier.getLocalName());
 		String acronym = identifier.getValueSet().getName();
+		String expectedAcronym = this.idService.getAcronymForOntologyId(ontologyId);
+		
+		//acronym mismatch - this is caused if the 'valueSet' restriction is wrong.
+		if(! acronym.equals(expectedAcronym)){
+			return null;
+		}
 		
 		if(CollectionUtils.isEmpty(filterComponent)){
 			
 			Map<String,Object> parameters = new HashMap<String,Object>();
+			parameters.put("ontologyId", ontologyId);
 			parameters.put("id", id);
 			parameters.put("acronym", acronym);
 			

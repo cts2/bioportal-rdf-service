@@ -132,11 +132,17 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 		
 		if(StringUtils.isNotBlank(ontologyId)){
 			parameters.put("ontologyId", ontologyId);
+			
+			String codeSystemName = this.idService.getAcronymForOntologyId(ontologyId);
+			parameters.put("acronym", codeSystemName);
 		}
 
-		return this.rdfDao.selectForObject(ENTITY_NAMESPACE, GET_ENTITY_BY_URI,
+		long start = System.currentTimeMillis();
+		EntityDescription entity = this.rdfDao.selectForObject(ENTITY_NAMESPACE, GET_ENTITY_BY_URI,
 				parameters, EntityDescription.class);
+		System.out.println("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
 
+		return entity;
 	}
 	
 	private String getUriFromCode(String ontologyId, String code){
@@ -147,8 +153,10 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 		filter.setMatchValue(code);
 		filters.add(filter);
 
+		long start = System.currentTimeMillis();
 		SuccessBean success = bioportalRestClient.searchEntities(ontologyId,
 				filters, new Page());
+		System.out.println("Query REST time: " + ( System.currentTimeMillis() - start ));
 
 		return this.bioportalRestTransform.successBeanToEntityUri(success);
 	}

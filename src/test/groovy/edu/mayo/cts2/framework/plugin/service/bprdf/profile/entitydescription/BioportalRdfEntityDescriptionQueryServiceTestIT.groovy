@@ -22,7 +22,7 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	
 	@Resource
 	Cts2Marshaller marshaller
-	
+
 	@Resource
 	BioportalRdfEntityDescriptionQueryService query
 	
@@ -30,6 +30,7 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	void TestGetResourceSummaries(){
 		def dir = query.getResourceSummaries(
 			[
+			getEntitiesFromAssociationsQuery:{null},
 			getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(
@@ -49,11 +50,38 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 		}
 	}
 	
+	@Test
+	void TestGetResourceSummariesHaveNameAndNamespace(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{null},
+				getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"software",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+						)] as Set
+				}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			assertNotNull it.name
+			assertNotNull it.name.name
+			assertNotNull it.name.namespace
+		}
+	}
+	
 	
 	@Test
 	void TestGetResourceSummariesValid(){
 		def dir = query.getResourceSummaries(
 			[
+			getEntitiesFromAssociationsQuery:{null},
 			getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(
@@ -74,6 +102,7 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	void TestGetResourceSummariesHaveHrefs(){
 		def dir = query.getResourceSummaries(
 			[
+			getEntitiesFromAssociationsQuery:{null},
 			getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(

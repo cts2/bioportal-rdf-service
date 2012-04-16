@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
@@ -48,11 +49,15 @@ import edu.mayo.cts2.framework.model.service.core.Query;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
-import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.association.BioportalRdfAssociationQueryService;
+import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions.HierarchyRestriction;
+import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions.HierarchyRestriction.HierarchyType;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
+import edu.mayo.cts2.framework.service.profile.entitydescription.EntitiesFromAssociationsQuery.EntitiesFromAssociations;
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery;
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQueryService;
+import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId;
 
 /**
  * The Class BioportalRdfCodeSystemReadService.
@@ -70,6 +75,9 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 	private BioportalRestEntityDescriptionTransform bioportalRestTransform;
 	
 	@Resource
+	private BioportalRdfAssociationQueryService bioportalRdfAssociationQueryService;
+	
+	@Resource
 	private IdService idService;
 
 	@Override
@@ -77,6 +85,14 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 			EntityDescriptionQuery query, 
 			SortCriteria sortCriteria, 
 			Page page) {
+		
+		if(query.getEntitiesFromAssociationsQuery() != null){
+			return this.handleAssociationsQuery(query, sortCriteria, page);
+		}
+
+		if(this.isHierarchyQuery(query)){
+			return handleHierarchyQuery(query, sortCriteria, page);
+		}
 		
 		String ontologyId = null;
 		
@@ -96,17 +112,69 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 				this.bioportalRestClient.searchEntities(ontologyId, query.getFilterComponent(), page));
 	}
 
+	private DirectoryResult<EntityDirectoryEntry> handleHierarchyQuery(
+			EntityDescriptionQuery query, 
+			SortCriteria sortCriteria, 
+			Page page) {
+
+		HierarchyRestriction hierarchy = query.getRestrictions().getHierarchyRestriction();
+		
+		if(hierarchy.getHierarchyType() != HierarchyType.CHILDREN){
+			throw new UnsupportedOperationException("Only CHILDREN may currently be resolved.");
+		}
+	
+		EntityNameOrURI entity = hierarchy.getEntity();
+		
+		Assert.notNull(query.getRestrictions().getCodeSystemVersion(), "CodeSystemVersion restriction should be set.");
+		
+		EntityDescriptionReadId id = new EntityDescriptionReadId(
+				entity, 
+				query.getRestrictions().getCodeSystemVersion());
+		
+		return this.bioportalRdfAssociationQueryService.getChildrenAssociationsOfEntity(
+				id, 
+				query, 
+				query.getReadContext(), 
+				page);
+	}
+
+	private boolean isHierarchyQuery(EntityDescriptionQuery query) {
+		return 
+				query != null && 
+				query.getRestrictions() != null && 
+				query.getRestrictions().getHierarchyRestriction() != null;
+	}
+	
+
+	private DirectoryResult<EntityDirectoryEntry> handleAssociationsQuery(
+			EntityDescriptionQuery query, 
+			SortCriteria sortCriteria, 
+			Page page) {
+		
+		EntitiesFromAssociations type = 
+			query.getEntitiesFromAssociationsQuery().getEntitiesFromAssociationsType();
+		
+		
+		if(type != EntitiesFromAssociations.SOURCES){
+			throw new UnsupportedOperationException("Only SOURCES can be resolved as Entities.");
+		}
+		
+		return this.bioportalRdfAssociationQueryService.getSourceEntities(
+				query.getEntitiesFromAssociationsQuery().getAssociationQuery().getRestrictions(), 
+				query.getRestrictions(), 
+				query.getReadContext(), 
+				page);
+	}
+
 	@Override
 	public DirectoryResult<EntityDescription> getResourceList(
 			EntityDescriptionQuery query, SortCriteria sortCriteria, Page page) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public int count(EntityDescriptionQuery query) {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -128,35 +196,29 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 		return returnSet;
 	}
 
-
 	@Override
 	public boolean isEntityInSet(EntityNameOrURI entity, Query query,
 			Set<ResolvedFilter> filterComponent,
-			EntityDescriptionQueryServiceRestrictions restrictions,
+			EntityDescriptionQuery restrictions, 
 			ResolvedReadContext readContext) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public EntityReferenceList resolveAsEntityReferenceList(
-			Query query,
+	public EntityReferenceList resolveAsEntityReferenceList(Query query,
 			Set<ResolvedFilter> filterComponent,
-			EntityDescriptionQueryServiceRestrictions restrictions,
+			EntityDescriptionQuery restrictions, 
 			ResolvedReadContext readContext) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public EntityNameOrURIList intersectEntityList(
-			Set<EntityNameOrURI> entities,
-			Query query,
+			Set<EntityNameOrURI> entities, Query query,
 			Set<ResolvedFilter> filterComponent,
-			EntityDescriptionQueryServiceRestrictions restrictions,
+			EntityDescriptionQuery restrictions, 
 			ResolvedReadContext readContext) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

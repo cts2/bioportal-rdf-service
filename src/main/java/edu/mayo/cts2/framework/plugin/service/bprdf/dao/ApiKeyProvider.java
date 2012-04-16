@@ -1,27 +1,15 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.dao;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
 
-import edu.mayo.cts2.framework.core.config.option.Option;
-import edu.mayo.cts2.framework.core.plugin.PluginConfigManager;
-
-@Component("apiKeyProvider")
 public class ApiKeyProvider implements InitializingBean {
 
 	private Log log = LogFactory.getLog(this.getClass());
-
-	public static final String BIOPORTAL_RDF_CONFIG_NAMESPACE = "bioportal-rdf-service";
 	
 	private static final String API_KEY_PROP = "apiKey";
-
-	@Resource
-	private PluginConfigManager pluginConfigManager;
 
 	private String apiKey;
 
@@ -51,14 +39,9 @@ public class ApiKeyProvider implements InitializingBean {
 			return;
 		}
 
-		Option apiKey = this.pluginConfigManager.getPluginConfigProperties(
-				BIOPORTAL_RDF_CONFIG_NAMESPACE).getStringOption(API_KEY_PROP);
-
-		if (apiKey != null
-				&& StringUtils.isNotBlank(apiKey.getOptionValueAsString())) {
+		if (apiKey != null) {
 			log.info("Using APIKEY from Configuration File.");
-			this.apiKey = apiKey.getOptionValueAsString();
-
+			
 			return;
 		}
 

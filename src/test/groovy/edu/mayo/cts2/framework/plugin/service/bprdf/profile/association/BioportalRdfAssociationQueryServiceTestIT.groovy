@@ -5,6 +5,7 @@ import static org.junit.Assert.*
 import javax.annotation.Resource
 import javax.xml.transform.stream.StreamResult
 
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.test.context.ContextConfiguration
@@ -20,6 +21,7 @@ import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDesc
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(value="classpath:/bioportal-rdf-service-test-context.xml")
+@Ignore("This seems to be killing the SPARQL endpoint... need to check with NCBO.")
 class BioportalRdfAssociationQueryServiceTestIT {
 	
 	@Resource

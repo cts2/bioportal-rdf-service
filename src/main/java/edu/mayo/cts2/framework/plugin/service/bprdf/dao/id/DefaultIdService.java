@@ -92,7 +92,7 @@ public class DefaultIdService implements IdService, InitializingBean {
 				this.ontologyIdToAcronym.put(ontologyId, acronym);
 			} else {
 				String foundAcronym = 
-					this.ontologyIdToAcronym.get(acronym);
+					this.ontologyIdToAcronym.get(ontologyId);
 				
 				if(! acronym.equals(foundAcronym)){
 						log.warn("Found multiple Acronyms ("+foundAcronym+","+acronym+") for the same ontologyId ("+ontologyId+").");

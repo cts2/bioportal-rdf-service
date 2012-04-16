@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>edu.mayo.cts2.framework</groupId>
 		<artifactId>base-service-plugin</artifactId>
-		<version>0.6.5-SNAPSHOT</version>
+		<version>0.7.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>bioportal-rdf-service</artifactId>
@@ -133,6 +133,12 @@
 			<artifactId>service</artifactId>
 			<version>${develpment.framework.version}</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.kxml</groupId>
+			<artifactId>kxml2</artifactId>
+			<version>2.3.0</version>
 		</dependency>
 
 		<dependency>
@@ -268,6 +274,30 @@
 			<id>maven-restlet</id>
 			<name>Public online Restlet repository</name>
 			<url>http://maven.restlet.org</url>
+		</repository>
+		
+		<repository>
+			<id>edu.informatics.maven.snapshot</id>
+			<name>Informatics Maven Snapshot Repository</name>
+			<url>http://informatics.mayo.edu/maven/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>edu.informatics.maven.releases</id>
+			<name>Informatics Maven Release Repository</name>
+			<url>http://informatics.mayo.edu/maven/content/repositories/releases</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 

@@ -198,6 +198,11 @@ public class BioportalRestClient implements InitializingBean {
 		xmlSerializer.setMode(XStream.NO_REFERENCES);
 		
 		xmlSerializer.alias("page", Page.class);
+		xmlSerializer.alias("numHitsTotal", Integer.class);
+		xmlSerializer.alias("numResultsPage", Integer.class);
+		xmlSerializer.alias("pageSize", Integer.class);
+		xmlSerializer.alias("pageNum", Integer.class);
+		
 		xmlSerializer.alias("searchResultList", List.class);
 		xmlSerializer.alias("ontologyHitList", List.class);
 		xmlSerializer.alias("ontologyHitBean", OntologyHitBean.class);
