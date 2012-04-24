@@ -27,6 +27,8 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.model.core.URIAndEntityName;
 import edu.mayo.cts2.framework.model.entity.EntityDescription;
 import edu.mayo.cts2.framework.model.entity.EntityDescriptionBase;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
@@ -43,6 +45,9 @@ public class EntityDescriptionCallback implements AfterResultBinding<EntityDescr
 	
 	@Resource
 	private BioportalRestEntityDescriptionTransform bioportalRestEntityDescriptionTransform;
+	
+	@Resource
+	private UrlConstructor urlConstructor;
 	
 	@Resource
 	private IdService idService;
@@ -63,6 +68,14 @@ public class EntityDescriptionCallback implements AfterResultBinding<EntityDescr
 		
 		base.setDescribingCodeSystemVersion(
 				this.bioportalRestEntityDescriptionTransform.getCodeSystemVersionReference(ontologyId, id));
+		
+		for(URIAndEntityName parent : base.getParent()){
+			parent.setHref(
+					this.urlConstructor.createEntityUrl(
+							base.getDescribingCodeSystemVersion().getCodeSystem().getContent(),
+							base.getDescribingCodeSystemVersion().getVersion().getContent(),
+							parent.getName()));
+		}
 	}
 
 }

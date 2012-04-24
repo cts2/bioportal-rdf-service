@@ -126,6 +126,25 @@ public class BioportalRestClient implements InitializingBean {
 		return successBean;
 	}
 	
+	public SuccessBean getAllEntitiesByOntologyId(String ontologyId, edu.mayo.cts2.framework.model.command.Page page){
+		String xml = this.doGetAllEntitiesByOntologyId(ontologyId, page);
+		
+		SuccessBean successBean = (SuccessBean) this.xstream.fromXML(xml);
+		
+		return successBean;
+	}
+	
+	protected String doGetAllEntitiesByOntologyId(String ontologyId, edu.mayo.cts2.framework.model.command.Page page){
+		String 
+			url = "http://rest.bioontology.org/bioportal/concepts/" + ontologyId + "/all" +
+			"?pagenum=" + page.getPage() +
+			"&pagesize=" + page.getMaxToReturn();
+
+		String xml = this.callBioportal(url);
+
+		return xml;
+	}
+	
 	protected String doSearchEntities(Collection<String> ontologyIds, ResolvedFilter filter, edu.mayo.cts2.framework.model.command.Page page){
 		String url = "http://rest.bioontology.org/bioportal/search/" + filter.getMatchValue() +
 			"?pagenum=" + (page.getPage() + 1) +

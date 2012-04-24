@@ -45,10 +45,12 @@ import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.core.VersionTagReference;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDescription;
+import edu.mayo.cts2.framework.model.entity.EntityDescriptionBase;
 import edu.mayo.cts2.framework.model.entity.EntityList;
 import edu.mayo.cts2.framework.model.entity.EntityListEntry;
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
+import edu.mayo.cts2.framework.model.util.ModelUtils;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
@@ -184,7 +186,22 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 	public EntityReference availableDescriptions(
 			EntityNameOrURI entityId,
 			ResolvedReadContext readContext) {
-		throw new UnsupportedOperationException();
+		EntityDescriptionReadId id = new EntityDescriptionReadId(entityId, null);
+		
+		EntityDescription entity = this.read(id, readContext);
+		
+		return this.entityDescriptionToReference(entity);
+	}
+
+	private EntityReference entityDescriptionToReference(
+			EntityDescription entity) {
+		EntityDescriptionBase base = ModelUtils.getEntity(entity);
+		
+		EntityReference reference = new EntityReference();
+		reference.setAbout(base.getAbout());
+		reference.setName(base.getEntityID());
+		
+		return reference;
 	}
 
 	@Override

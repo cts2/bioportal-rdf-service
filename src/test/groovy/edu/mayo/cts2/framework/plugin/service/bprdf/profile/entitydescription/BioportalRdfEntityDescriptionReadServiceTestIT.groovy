@@ -10,7 +10,9 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
+import edu.mayo.cts2.framework.model.core.EntityReference
 import edu.mayo.cts2.framework.model.core.ScopedEntityName
+import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI
 import edu.mayo.cts2.framework.model.util.ModelUtils
 import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId
 
@@ -108,5 +110,40 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 		
 	}
 	
+	@Test
+	void TestReadByNameHasParent() {
+	
+		def name = new ScopedEntityName(name:"Hospital")
+		def csv = ModelUtils.nameOrUriFromName("ICNP-45766")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assert 1 <= ed.namedEntity.parent.length
+	}
+	
+	@Test
+	void TestReadByNameParentComplete() {
+	
+		def name = new ScopedEntityName(name:"Hospital")
+		def csv = ModelUtils.nameOrUriFromName("ICNP-45766")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assert 1 <= ed.namedEntity.parent.length
+		
+		ed.namedEntity.parent.each {
+			assertNotNull it.name
+			assertNotNull it.namespace
+			assertNotNull it.href	
+		}
+	}
+	
+	@Test
+	void TestAvailableDescriptions() {
+		def name = new ScopedEntityName(name:"285487006", namespace:"SNOMEDCT")
+		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
+		
+		assertNotNull ed
+		
+		assert ed instanceof EntityReference
+	}
 	
 }

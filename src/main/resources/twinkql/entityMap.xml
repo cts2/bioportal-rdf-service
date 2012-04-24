@@ -4,6 +4,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
+	<perRowResultMap id="entityDirectoryEntryResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry">
+		<rowMap var="s" varType="uri"  beanProperty="about"/>
+		<rowMap var="s" varType="localName" beanProperty="name.name"/>
+		<rowMap var="s" varType="namespace" beanProperty="name.namespace" modifier="spring:namespaceModifier" />
+		<rowMap var="label" varType="literalValue" beanProperty="knownEntityDescriptionAsReference.designation" />
+	</perRowResultMap>
+	
 	<compositeResultMap id="entityDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.entity.EntityDescription"
 		afterMap="spring:entityDescriptionCallback">
@@ -21,6 +29,8 @@
 		<tripleMap var="o" varType="localName" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityTypeAsReference[0].name"/>
 		<tripleMap var="o" varType="uri" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityTypeAsReference[0].uri"/>
 		<tripleMap var="o" varType="namespace" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityTypeAsReference[0].namespace" modifier="spring:namespaceModifier" />
+		<tripleMap var="o" varType="localName" predicateUri="rdfs:subClassOf" beanProperty="namedEntity.parentAsReference[].name" />
+		<tripleMap var="o" varType="uri" predicateUri="rdfs:subClassOf" beanProperty="namedEntity.parentAsReference[].namespace" modifier="spring:namespaceModifier" />
 	</compositeResultMap>
 	
 	<compositeResultMap id="definitionResultMap" 
@@ -75,6 +85,33 @@
       		}
 		} 
 		]]>
+	</select>
+	
+	<select id="getAllEntityDescriptions" resultMap="entityDirectoryEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT ?s ?label
+        
+        <test testType="IS_NOT_NULL" property="acronym">
+        ( ?graph as #{acronym} )
+        FROM <http://bioportal.bioontology.org/ontologies/#{acronym}>
+        FROM bpOntologies:globals
+        </test>
+        
+              WHERE { 
+
+				<test testType="IS_NULL" property="acronym">
+			    GRAPH ?graph {
+			   	</test>
+		    		?s a owl:Class ;
+		    			bpMetadata:prefLabel ?label .
+		        <test testType="IS_NULL" property="acronym">
+		        }
+		        </test>
+       
+        	}
+        LIMIT  #{limit}
+	    OFFSET #{offset}
+        ]]>
 	</select>
 
 </sparqlMap>

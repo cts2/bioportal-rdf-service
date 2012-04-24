@@ -51,6 +51,25 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	}
 	
 	@Test
+	void TestGetResourceSummariesNoFilterNoCSV(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{null},
+			getFilterComponent:{null}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			assertTrue 1 <= it.knownEntityDescriptionCount
+		}
+	}
+	
+	@Test
 	void TestGetResourceSummariesHaveNameAndNamespace(){
 		def dir = query.getResourceSummaries(
 			[

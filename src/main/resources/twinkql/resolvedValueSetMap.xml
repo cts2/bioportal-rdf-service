@@ -52,9 +52,9 @@
           	?defintionOfCodeSystemVersion
           	?definitionOfCodeSystem
           	( ?resolvedValueSetId as ?resolvedValueSetLocalName)
-          	( CONCAT( ?acronym, "-", ?valueSetId ) as ?valueSetName ) 
+          	( ?acronym as ?valueSetName ) 
           	( CONCAT( ?acronym, "-", ?resolvedValueSetId ) as ?valueSetDefinitionName ) 
-          	( CONCAT( ?codeSystemVersionAcronym, "-", ?codeSystemId ) as ?codeSystemName )
+          	( CONCAT( ?codeSystemVersionAcronym ) as ?codeSystemName )
           	( CONCAT( ?codeSystemVersionAcronym, "-", ?codeSystemVersionId ) as ?codeSystemVersionName )
           	( CONCAT( ?resolvedValueSet, "/", "resolution" ) as ?resolvedValueSetUri )
 	   WHERE {
@@ -114,20 +114,22 @@
         <![CDATA[
         SELECT DISTINCT ?s ?label ?codeSystemId ?codeSystemVersionId
         
-        FROM <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata>
+        FROM <http://bioportal.bioontology.org/ontologies/#{acronym}>
         FROM bpOntologies:globals
         
               WHERE { 
                 
-		  		 <http://bioportal.bioontology.org/ontologies/#{id}> bpMetadata:isVersionOfVirtualOntology  ?virtualView ;      
-			         bpMetadata:id ?codeSystemVersionId ;
-			         bpMetadata:isVersionOfVirtualOntology ?definitionOfCodeSystem .
-			     ?definitionOfCodeSystem bpMetadata:id ?codeSystemId .
-          
-			     ?s a owl:Class ;
-			         rdfs:label ?label .
+                 GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata> {
+			  		 <http://bioportal.bioontology.org/ontologies/#{id}> bpMetadata:isVersionOfVirtualOntology  ?virtualView ;      
+				         bpMetadata:id ?codeSystemVersionId ;
+				         bpMetadata:isVersionOfVirtualOntology ?definitionOfCodeSystem .
+				     ?definitionOfCodeSystem bpMetadata:id ?codeSystemId .
+			     }
+			     
+		    	 ?s a owl:Class ;
+		        	 rdfs:label ?label .
                          
-        }
+        	}
         LIMIT  #{limit}
 	    OFFSET #{offset}
         ]]>

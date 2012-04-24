@@ -23,11 +23,15 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -46,6 +50,8 @@ import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURIList;
 import edu.mayo.cts2.framework.model.service.core.Query;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
@@ -68,6 +74,12 @@ import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDesc
 public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 	implements EntityDescriptionQueryService {
 	
+	private final static String ENTITY_NAMESPACE = "entity";
+	private final static String GET_ALL_ENTITY_DESCRIPTIONS = "getAllEntityDescriptions";
+	
+	private final static String LIMIT = "limit";
+	private final static String OFFSET = "offset";
+
 	@Resource
 	private BioportalRestClient bioportalRestClient;
 	
@@ -76,6 +88,9 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 	
 	@Resource
 	private BioportalRdfAssociationQueryService bioportalRdfAssociationQueryService;
+	
+	@Resource
+	private RdfDao rdfDao;
 	
 	@Resource
 	private IdService idService;
@@ -95,21 +110,49 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 		}
 		
 		String ontologyId = null;
+		String acronym = null;
 		
 		if(query != null && 
 				query.getRestrictions() != null && 
 				query.getRestrictions().getCodeSystemVersion() != null){
 			
-			String id = 
+			CodeSystemVersionName csvName = 
 					this.idService.getCodeSystemVersionNameForName(
-							query.getRestrictions().getCodeSystemVersion().getName()).getId();
+							query.getRestrictions().getCodeSystemVersion().getName());
+			
+			String id = csvName.getId();
+			acronym = csvName.getAcronym();
 			
 			ontologyId = this.idService.getOntologyIdForId(id);
 			
 		}
-
-		return this.bioportalRestTransform.successBeanToEntitySummaries(
-				this.bioportalRestClient.searchEntities(ontologyId, query.getFilterComponent(), page));
+		
+		if(CollectionUtils.isEmpty(query.getFilterComponent())){
+			/*
+			Map<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put(LIMIT, page.getMaxToReturn()+1);
+			parameters.put(OFFSET, page.getStart());
+			parameters.put("acronym", acronym);
+			
+			List<EntityDirectoryEntry> results = this.rdfDao.selectForList(
+					ENTITY_NAMESPACE,
+					GET_ALL_ENTITY_DESCRIPTIONS, 
+					parameters, 
+					EntityDirectoryEntry.class);
+			
+			boolean moreResults = results.size() > page.getMaxToReturn();
+			
+			if(moreResults){
+				results.remove(results.size() - 1);
+			}
+			*/
+			
+			return this.bioportalRestTransform.successBeanToEntitySummaries(
+					this.bioportalRestClient.getAllEntitiesByOntologyId(ontologyId, page));
+		} else {
+			return this.bioportalRestTransform.successBeanToEntitySummaries(
+					this.bioportalRestClient.searchEntities(ontologyId, query.getFilterComponent(), page));
+		}
 	}
 
 	private DirectoryResult<EntityDirectoryEntry> handleHierarchyQuery(
