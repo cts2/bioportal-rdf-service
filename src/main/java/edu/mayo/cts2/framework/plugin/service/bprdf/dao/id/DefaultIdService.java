@@ -24,6 +24,7 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.dao.id;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -48,6 +50,9 @@ public class DefaultIdService implements IdService, InitializingBean {
 	
 	protected final Log log = LogFactory.getLog(getClass().getName());
 	
+	private final static String BIOPORTAL_PURL_URI = "http://purl.bioontology.org/ontology/";
+	private final static String BIOPORTAL_ONTOLOGIES_URI = "http://bioportal.bioontology.org/ontologies/";
+	
 	private final static String UTILITY_NAMESPACE = "util";
 	private final static String GET_IDS = "getIds";
 	
@@ -61,6 +66,8 @@ public class DefaultIdService implements IdService, InitializingBean {
 	private Map<String,CodeSystemVersionName> idToCsvName = new HashMap<String,CodeSystemVersionName>();
 	private Map<String,String> acronymToOntologyId = new HashMap<String,String>();
 	private Map<String,String> ontologyIdToAcronym = new HashMap<String,String>();
+	private Map<String,String> acronymToUri = new HashMap<String,String>();
+	private Map<String,String> uriToAcronym = new HashMap<String,String>();
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -70,13 +77,14 @@ public class DefaultIdService implements IdService, InitializingBean {
 	//ontologyId = CodeSystem
 	public void afterPropertiesSet() throws Exception {
 		List<IdResult> result = 
-				this.twinkqlTemplate.selectForList(UTILITY_NAMESPACE, GET_IDS, null, IdResult.class);
+			this.twinkqlTemplate.selectForList(UTILITY_NAMESPACE, GET_IDS, null, IdResult.class);
 		
 		for(IdResult idResult : result){
 			String id = idResult.getId();
 			String ontologyId = idResult.getOntologyId();
 			String acronym = idResult.getAcronym();
-			
+			String uri = BIOPORTAL_ONTOLOGIES_URI + acronym;
+
 			if(! this.acronymToOntologyId.containsKey(acronym)){
 				this.acronymToOntologyId.put(acronym, ontologyId);
 			} else {
@@ -119,6 +127,9 @@ public class DefaultIdService implements IdService, InitializingBean {
 			CodeSystemVersionName csvName = new CodeSystemVersionName(acronym, id);
 			this.csvNameToCsv.put(csvName.toString(), csvName);
 			this.idToCsvName.put(id, csvName);
+			
+			this.acronymToUri.put(acronym, uri);
+			this.uriToAcronym.put(uri, acronym);
 		}
 	}
 
@@ -175,6 +186,29 @@ public class DefaultIdService implements IdService, InitializingBean {
 	@Override
 	public CodeSystemVersionName getCodeSystemVersionNameForId(String id) {
 		return this.idToCsvName.get(id);
+	}
+
+	@Override
+	public String getUriForAcronym(String acronym) {
+		return this.acronymToUri.get(acronym);
+	}
+	
+	@Override
+	public String getAcronymForUri(String uri) {
+		//try adding a '/' if we don't find it
+		for(String addition : Arrays.asList("", "/")){
+			String acronym = this.uriToAcronym.get(uri+addition);
+			if(acronym != null){
+				return acronym;
+			}
+		}
+		
+		if(uri.startsWith(BIOPORTAL_PURL_URI)){
+			uri = StringUtils.removeEnd(uri, "/");
+			return StringUtils.substringAfterLast(uri, "/");
+		} else {
+			return null;	
+		}
 	}
 	
 }

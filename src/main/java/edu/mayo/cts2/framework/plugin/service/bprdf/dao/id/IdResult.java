@@ -33,7 +33,7 @@ public class IdResult {
 	private String ontologyId;
 	private String id;
 	private String acronym;
-	
+
 	public String getOntologyId() {
 		return ontologyId;
 	}
@@ -57,4 +57,5 @@ public class IdResult {
 	public void setAcronym(String acronym) {
 		this.acronym = acronym;
 	}
+
 }

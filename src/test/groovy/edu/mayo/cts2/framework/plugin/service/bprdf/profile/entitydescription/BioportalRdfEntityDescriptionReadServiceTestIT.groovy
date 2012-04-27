@@ -137,6 +137,26 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	}
 	
 	@Test
+	void TestAvailableDescriptionsNotFound() {
+		def name = new ScopedEntityName(name:"___INVALID___", namespace:"___INVALID___")
+		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
+		
+		assertNull ed
+	}
+	
+	@Test
+	void TestAvailableDescriptionsHaveNameAndUri() {
+		def name = new ScopedEntityName(name:"285487006", namespace:"SNOMEDCT")
+		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
+		
+		assertNotNull ed
+		
+		assertNotNull ed.about
+		assertNotNull ed.name.name;
+		assertNotNull ed.name.namespace;
+	}
+	
+	@Test
 	void TestAvailableDescriptions() {
 		def name = new ScopedEntityName(name:"285487006", namespace:"SNOMEDCT")
 		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
@@ -144,6 +164,48 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 		assertNotNull ed
 		
 		assert ed instanceof EntityReference
+	}
+	
+	@Test
+	void TestAvailableDescriptionsHaveDescriptions() {
+		def name = new ScopedEntityName(name:"285487006", namespace:"SNOMEDCT")
+		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
+		
+		assertEquals ed.knownEntityDescriptionCount == 1
+	}
+	
+	@Test
+	void TestAvailableDescriptionsHaveDescriptionsMoreThanOne() {
+		def ed = read.availableDescriptions( 
+			new EntityNameOrURI(uri:"http://www.ifomis.org/bfo/1.1/span#Occurrent"), null)
+		
+		assertTrue ed.knownEntityDescriptionCount > 1
+	}
+	
+	@Test
+	void TestAvailableDescriptionsHaveDescriptionsMoreThanOneAllDifferent() {
+		def ed = read.availableDescriptions(
+			new EntityNameOrURI(uri:"http://www.ifomis.org/bfo/1.1/span#Occurrent"), null)
+		
+		def set = new HashSet()
+		ed.knownEntityDescription.each {
+			def name = it.describingCodeSystemVersion.codeSystem.content
+			if(set.contains(name)){
+				fail(name)
+			} else {
+				set.add(name)
+			}
+		}
+	}
+	
+	@Test
+	void TestAvailableDescriptionsHaveDesignations() {
+		def ed = read.availableDescriptions(
+			new EntityNameOrURI(uri:"http://www.ifomis.org/bfo/1.1/span#Occurrent"), null)
+
+		ed.knownEntityDescription.each {
+			assertNotNull it.designation
+		}
 	}
 	
 }

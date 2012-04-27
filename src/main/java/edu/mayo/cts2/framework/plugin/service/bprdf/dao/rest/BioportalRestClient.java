@@ -155,10 +155,16 @@ public class BioportalRestClient implements InitializingBean {
 	
 		if(CollectionUtils.isNotEmpty(ontologyIds)){
 			Iterator<String> itr = ontologyIds.iterator();
-			sb.append("&ontologyids=" + itr.next());
-			
-			while(itr.hasNext()){
-				sb.append("," + itr.next());
+			String id = itr.next();
+			if(StringUtils.isNotBlank(id)){
+				sb.append("&ontologyids=" + id);
+				
+				while(itr.hasNext()){
+					id = itr.next();
+					if(StringUtils.isNotBlank(id)){
+						sb.append("," + id);
+					}
+				}
 			}
 		}
 		

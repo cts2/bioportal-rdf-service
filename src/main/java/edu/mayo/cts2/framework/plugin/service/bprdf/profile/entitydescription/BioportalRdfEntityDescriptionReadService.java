@@ -28,9 +28,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ncbo.stanford.bean.response.SuccessBean;
 import org.springframework.stereotype.Component;
@@ -40,12 +44,12 @@ import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.CodeSystemReference;
 import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
+import edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem;
 import edu.mayo.cts2.framework.model.core.EntityReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.core.VersionTagReference;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDescription;
-import edu.mayo.cts2.framework.model.entity.EntityDescriptionBase;
 import edu.mayo.cts2.framework.model.entity.EntityList;
 import edu.mayo.cts2.framework.model.entity.EntityListEntry;
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
@@ -55,7 +59,9 @@ import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
+import edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.util.UriUtils;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionReadService;
 import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId;
@@ -71,7 +77,14 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 
 	private final static String ENTITY_NAMESPACE = "entity";
 	private final static String GET_ENTITY_BY_URI = "getEntityDescriptionByUri";
+	private final static String GET_AVAILABLE_DESCRIPTIONS = "getAvailableDescriptions";
+	private final static String GET_DESIGNATION = "getDesignation";
+	
+	private ExecutorService executorService = Executors.newCachedThreadPool();
 
+	@Resource
+	private NamespaceModifier namespaceModifier;
+	
 	@Resource
 	private RdfDao rdfDao;
 
@@ -186,22 +199,81 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 	public EntityReference availableDescriptions(
 			EntityNameOrURI entityId,
 			ResolvedReadContext readContext) {
-		EntityDescriptionReadId id = new EntityDescriptionReadId(entityId, null);
+		final String entityUri;
 		
-		EntityDescription entity = this.read(id, readContext);
+		if(StringUtils.isNotBlank(entityId.getUri())){
+			entityUri = entityId.getUri();
+		} else {
+			entityUri = this.getUriFromCode(null, entityId.getEntityName().getName());
+		}
 		
-		return this.entityDescriptionToReference(entity);
-	}
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("uri", entityUri);
 
-	private EntityReference entityDescriptionToReference(
-			EntityDescription entity) {
-		EntityDescriptionBase base = ModelUtils.getEntity(entity);
+		long start = System.currentTimeMillis();
+		List<DescriptionInCodeSystem> descriptions = this.rdfDao.selectForList(
+				ENTITY_NAMESPACE, 
+				GET_AVAILABLE_DESCRIPTIONS,
+				parameters, DescriptionInCodeSystem.class);
 		
-		EntityReference reference = new EntityReference();
-		reference.setAbout(base.getAbout());
-		reference.setName(base.getEntityID());
+		System.out.println("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
 		
-		return reference;
+		EntityReference ref = null;
+		
+		if(CollectionUtils.isNotEmpty(descriptions)){
+			ref = new EntityReference();
+			ref.setKnownEntityDescription(descriptions);
+			
+			String[] names = UriUtils.getNamespaceNameTuple(entityUri);
+			
+			String name = names[0];
+			String namespaceUri = names[1];
+			String namespaceName = this.namespaceModifier.getNamespace(namespaceUri);
+		
+			ref.setName(
+					ModelUtils.createScopedEntityName(name, namespaceName));
+			ref.setAbout(entityUri);
+			
+			for(final DescriptionInCodeSystem description : descriptions){
+				final String acronym =
+					description.getDescribingCodeSystemVersion().
+						getCodeSystem().
+							getContent();
+				
+				//Resolve all the descriptions at once in separate threads.
+				//... may need to throttle this back if the server doesn't
+				//handle it well.
+				this.executorService.submit(new Callable<Void>(){
+
+					@Override
+					public Void call() throws Exception {
+						Map<String, Object> designationParams = new HashMap<String, Object>();
+						designationParams.put("uri", entityUri);
+						designationParams.put("acronym", acronym);
+						
+						DesignationResult designation = 
+							rdfDao.selectForObject(
+									ENTITY_NAMESPACE, 
+									GET_DESIGNATION, 
+									designationParams, 
+									DesignationResult.class);
+						
+						if(designation == null){
+							//if it doesn't assert a preferred designation, set it blank
+							description.setDesignation("");
+						} else {
+							description.setDesignation(designation.getDesignation());
+						}
+						
+						return null;
+					}
+					
+				});
+				
+			}
+		}
+
+		return ref;
 	}
 
 	@Override

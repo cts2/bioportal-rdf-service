@@ -124,29 +124,9 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 			acronym = csvName.getAcronym();
 			
 			ontologyId = this.idService.getOntologyIdForId(id);
-			
-		}
+		} 
 		
 		if(CollectionUtils.isEmpty(query.getFilterComponent())){
-			/*
-			Map<String, Object> parameters = new HashMap<String, Object>();
-			parameters.put(LIMIT, page.getMaxToReturn()+1);
-			parameters.put(OFFSET, page.getStart());
-			parameters.put("acronym", acronym);
-			
-			List<EntityDirectoryEntry> results = this.rdfDao.selectForList(
-					ENTITY_NAMESPACE,
-					GET_ALL_ENTITY_DESCRIPTIONS, 
-					parameters, 
-					EntityDirectoryEntry.class);
-			
-			boolean moreResults = results.size() > page.getMaxToReturn();
-			
-			if(moreResults){
-				results.remove(results.size() - 1);
-			}
-			*/
-			
 			return this.bioportalRestTransform.successBeanToEntitySummaries(
 					this.bioportalRestClient.getAllEntitiesByOntologyId(ontologyId, page));
 		} else {

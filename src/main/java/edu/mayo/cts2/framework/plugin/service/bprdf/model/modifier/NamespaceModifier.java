@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.namespace.NamespaceLookupService;
 import edu.mayo.twinkql.context.TwinkqlContext;
 import edu.mayo.twinkql.model.NamespaceDefinition;
@@ -55,6 +56,9 @@ public class NamespaceModifier implements Modifier<String>, InitializingBean {
 	
 	@Resource
 	private TwinkqlContext twinkqlContext;
+	
+	@Resource
+	private IdService idService;
 	
 	@Resource
 	private NamespaceLookupService namespaceLookupService;
@@ -83,7 +87,12 @@ public class NamespaceModifier implements Modifier<String>, InitializingBean {
 	 * @param uri the uri
 	 * @return the namespace
 	 */
-	protected String getNamespace(String uri){
+	public String getNamespace(String uri){
+		
+		String acronym = this.idService.getAcronymForUri(uri);
+		if(acronym != null){
+			return acronym;
+		}
 
 		if(! this.knownNamespaces.containsKey(uri)){
 

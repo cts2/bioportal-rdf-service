@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
 import edu.mayo.cts2.framework.model.command.ResolvedFilter
+import edu.mayo.cts2.framework.model.util.ModelUtils
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery
 
@@ -51,22 +52,42 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	}
 	
 	@Test
-	void TestGetResourceSummariesNoFilterNoCSV(){
+	void TestGetResourceSummariesWithFilterNoCSV(){
 		def dir = query.getResourceSummaries(
 			[
 			getEntitiesFromAssociationsQuery:{null},
 			getRestrictions:{null},
-			getFilterComponent:{null}
+			getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"software",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+						)] as Set
+					}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0	
+	}
+	
+	@Test
+	void TestGetResourceSummariesWithCSVNoFilter(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				getCodeSystemVersion: {
+					ModelUtils.nameOrUriFromName("GO")
+				}
+			},
+			getFilterComponent:{}
 			] as EntityDescriptionQuery,
 		null,
 		new Page(maxToReturn:10))
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
-		
-		dir.entries.each {
-			assertTrue 1 <= it.knownEntityDescriptionCount
-		}
 	}
 	
 	@Test

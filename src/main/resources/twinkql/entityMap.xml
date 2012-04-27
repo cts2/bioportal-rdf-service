@@ -12,6 +12,16 @@
 		<rowMap var="label" varType="literalValue" beanProperty="knownEntityDescriptionAsReference.designation" />
 	</perRowResultMap>
 	
+	<compositeResultMap id="designationResultMap" 
+		resultClass="edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription.DesignationResult">
+		<tripleMap var="label" predicateUri="skos:prefLabel" varType="literalValue" beanProperty="designation" />
+	</compositeResultMap>
+	
+	<perRowResultMap id="descriptionInCodeSystemResultMap" 
+		resultClass="edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem">
+		<nestedResultMap resultMap="codeSystem:codeSystemVersionReferenceResultMap" beanProperty="describingCodeSystemVersion"/>
+	</perRowResultMap>
+	
 	<compositeResultMap id="entityDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.entity.EntityDescription"
 		afterMap="spring:entityDescriptionCallback">
@@ -87,31 +97,44 @@
 		]]>
 	</select>
 	
-	<select id="getAllEntityDescriptions" resultMap="entityDirectoryEntryResultMap">
+	<select id="getAvailableDescriptions" resultMap="descriptionInCodeSystemResultMap">
         <![CDATA[
-        SELECT DISTINCT ?s ?label
-        
-        <test testType="IS_NOT_NULL" property="acronym">
-        ( ?graph as #{acronym} )
-        FROM <http://bioportal.bioontology.org/ontologies/#{acronym}>
-        FROM bpOntologies:globals
-        </test>
-        
+        SELECT DISTINCT
+        	?id
+          	?ontologyId
+          	( ?acronym as ?codeSystemName )
+          	( CONCAT( ?acronym, "-", ?id ) as ?codeSystemVersionName )
+
               WHERE { 
 
-				<test testType="IS_NULL" property="acronym">
 			    GRAPH ?graph {
-			   	</test>
-		    		?s a owl:Class ;
-		    			bpMetadata:prefLabel ?label .
-		        <test testType="IS_NULL" property="acronym">
+		    		<#{uri}> ?p ?o .
 		        }
-		        </test>
-       
+		        
+		        ?dataGraph bpMetadata:hasDataGraph ?graph ;
+		        	 bpMetadata:id ?id ;
+	                 omv:acronym ?acronym ;
+	                 bpMetadata:isVersionOfVirtualOntology ?ontologyId .
         	}
-        LIMIT  #{limit}
-	    OFFSET #{offset}
+        
         ]]>
+	</select>
+	
+	<select id="getDesignation" resultMap="designationResultMap">
+        <![CDATA[
+        SELECT DISTINCT
+        	(skos:prefLabel as ?p)
+        	?label
+        FROM bpOntologies:#{acronym}
+        FROM bpOntologies:globals
+
+        WHERE { 
+	 		<#{uri}> skos:prefLabel ?label .
+    	}
+        
+        ]]>
+        
+        LIMIT 1
 	</select>
 
 </sparqlMap>

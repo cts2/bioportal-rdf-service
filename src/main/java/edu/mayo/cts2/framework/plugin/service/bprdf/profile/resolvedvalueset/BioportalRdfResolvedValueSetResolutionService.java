@@ -49,7 +49,7 @@ import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
-import edu.mayo.cts2.framework.plugin.service.bprdf.profile.ProfileUtils;
+import edu.mayo.cts2.framework.plugin.service.bprdf.util.SparqlUtils;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService;
@@ -103,7 +103,7 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 			parameters.put("id", id);
 			parameters.put("acronym", acronym);
 			
-			ProfileUtils.setLimitOffsetParams(parameters, page);
+			SparqlUtils.setLimitOffsetParams(parameters, page);
 			
 			List<EntitySynopsis> results = 
 				this.rdfDao.selectForList(

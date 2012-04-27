@@ -21,7 +21,7 @@
     		?ontology bpMetadata:hasVersion ?ontologyVersion ;
     			bpMetadata:id ?ontologyId .
     		?ontologyVersion bpMetadata:id ?id ;
-    			omv:acronym ?acronym .
+    			omv:acronym ?acronym ;
 		}
 	</select>
 	
