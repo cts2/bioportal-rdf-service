@@ -68,4 +68,8 @@ public interface IdService {
 	public String getUriForAcronym(String acronym);
 	
 	public String getAcronymForUri(String uri);
+	
+	public String getDocumentUriForId(String id);
+
+	public String getUriForOntologyId(String ontologyId);
 }

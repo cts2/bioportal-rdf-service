@@ -51,6 +51,7 @@ public class DefaultIdService implements IdService, InitializingBean {
 	protected final Log log = LogFactory.getLog(getClass().getName());
 	
 	private final static String BIOPORTAL_PURL_URI = "http://purl.bioontology.org/ontology/";
+	private final static String VERSION_SUBRESOURCE = "version";
 	private final static String BIOPORTAL_ONTOLOGIES_URI = "http://bioportal.bioontology.org/ontologies/";
 	
 	private final static String UTILITY_NAMESPACE = "util";
@@ -68,6 +69,8 @@ public class DefaultIdService implements IdService, InitializingBean {
 	private Map<String,String> ontologyIdToAcronym = new HashMap<String,String>();
 	private Map<String,String> acronymToUri = new HashMap<String,String>();
 	private Map<String,String> uriToAcronym = new HashMap<String,String>();
+	private Map<String,String> ontologyIdToUri = new HashMap<String,String>();
+	private Map<String,String> idToDocumentUri = new HashMap<String,String>();
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -84,6 +87,7 @@ public class DefaultIdService implements IdService, InitializingBean {
 			String ontologyId = idResult.getOntologyId();
 			String acronym = idResult.getAcronym();
 			String uri = BIOPORTAL_ONTOLOGIES_URI + acronym;
+			String documentUri = BIOPORTAL_ONTOLOGIES_URI + acronym + "/" + VERSION_SUBRESOURCE + "/" + id;
 
 			if(! this.acronymToOntologyId.containsKey(acronym)){
 				this.acronymToOntologyId.put(acronym, ontologyId);
@@ -130,6 +134,9 @@ public class DefaultIdService implements IdService, InitializingBean {
 			
 			this.acronymToUri.put(acronym, uri);
 			this.uriToAcronym.put(uri, acronym);
+			
+			this.ontologyIdToUri.put(ontologyId, uri);
+			this.idToDocumentUri.put(id, documentUri);
 		}
 	}
 
@@ -192,7 +199,17 @@ public class DefaultIdService implements IdService, InitializingBean {
 	public String getUriForAcronym(String acronym) {
 		return this.acronymToUri.get(acronym);
 	}
-	
+
+	@Override
+	public String getDocumentUriForId(String id) {
+		return this.idToDocumentUri.get(id);
+	}
+
+	@Override
+	public String getUriForOntologyId(String ontologyId) {
+		return this.ontologyIdToUri.get(ontologyId);
+	}
+
 	@Override
 	public String getAcronymForUri(String uri) {
 		//try adding a '/' if we don't find it

@@ -10,7 +10,7 @@
 		afterMap="spring:codeSystemSummaryHrefCallback">
 		<nestedResultMap beanProperty="currentVersion" resultMap="codeSystem:codeSystemVersionReferenceResultMap"/>	
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
-		<rowMap var="ontologyId" varType="uri" beanProperty="about" />
+		<rowMap var="acronym" varType="literalValue" beanProperty="about" modifier="spring:codeSystemAboutModifier" />
 		<rowMap var="codeSystemName" varType="literalValue" beanProperty="codeSystemName" />
 		<rowMap var="codeSystemName" varType="literalValue" beanProperty="resourceName"/>
 		<rowMap var="id" varType="literalValue" callbackId="id" />
@@ -26,13 +26,13 @@
 	
 	<perRowResultMap id="currentVersionCodeSystemNameAndMeaningReferenceResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference">
-		<rowMap var="ontologyId" varType="uri" beanProperty="uri"/>
+		<rowMap var="codeSystem" varType="uri" beanProperty="uri"/>
 		<rowMap var="codeSystemName" varType="literalValue" beanProperty="content"/>
 	</perRowResultMap>
 	
 	<perRowResultMap id="currentVersionVersionNameAndMeaningReferenceResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
-		<rowMap var="s" varType="uri" beanProperty="uri"/>
+		<rowMap var="codeSystemVersion" varType="uri" beanProperty="uri"/>
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="content"/>
 	</perRowResultMap>
 	
@@ -40,7 +40,7 @@
 	 	extends="common:resourceDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry"
 		afterMap="spring:codeSystemHrefCallback">
-		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="about" modifier="spring:codeSystemAboutModifier"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="codeSystemName"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
 	</compositeResultMap>
@@ -49,11 +49,11 @@
         
        SELECT 
           ?s
+          ( IRI(?s) as ?codeSystemVersion )
           ?acronym
           ?formalName
           ?description
-          ?id
-          ?ontologyId
+          ?codeSystem
           ( ?acronym as ?codeSystemName )
           ( CONCAT( ?acronym, "-", ?id ) as ?codeSystemVersionName )
     
@@ -63,15 +63,15 @@
 	      omv:name ?formalName ;
 	      bpMetadata:id ?id ;
 	      omv:description ?description ;
-	      bpMetadata:isVersionOfVirtualOntology ?ontologyId .
-	   ?ontologyId bpMetadata:id ?virtualId ;
+	      bpMetadata:isVersionOfVirtualOntology ?codeSystem.
+	   ?codeSystem bpMetadata:id ?virtualId ;
 		
 		    <iterator property="filters" collection="queries" open="FILTER(" close=")" separator="&amp;&amp;">
 		   	    CONTAINS( UCASE( ?#{item.var} ), UCASE( '#{item.text}' ) ) 
 		    </iterator>
 	    }
 	    
-	    GROUP BY ?ontologyId
+	    GROUP BY ?codeSystem
  
 	    LIMIT  #{limit}
 	    OFFSET #{offset}

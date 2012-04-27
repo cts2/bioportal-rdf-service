@@ -9,7 +9,7 @@
 		<rowMap var="s" varType="uri"  beanProperty="about"/>
 		<rowMap var="s" varType="localName" beanProperty="name.name"/>
 		<rowMap var="s" varType="namespace" beanProperty="name.namespace" modifier="spring:namespaceModifier" />
-		<rowMap var="label" varType="literalValue" beanProperty="knownEntityDescriptionAsReference.designation" />
+		<rowMap var="label" varType="literalValue" beanProperty="knownEntityDescriptionAsReference[0].designation" />
 	</perRowResultMap>
 	
 	<compositeResultMap id="designationResultMap" 
@@ -18,8 +18,8 @@
 	</compositeResultMap>
 	
 	<perRowResultMap id="descriptionInCodeSystemResultMap" 
-		resultClass="edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem">
-		<nestedResultMap resultMap="codeSystem:codeSystemVersionReferenceResultMap" beanProperty="describingCodeSystemVersion"/>
+		resultClass="edu.mayo.cts2.framework.plugin.service.bprdf.callback.common.Result">
+		<rowMap var="id" varType="literalValue" beanProperty="result"/>
 	</perRowResultMap>
 	
 	<compositeResultMap id="entityDescriptionResultMap" 
@@ -101,21 +101,35 @@
         <![CDATA[
         SELECT DISTINCT
         	?id
-          	?ontologyId
-          	( ?acronym as ?codeSystemName )
-          	( CONCAT( ?acronym, "-", ?id ) as ?codeSystemVersionName )
 
-              WHERE { 
+            WHERE { 
 
 			    GRAPH ?graph {
 		    		<#{uri}> ?p ?o .
 		        }
 		        
 		        ?dataGraph bpMetadata:hasDataGraph ?graph ;
-		        	 bpMetadata:id ?id ;
-	                 omv:acronym ?acronym ;
-	                 bpMetadata:isVersionOfVirtualOntology ?ontologyId .
+		        	 bpMetadata:id ?id .
         	}
+        
+        ]]>
+	</select>
+	
+	<select id="getAllEntityDescriptions" resultMap="entityDirectoryEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT
+        	?s
+          	?label
+          	
+          	FROM bpOntologies:#{acronym}
+
+            WHERE { 
+		    	?s a owl:Class ;
+		        	skos:prefLabel ?label .
+        	}
+        	
+        LIMIT  #{limit}
+	    OFFSET #{offset}
         
         ]]>
 	</select>

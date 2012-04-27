@@ -153,9 +153,9 @@ class BioportalRdfCodeSystemVersionQueryServiceTestIT {
 		
 		dir.entries.each {
 			
-			assertNotNull it.versionOf.content
-			assertNotNull it.versionOf.uri
-			assertNotNull it.versionOf.href	
+			assertNotNull "content", it.versionOf.content
+			assertNotNull "uri", it.versionOf.uri
+			assertNotNull "href", it.versionOf.href	
 		}
 	}
 	

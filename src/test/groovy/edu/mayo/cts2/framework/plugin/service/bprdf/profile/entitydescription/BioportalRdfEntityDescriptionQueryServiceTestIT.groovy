@@ -13,6 +13,7 @@ import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
 import edu.mayo.cts2.framework.model.command.ResolvedFilter
 import edu.mayo.cts2.framework.model.util.ModelUtils
+import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery
 
@@ -77,9 +78,9 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 			[
 			getEntitiesFromAssociationsQuery:{null},
 			getRestrictions:{
-				getCodeSystemVersion: {
-					ModelUtils.nameOrUriFromName("GO")
-				}
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("SNOMEDCT-46896")
+				)
 			},
 			getFilterComponent:{}
 			] as EntityDescriptionQuery,
@@ -87,7 +88,7 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 		new Page(maxToReturn:10))
 		
 		assertNotNull dir
-		assertTrue dir.getEntries().size() > 0
+		assertEquals 10, dir.getEntries().size()
 	}
 	
 	@Test

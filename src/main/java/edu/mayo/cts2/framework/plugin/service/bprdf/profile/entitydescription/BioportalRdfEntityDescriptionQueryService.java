@@ -38,6 +38,7 @@ import org.springframework.util.Assert;
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
+import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
 import edu.mayo.cts2.framework.model.core.EntityReferenceList;
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
@@ -50,12 +51,14 @@ import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURIList;
 import edu.mayo.cts2.framework.model.service.core.Query;
+import edu.mayo.cts2.framework.plugin.service.bprdf.common.CodeSystemVersionReferenceFactory;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.association.BioportalRdfAssociationQueryService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.util.SparqlUtils;
 import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions.HierarchyRestriction;
 import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions.HierarchyRestriction.HierarchyType;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
@@ -76,12 +79,12 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 	
 	private final static String ENTITY_NAMESPACE = "entity";
 	private final static String GET_ALL_ENTITY_DESCRIPTIONS = "getAllEntityDescriptions";
-	
-	private final static String LIMIT = "limit";
-	private final static String OFFSET = "offset";
 
 	@Resource
 	private BioportalRestClient bioportalRestClient;
+	
+	@Resource
+	private CodeSystemVersionReferenceFactory codeSystemVersionReferenceFactory;
 	
 	@Resource
 	private BioportalRestEntityDescriptionTransform bioportalRestTransform;
@@ -110,6 +113,7 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 		}
 		
 		String ontologyId = null;
+		String id = null;
 		String acronym = null;
 		
 		if(query != null && 
@@ -120,18 +124,53 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 					this.idService.getCodeSystemVersionNameForName(
 							query.getRestrictions().getCodeSystemVersion().getName());
 			
-			String id = csvName.getId();
+			id = csvName.getId();
 			acronym = csvName.getAcronym();
 			
 			ontologyId = this.idService.getOntologyIdForId(id);
 		} 
 		
 		if(CollectionUtils.isEmpty(query.getFilterComponent())){
-			return this.bioportalRestTransform.successBeanToEntitySummaries(
-					this.bioportalRestClient.getAllEntitiesByOntologyId(ontologyId, page));
+			return this.handleAllEntitiesOfCodeSystemVersion(id, acronym, page);
 		} else {
 			return this.bioportalRestTransform.successBeanToEntitySummaries(
 					this.bioportalRestClient.searchEntities(ontologyId, query.getFilterComponent(), page));
+		}
+	}
+	
+	private DirectoryResult<EntityDirectoryEntry> handleAllEntitiesOfCodeSystemVersion(
+			String id,
+			String acronym, 
+			Page page){	
+		
+		Map<String,Object> parameters = new HashMap<String,Object>();
+		parameters.put("acronym", acronym);
+		SparqlUtils.setLimitOffsetParams(parameters, page);
+		
+		List<EntityDirectoryEntry> results = rdfDao.selectForList(
+				ENTITY_NAMESPACE, 
+				GET_ALL_ENTITY_DESCRIPTIONS,
+				parameters,
+				EntityDirectoryEntry.class);
+		
+		this.setCodesSystemVersionRefs(id, results);
+	
+		boolean moreResults = results.size() > page.getMaxToReturn();
+		
+		if(moreResults){
+			results.remove(results.size() - 1);
+		}
+		
+		return new DirectoryResult<EntityDirectoryEntry>(results,!moreResults);
+	}
+	
+	private void setCodesSystemVersionRefs(String id, Iterable<EntityDirectoryEntry> entries){
+		for(EntityDirectoryEntry entry : entries){
+			
+			CodeSystemVersionReference ref =
+				this.codeSystemVersionReferenceFactory.getCodeSystemVersionReferenceFor(id);
+			
+			entry.getKnownEntityDescription(0).setDescribingCodeSystemVersion(ref);
 		}
 	}
 

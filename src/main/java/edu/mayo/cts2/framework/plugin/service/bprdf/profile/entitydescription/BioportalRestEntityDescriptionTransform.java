@@ -190,9 +190,13 @@ public class BioportalRestEntityDescriptionTransform {
 
 		List<Page> pages = (List) successBean.getData();
 		for(Page p : pages){
+			if(p.getNumResultsTotal() == 0){
+				return null;
+			}
 			Iterator<List> itr = p.getContents().iterator();
 			while(itr.hasNext()){
 				List bean = itr.next();
+				
 				for(Object hit : bean){
 
 					SearchBean searchBean = (SearchBean)hit;
@@ -202,6 +206,6 @@ public class BioportalRestEntityDescriptionTransform {
 			}
 		}
 
-		throw new RuntimeException("Not found.");
+		return null;
 	}
 }

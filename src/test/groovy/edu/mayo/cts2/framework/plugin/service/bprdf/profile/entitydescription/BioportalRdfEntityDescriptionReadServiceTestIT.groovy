@@ -171,7 +171,7 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 		def name = new ScopedEntityName(name:"285487006", namespace:"SNOMEDCT")
 		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
 		
-		assertEquals ed.knownEntityDescriptionCount == 1
+		assertEquals 1, ed.knownEntityDescriptionCount
 	}
 	
 	@Test

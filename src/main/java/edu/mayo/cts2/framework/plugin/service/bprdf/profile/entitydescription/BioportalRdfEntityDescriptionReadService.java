@@ -23,6 +23,7 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +56,8 @@ import edu.mayo.cts2.framework.model.entity.EntityListEntry;
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI;
 import edu.mayo.cts2.framework.model.service.core.NameOrURI;
 import edu.mayo.cts2.framework.model.util.ModelUtils;
+import edu.mayo.cts2.framework.plugin.service.bprdf.callback.common.Result;
+import edu.mayo.cts2.framework.plugin.service.bprdf.common.CodeSystemVersionReferenceFactory;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
@@ -84,6 +87,9 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 
 	@Resource
 	private NamespaceModifier namespaceModifier;
+	
+	@Resource
+	private CodeSystemVersionReferenceFactory codeSystemVersionReferenceFactory;
 	
 	@Resource
 	private RdfDao rdfDao;
@@ -207,23 +213,28 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 			entityUri = this.getUriFromCode(null, entityId.getEntityName().getName());
 		}
 		
+		if(StringUtils.isBlank(entityUri)){
+			return null;
+		}
+		
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("uri", entityUri);
 
 		long start = System.currentTimeMillis();
-		List<DescriptionInCodeSystem> descriptions = this.rdfDao.selectForList(
+		
+		@SuppressWarnings("rawtypes")
+		List<Result> ids = this.rdfDao.selectForList(
 				ENTITY_NAMESPACE, 
 				GET_AVAILABLE_DESCRIPTIONS,
-				parameters, DescriptionInCodeSystem.class);
+				parameters, Result.class);
 		
 		System.out.println("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
 		
 		EntityReference ref = null;
 		
-		if(CollectionUtils.isNotEmpty(descriptions)){
+		if(CollectionUtils.isNotEmpty(ids)){
 			ref = new EntityReference();
-			ref.setKnownEntityDescription(descriptions);
-			
+
 			String[] names = UriUtils.getNamespaceNameTuple(entityUri);
 			
 			String name = names[0];
@@ -234,7 +245,16 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 					ModelUtils.createScopedEntityName(name, namespaceName));
 			ref.setAbout(entityUri);
 			
-			for(final DescriptionInCodeSystem description : descriptions){
+			List<Callable<Void>> callables = new ArrayList<Callable<Void>>();
+			
+			for(final Result<String> id : ids){
+				final DescriptionInCodeSystem description = new DescriptionInCodeSystem();
+				
+				description.setDescribingCodeSystemVersion(
+					codeSystemVersionReferenceFactory.getCodeSystemVersionReferenceFor(id.getResult()));
+				
+				ref.addKnownEntityDescription(description);
+				
 				final String acronym =
 					description.getDescribingCodeSystemVersion().
 						getCodeSystem().
@@ -243,7 +263,7 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 				//Resolve all the descriptions at once in separate threads.
 				//... may need to throttle this back if the server doesn't
 				//handle it well.
-				this.executorService.submit(new Callable<Void>(){
+				Callable<Void> callable = new Callable<Void>(){
 
 					@Override
 					public Void call() throws Exception {
@@ -268,8 +288,15 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 						return null;
 					}
 					
-				});
+				};
 				
+				callables.add(callable);
+			}
+			
+			try {
+				this.executorService.invokeAll(callables);
+			} catch (InterruptedException e) {
+				throw new IllegalStateException();
 			}
 		}
 

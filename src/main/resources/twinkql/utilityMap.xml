@@ -18,10 +18,11 @@
 	
 	<select id="getIds" resultMap="idsResultMap">
 		SELECT ?id ?ontologyId ?acronym {
-    		?ontology bpMetadata:hasVersion ?ontologyVersion ;
-    			bpMetadata:id ?ontologyId .
-    		?ontologyVersion bpMetadata:id ?id ;
-    			omv:acronym ?acronym ;
+    		?ontologyVersion bpMetadata:isVersionOfVirtualOntology ?ontology ;
+    			bpMetadata:id ?id ;
+    			omv:acronym ?acronym .
+    		?ontology bpMetadata:id ?ontologyId ;
+
 		}
 	</select>
 	

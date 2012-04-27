@@ -9,19 +9,19 @@
 		resultClass="edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntrySummary"
 		afterMap="spring:codeSystemVersionSummaryHrefCallback">
 		<nestedResultMap resultMap="codeSystemVersion:versionOfResultMap" beanProperty="versionOf"/>
-		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
+		<rowMap var="codeSystemName" varType="literalValue" callbackId="acronym"/>
 		<rowMap var="versionId" varType="literalValue" callbackId="latestVersionId"/>
 		<rowMap var="id" varType="literalValue" callbackId="id"/>
-		<rowMap var="s" varType="uri" beanProperty="about"/>
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="about" modifier="spring:codeSystemAboutModifier"/>
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="codeSystemVersionName"/>
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="resourceName"/>
-		<rowMap var="s" varType="uri" beanProperty="documentURI" />
+		<rowMap var="id" varType="literalValue" beanProperty="documentURI" modifier="spring:codeSystemVersionDocumentUriModifier"/>
 	</perRowResultMap>
 	
 	<perRowResultMap id="versionOfResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference"
 		afterMap="spring:codeSystemReferenceHrefCallback">
-		<rowMap var="ontologyId" varType="uri" beanProperty="uri"/>
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="uri" modifier="spring:codeSystemAboutModifier"/>
 		<rowMap var="codeSystemName" varType="literalValue" beanProperty="content"/>
 	</perRowResultMap>
 	
@@ -30,16 +30,16 @@
 		resultClass="edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry"
 		afterMap="spring:codeSystemVersionNameCallback,spring:codeSystemVersionHrefCallback">
 		<nestedResultMap resultMap="codeSystemVersion:compositeVersionOfResultMap" beanProperty="versionOf"/>
-		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="about" modifier="spring:codeSystemAboutModifier"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" callbackId="acronym"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
-		<tripleMap var="s" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="documentURI"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" beanProperty="documentURI" modifier="spring:codeSystemVersionDocumentUriModifier" />
 	</compositeResultMap>
 	
 	<compositeResultMap id="compositeVersionOfResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference"
 		afterMap="spring:codeSystemReferenceHrefCallback">
-		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="uri"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="uri" modifier="spring:codeSystemAboutModifier"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="content"/>
 	</compositeResultMap>
 	
