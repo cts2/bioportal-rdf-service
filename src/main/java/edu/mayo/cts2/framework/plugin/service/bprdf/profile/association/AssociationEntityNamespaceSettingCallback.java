@@ -6,14 +6,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.association.AssociationDirectoryEntry;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.namespace.NamespaceLookupService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 import edu.mayo.twinkql.result.callback.CallbackContext;
 
 @Component("associationEntityNamespaceCallback")
 public class AssociationEntityNamespaceSettingCallback implements AfterResultBinding<AssociationDirectoryEntry> {
     @Resource
-	NamespaceLookupService namespaceService;
+    NamespaceModifier namespaceModifier;
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
@@ -33,7 +33,7 @@ public class AssociationEntityNamespaceSettingCallback implements AfterResultBin
 		try {
 		//String  encodedNsURL= URLEncoder.encode(bindingResult.getPredicate().getNamespace(), "UTF-8");
 		//String predicatePrefix= namespaceService.getPreferredPrefixForUri(encodedNsURL);
-		String predicatePrefix= namespaceService.getPreferredPrefixForUri(bindingResult.getPredicate().getNamespace());
+		String predicatePrefix= namespaceModifier.getNamespace(bindingResult.getPredicate().getNamespace());
 		bindingResult.getPredicate().setNamespace(predicatePrefix);
 		} catch (Exception ex) {
 			ex.printStackTrace();

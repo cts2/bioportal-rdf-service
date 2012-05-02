@@ -21,7 +21,7 @@ import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDesc
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(value="classpath:/bioportal-rdf-service-test-context.xml")
-@Ignore("This seems to be killing the SPARQL endpoint... need to check with NCBO.")
+//@Ignore("This seems to be killing the SPARQL endpoint... need to check with NCBO.")
 class BioportalRdfAssociationQueryServiceTestIT {
 	
 	@Resource
@@ -58,6 +58,19 @@ class BioportalRdfAssociationQueryServiceTestIT {
 		}
 	}
 	
+	@Test
+	void testGetResourceSummariesValidForLNC(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("LNC-44774"),
+																		  sourceEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("18265-9", "") ))},
+				getFilterComponent:{[] as Set}
+			] as AssociationQuery,null,new Page())
+		
+		assertNotNull dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
+	}
 	
 	
 	@Test
@@ -94,7 +107,7 @@ class BioportalRdfAssociationQueryServiceTestIT {
 
 	}
 	
-	@Test
+	
 	void testGetResourceSummariesWithCodeSystemVersionAndSourceOrTargetEntityNameRestriction(){
 		def dir = query.getResourceSummaries(
 			[
@@ -108,7 +121,7 @@ class BioportalRdfAssociationQueryServiceTestIT {
 		
 
 	}
-	@Test
+
 	void testGetResourceSummariesWithCodeSystemVersionAndSourceOrTargetEntityUriRestriction(){
 		def dir = query.getResourceSummaries(
 			[

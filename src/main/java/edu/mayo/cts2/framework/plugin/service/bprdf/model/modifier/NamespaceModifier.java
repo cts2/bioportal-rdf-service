@@ -127,6 +127,7 @@ public class NamespaceModifier implements Modifier<String>, InitializingBean {
 		namespaces.put("http://purl.bioontology.org/ontology/bioportal/", "bioportal");
 		namespaces.put("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdfs");
 		namespaces.put("http://www.w3.org/2002/07/owl#", "owl");
+		namespaces.put("http://bioportal.bioontology.org/ontologies/umls/", "bioportal_umls");
 		
 		TwinkqlConfig twinkqlConfig = this.twinkqlContext.getTwinkqlConfig();
 		if(twinkqlConfig != null && twinkqlConfig.getTwinkqlConfigItem() != null){

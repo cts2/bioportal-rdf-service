@@ -25,10 +25,8 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,11 +35,9 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ncbo.stanford.bean.response.SuccessBean;
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.model.command.Page;
-import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.CodeSystemReference;
 import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
@@ -61,11 +57,10 @@ import edu.mayo.cts2.framework.plugin.service.bprdf.common.CodeSystemVersionRefe
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
-import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.util.EntityUriLookupService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.util.UriUtils;
-import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionReadService;
 import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId;
 
@@ -97,11 +92,9 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 	@Resource
 	private IdService idService;
 
-	@Resource
-	private BioportalRestClient bioportalRestClient;
 
 	@Resource
-	private BioportalRestEntityDescriptionTransform bioportalRestTransform;
+	private EntityUriLookupService entityUriLookupService;
 
 	/*
 	 * (non-Javadoc)
@@ -128,22 +121,7 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 		String uri;
 
 		if (identifier.getEntityName() != null) {
-			String name = identifier.getEntityName().getName();
-			String namespace = identifier.getEntityName().getNamespace();
-
-			uri = this.getUriFromCode(ontologyId, name);
-			
-			if(StringUtils.isBlank(uri)){
-				uri = this.getUriFromCode(ontologyId, namespace + ":" + name);
-			}
-			
-			if(StringUtils.isBlank(uri)){
-				uri = this.getUriFromCode(ontologyId, namespace + "_" + name);
-			}
-			
-			if(StringUtils.isBlank(uri)){
-				return null;
-			}
+			uri= entityUriLookupService.getUriFromScopedEntityName(ontologyId, identifier.getEntityName());
 		} else {
 			uri = identifier.getUri();
 		}
@@ -166,21 +144,7 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 		return entity;
 	}
 	
-	private String getUriFromCode(String ontologyId, String code){
-		Set<ResolvedFilter> filters = new HashSet<ResolvedFilter>();
-		ResolvedFilter filter = new ResolvedFilter();
-		filter.setMatchAlgorithmReference(StandardMatchAlgorithmReference.EXACT_MATCH
-				.getMatchAlgorithmReference());
-		filter.setMatchValue(code);
-		filters.add(filter);
 
-		long start = System.currentTimeMillis();
-		SuccessBean success = bioportalRestClient.searchEntities(ontologyId,
-				filters, new Page());
-		System.out.println("Query REST time: " + ( System.currentTimeMillis() - start ));
-
-		return this.bioportalRestTransform.successBeanToEntityUri(success);
-	}
 
 	protected CodeSystemVersionName getCodeSystemVersionNameFromCodeSystemVersionNameOrUri(
 			NameOrURI codeSystemVersion) {
@@ -210,7 +174,7 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 		if(StringUtils.isNotBlank(entityId.getUri())){
 			entityUri = entityId.getUri();
 		} else {
-			entityUri = this.getUriFromCode(null, entityId.getEntityName().getName());
+			entityUri = entityUriLookupService.getUriFromScopedEntityName(null, entityId.getEntityName());
 		}
 		
 		if(StringUtils.isBlank(entityUri)){
