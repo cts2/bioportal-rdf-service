@@ -85,7 +85,7 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 				getRestrictions:{null},
 				getFilterComponent:{
 					[new ResolvedFilter(
-						matchValue:"CPT",
+						matchValue:"LNC",
 						propertyReference: new PropertyReference(referenceTarget: new URIAndEntityName(name:"resourceName"))
 						)] as Set
 				}
@@ -96,7 +96,7 @@ class BioportalRdfCodeSystemQueryServiceTestIT {
 		assertTrue dir.getEntries().size() > 0
 		
 		dir.entries.each { 
-			assertTrue it.codeSystemName, it.codeSystemName.contains("CPT")
+			assertTrue it.codeSystemName, it.codeSystemName.contains("LNC")
 		}
 	}
 	

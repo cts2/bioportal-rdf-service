@@ -7,8 +7,7 @@
 	<perRowResultMap id="codeSystemCatalogEntrySummaryResultMap" 
 		extends="common:resourceDescriptionDirectoryEntryResultMap"
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntrySummary"
-		afterMap="spring:codeSystemSummaryHrefCallback">
-		<nestedResultMap beanProperty="currentVersion" resultMap="codeSystem:codeSystemVersionReferenceResultMap"/>	
+		afterMap="spring:codeSystemSummaryHrefCallback,spring:currentCodeSystemReferenceCallback">
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
 		<rowMap var="acronym" varType="literalValue" beanProperty="about" modifier="spring:codeSystemAboutModifier" />
 		<rowMap var="codeSystemName" varType="literalValue" beanProperty="codeSystemName" />
@@ -31,7 +30,8 @@
 	</perRowResultMap>
 	
 	<perRowResultMap id="currentVersionVersionNameAndMeaningReferenceResultMap" 
-		resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
+		resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference"
+		afterMap="spring:currentCodeSystemReferenceCallback">
 		<rowMap var="codeSystemVersion" varType="uri" beanProperty="uri"/>
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="content"/>
 	</perRowResultMap>
@@ -54,6 +54,7 @@
           ?formalName
           ?description
           ?codeSystem
+          ?virtualId
           ( ?acronym as ?codeSystemName )
           ( CONCAT( ?acronym, "-", ?id ) as ?codeSystemVersionName )
     
