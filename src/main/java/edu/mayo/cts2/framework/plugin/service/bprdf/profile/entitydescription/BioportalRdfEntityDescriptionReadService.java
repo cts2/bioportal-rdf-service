@@ -125,6 +125,10 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 		} else {
 			uri = identifier.getUri();
 		}
+		
+		if(StringUtils.isBlank(uri)){
+			return null;
+		}
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("uri", uri);
