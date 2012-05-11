@@ -30,8 +30,7 @@
 	</perRowResultMap>
 	
 	<perRowResultMap id="currentVersionVersionNameAndMeaningReferenceResultMap" 
-		resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference"
-		afterMap="spring:currentCodeSystemReferenceCallback">
+		resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
 		<rowMap var="codeSystemVersion" varType="uri" beanProperty="uri"/>
 		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="content"/>
 	</perRowResultMap>

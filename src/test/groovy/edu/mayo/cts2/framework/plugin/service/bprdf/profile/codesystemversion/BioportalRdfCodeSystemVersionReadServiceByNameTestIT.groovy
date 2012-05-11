@@ -15,7 +15,7 @@ class BioportalRdfCodeSystemVersionReadServiceByNameTestIT extends BioportalRdfC
 	
 	@Override
 	public Object doRead() {
-		read.read(ModelUtils.nameOrUriFromName("FIX-45720"), null)
+		read.read(ModelUtils.nameOrUriFromName("LNC-44256"), null)
 	}
 
 	@Test
