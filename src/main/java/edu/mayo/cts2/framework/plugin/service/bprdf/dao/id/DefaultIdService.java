@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.annotation.Resource;
 
@@ -42,137 +44,180 @@ import edu.mayo.twinkql.template.TwinkqlTemplate;
 
 /**
  * The Class DefaultIdService.
- *
+ * 
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component
 public class DefaultIdService implements IdService, InitializingBean {
-	
+
 	protected final Log log = LogFactory.getLog(getClass().getName());
-	
+
 	private final static String BIOPORTAL_PURL_URI = "http://purl.bioontology.org/ontology/";
 	private final static String VERSION_SUBRESOURCE = "version";
 	private final static String BIOPORTAL_ONTOLOGIES_URI = "http://bioportal.bioontology.org/ontologies/";
-	
+
 	private final static String UTILITY_NAMESPACE = "util";
 	private final static String GET_IDS = "getIds";
-	
+
 	@Resource
 	private TwinkqlTemplate twinkqlTemplate;
+
+	private Map<String, List<String>> ontologyIdToIds = new HashMap<String, List<String>>();
+	private Map<String, Integer> ontologyIdToLatestId = new HashMap<String, Integer>();
+	private Map<String, String> idToOntologyId = new HashMap<String, String>();
+	private Map<String, CodeSystemVersionName> csvNameToCsv = new HashMap<String, CodeSystemVersionName>();
+	private Map<String, CodeSystemVersionName> idToCsvName = new HashMap<String, CodeSystemVersionName>();
+	private Map<String, String> acronymToOntologyId = new HashMap<String, String>();
+	private Map<String, String> ontologyIdToAcronym = new HashMap<String, String>();
+	private Map<String, String> acronymToUri = new HashMap<String, String>();
+	private Map<String, String> uriToAcronym = new HashMap<String, String>();
+	private Map<String, String> ontologyIdToUri = new HashMap<String, String>();
+	private Map<String, String> idToDocumentUri = new HashMap<String, String>();
+
+	private Timer cacheClearingTimer = new Timer();
+
+	private static final int ONE_HOUR = 1000 * 60 * 60;
 	
-	private Map<String,List<String>> ontologyIdToIds = new HashMap<String,List<String>>();
-	private Map<String,Integer> ontologyIdToLatestId = new HashMap<String,Integer>();
-	private Map<String,String> idToOntologyId = new HashMap<String,String>();
-	private Map<String,CodeSystemVersionName> csvNameToCsv = new HashMap<String,CodeSystemVersionName>();
-	private Map<String,CodeSystemVersionName> idToCsvName = new HashMap<String,CodeSystemVersionName>();
-	private Map<String,String> acronymToOntologyId = new HashMap<String,String>();
-	private Map<String,String> ontologyIdToAcronym = new HashMap<String,String>();
-	private Map<String,String> acronymToUri = new HashMap<String,String>();
-	private Map<String,String> uriToAcronym = new HashMap<String,String>();
-	private Map<String,String> ontologyIdToUri = new HashMap<String,String>();
-	private Map<String,String> idToDocumentUri = new HashMap<String,String>();
-	
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	//id = CodeSystemVersion
-	//ontologyId = CodeSystem
+	private volatile boolean cacheBuilding = true;
+
 	public void afterPropertiesSet() throws Exception {
-		List<IdResult> result = 
-			this.twinkqlTemplate.selectForList(UTILITY_NAMESPACE, GET_IDS, null, IdResult.class);
-		
-		for(IdResult idResult : result){
+		this.cacheClearingTimer.scheduleAtFixedRate(new TimerTask() {
+
+			@Override
+			public void run() {
+				try {
+					cacheBuilding = true;
+					buildCache();
+				} finally {
+					cacheBuilding = false;
+				}
+			}
+
+		}, 0, ONE_HOUR);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	// id = CodeSystemVersion
+	// ontologyId = CodeSystem
+	protected synchronized void buildCache() {
+
+		List<IdResult> result = this.twinkqlTemplate.selectForList(
+				UTILITY_NAMESPACE, GET_IDS, null, IdResult.class);
+
+		for (IdResult idResult : result) {
 			String id = idResult.getId();
 			String ontologyId = idResult.getOntologyId();
 			String acronym = idResult.getAcronym();
 			String uri = BIOPORTAL_ONTOLOGIES_URI + acronym;
-			String documentUri = BIOPORTAL_ONTOLOGIES_URI + acronym + "/" + VERSION_SUBRESOURCE + "/" + id;
+			String documentUri = BIOPORTAL_ONTOLOGIES_URI + acronym + "/"
+					+ VERSION_SUBRESOURCE + "/" + id;
+			
+			if(acronym.equals("ontologia")){
+				System.out.println("here");
+			}
 
-			if(! this.acronymToOntologyId.containsKey(acronym)){
+			if (!this.acronymToOntologyId.containsKey(acronym)) {
 				this.acronymToOntologyId.put(acronym, ontologyId);
 			} else {
-				String foundOntologyId = 
-					this.acronymToOntologyId.get(acronym);
-				
-				if(! ontologyId.equals(foundOntologyId)){
-						log.warn("Found multiple OntologyIds ("+foundOntologyId+","+ontologyId+") for the same acronym ("+acronym+").");
+				String foundOntologyId = this.acronymToOntologyId.get(acronym);
+
+				if (!ontologyId.equals(foundOntologyId)) {
+					log.warn("Found multiple OntologyIds (" + foundOntologyId
+							+ "," + ontologyId + ") for the same acronym ("
+							+ acronym + ").");
 				}
 			}
-			
-			if(! this.ontologyIdToAcronym.containsKey(ontologyId)){
+
+			if (!this.ontologyIdToAcronym.containsKey(ontologyId)) {
 				this.ontologyIdToAcronym.put(ontologyId, acronym);
 			} else {
-				String foundAcronym = 
-					this.ontologyIdToAcronym.get(ontologyId);
-				
-				if(! acronym.equals(foundAcronym)){
-						log.warn("Found multiple Acronyms ("+foundAcronym+","+acronym+") for the same ontologyId ("+ontologyId+").");
+				String foundAcronym = this.ontologyIdToAcronym.get(ontologyId);
+
+				if (!acronym.equals(foundAcronym)) {
+					log.warn("Found multiple Acronyms (" + foundAcronym + ","
+							+ acronym + ") for the same ontologyId ("
+							+ ontologyId + ").");
 				}
 			}
-			
-			if(! this.ontologyIdToIds.containsKey(ontologyId)){
+
+			if (!this.ontologyIdToIds.containsKey(ontologyId)) {
 				this.ontologyIdToIds.put(ontologyId, new ArrayList<String>());
 			}
 			this.ontologyIdToIds.get(ontologyId).add(id);
-			
-			Integer latestOntologyId = this.ontologyIdToLatestId.get(ontologyId);
-			if(latestOntologyId == null){
+
+			Integer latestOntologyId = this.ontologyIdToLatestId
+					.get(ontologyId);
+			if (latestOntologyId == null) {
 				ontologyIdToLatestId.put(ontologyId, Integer.parseInt(id));
 			} else {
 				Integer foundOntologyId = Integer.parseInt(id);
-				if(foundOntologyId > latestOntologyId){
+				if (foundOntologyId > latestOntologyId) {
 					ontologyIdToLatestId.put(ontologyId, foundOntologyId);
 				}
 			}
-			
+
 			this.idToOntologyId.put(id, ontologyId);
-			
-			CodeSystemVersionName csvName = new CodeSystemVersionName(acronym, id);
+
+			CodeSystemVersionName csvName = new CodeSystemVersionName(acronym,
+					id);
 			this.csvNameToCsv.put(csvName.toString(), csvName);
 			this.idToCsvName.put(id, csvName);
-			
+
 			this.acronymToUri.put(acronym, uri);
 			this.uriToAcronym.put(uri, acronym);
-			
+
 			this.ontologyIdToUri.put(ontologyId, uri);
 			this.idToDocumentUri.put(id, documentUri);
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService#getOntologyIdForId(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService#
+	 * getOntologyIdForId(java.lang.String)
 	 */
 	@Override
 	public String getOntologyIdForId(String id) {
-		return this.idToOntologyId.get(id);
+		return this.getFromCache(idToOntologyId, id);
 	}
 
 	@Override
 	public String getOntologyIdForAcronym(String acronym) {
-		return this.acronymToOntologyId.get(acronym);
-	}
-	
-	@Override
-	public String getAcronymForOntologyId(String ontologyId) {
-		return this.ontologyIdToAcronym.get(ontologyId);
+		return this.getFromCache(acronymToOntologyId, acronym);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService#getIdsForOntologyId(java.lang.String)
+	@Override
+	public String getAcronymForOntologyId(String ontologyId) {
+		return this.getFromCache(ontologyIdToAcronym, ontologyId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService#
+	 * getIdsForOntologyId(java.lang.String)
 	 */
 	@Override
 	public Iterable<String> getIdsForOntologyId(String ontologyId) {
-		return this.ontologyIdToIds.get(ontologyId);
+		return this.getFromCache(ontologyIdToIds, ontologyId);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService#getCurrentIdForOntologyId(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService#
+	 * getCurrentIdForOntologyId(java.lang.String)
 	 */
 	@Override
 	public String getCurrentIdForOntologyId(String ontologyId) {
-		Integer intOntologyId = this.ontologyIdToLatestId.get(ontologyId);
-		if(intOntologyId == null){
+		Integer intOntologyId = this.getFromCache(ontologyIdToLatestId, ontologyId);
+		if (intOntologyId == null) {
 			return null;
 		} else {
 			return Integer.toString(intOntologyId);
@@ -182,50 +227,64 @@ public class DefaultIdService implements IdService, InitializingBean {
 	@Override
 	public CodeSystemVersionName getCodeSystemVersionNameForName(
 			String codeSystemVersionName) {
-		return this.csvNameToCsv.get(codeSystemVersionName);
+		return this.getFromCache(csvNameToCsv, codeSystemVersionName);
 	}
 
 	@Override
 	public Set<String> getAllOntologyIds() {
-		return this.ontologyIdToLatestId.keySet();
+		return this.getKeySetFromCache(ontologyIdToLatestId);
 	}
 
 	@Override
 	public CodeSystemVersionName getCodeSystemVersionNameForId(String id) {
-		return this.idToCsvName.get(id);
+		return this.getFromCache(idToCsvName, id);
 	}
 
 	@Override
 	public String getUriForAcronym(String acronym) {
-		return this.acronymToUri.get(acronym);
+		return this.getFromCache(acronymToUri, acronym);
 	}
 
 	@Override
 	public String getDocumentUriForId(String id) {
-		return this.idToDocumentUri.get(id);
+		return this.getFromCache(idToDocumentUri, id);
 	}
 
 	@Override
 	public String getUriForOntologyId(String ontologyId) {
-		return this.ontologyIdToUri.get(ontologyId);
+		return this.getFromCache(this.ontologyIdToUri, ontologyId);
 	}
 
 	@Override
 	public String getAcronymForUri(String uri) {
-		//try adding a '/' if we don't find it
-		for(String addition : Arrays.asList("", "/")){
-			String acronym = this.uriToAcronym.get(uri+addition);
-			if(acronym != null){
+		// try adding a '/' if we don't find it
+		for (String addition : Arrays.asList("", "/")) {
+			String acronym = this.getFromCache(this.uriToAcronym, uri + addition);
+			if (acronym != null) {
 				return acronym;
 			}
 		}
-		
-		if(uri.startsWith(BIOPORTAL_PURL_URI)){
+
+		if (uri.startsWith(BIOPORTAL_PURL_URI)) {
 			uri = StringUtils.removeEnd(uri, "/");
 			return StringUtils.substringAfterLast(uri, "/");
 		} else {
-			return null;	
+			return null;
 		}
 	}
 	
+	protected <T> T getFromCache(Map<?,T> map, Object key) {
+		while(cacheBuilding) {
+			//wait for cache rebuild...
+		}
+		return map.get(key);
+	}
+	
+	protected <T> Set<T> getKeySetFromCache(Map<T,?> map) {
+		while(cacheBuilding) {
+			//wait for cache rebuild...
+		}
+		return map.keySet();
+	}
+
 }
