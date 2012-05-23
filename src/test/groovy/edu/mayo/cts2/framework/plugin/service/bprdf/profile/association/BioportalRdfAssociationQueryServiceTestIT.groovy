@@ -148,6 +148,24 @@ class BioportalRdfAssociationQueryServiceTestIT {
 		}
 	}
 	
+	@Test
+	void testGetChildrenAssociationOfEntityValidateSNOMED(){
+		def dir = query.getChildrenAssociationsOfEntity(
+			new EntityDescriptionReadId(ModelUtils.createScopedEntityName("363662004","SNOMEDCT"),
+				 ModelUtils.nameOrUriFromName("SNOMEDCT-46896 "))
+				, null, null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.entries.size() > 0
+		
+		dir.entries.each {
+		
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+			
+		}
+	}
+	
+	
 	
 	@Test
 	void testGetSourceEntitiesValidate(){

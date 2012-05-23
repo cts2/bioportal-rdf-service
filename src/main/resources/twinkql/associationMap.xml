@@ -31,7 +31,7 @@
 		<rowMap var="s" varType="uri"  beanProperty="about" />	
 		<rowMap var="s" varType="localName" beanProperty="name.name"/>
 		<rowMap var="s" varType="localName" beanProperty="resourceName"/>	
-		<rowMap var="s" varType="namespace"  beanProperty="name.namespace"/>	
+		<rowMap var="s" varType="namespace"  beanProperty="name.namespace" modifier="spring:namespaceModifier" />	
 	</perRowResultMap>	
 	
 		<select id="getAssociationDirectoryEntrySummaries" resultMap="associationDirectoryEntryResultMap">
@@ -86,7 +86,7 @@
 	
 	
 	
-		<select id="getChildrenAssociationsOfEntity" resultMap="entityDirectoryEntryResultMap">
+	<select id="getChildrenAssociationsOfEntity" resultMap="entityDirectoryEntryResultMap">
 		<![CDATA[
 		SELECT ?s ?p ?o	
 		<isNotNull property="restrictToGraph">

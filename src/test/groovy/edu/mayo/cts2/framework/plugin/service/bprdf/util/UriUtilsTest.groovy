@@ -23,5 +23,16 @@ class UriUtilsTest {
 		assertEquals "Occurrent", a[0]
 		assertEquals "http://www.ifomis.org/bfo/1.1/span#", a[1]
 	}
+	
+	@Test
+	void TestParseUriWithHashOther(){
+		def a = UriUtils.getNamespaceNameTuple("http://example.org/testing.owl#test103690005");
+	
+		assertEquals 2, a.length
+		assertEquals "test103690005", a[0]
+		assertEquals "http://example.org/testing.owl#", a[1]
+	}
+	
+	
 
 }
