@@ -175,6 +175,15 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	}
 	
 	@Test
+	void TestAvailableDescriptionsHaveDescriptionsNone() {
+		def name = new ScopedEntityName(name:"___INVALID___", namespace:"SNOMEDCT")
+		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
+		
+		assertNull ed
+	}
+	
+	
+	@Test
 	void TestAvailableDescriptionsHaveDescriptionsMoreThanOne() {
 		def ed = read.availableDescriptions( 
 			new EntityNameOrURI(uri:"http://www.ifomis.org/bfo/1.1/span#Occurrent"), null)

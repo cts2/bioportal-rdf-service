@@ -38,22 +38,33 @@ import org.springframework.util.Assert;
 
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
+import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.EntitySynopsis;
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.PropertyReference;
+import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
+import edu.mayo.cts2.framework.model.entity.EntityDescription;
+import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
+import edu.mayo.cts2.framework.model.service.core.Query;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSet;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription.BioportalRdfEntityDescriptionQueryService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.util.SparqlUtils;
+import edu.mayo.cts2.framework.service.command.restriction.EntityDescriptionQueryServiceRestrictions;
+import edu.mayo.cts2.framework.service.command.restriction.ResolvedValueSetResolutionEntityRestrictions;
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 import edu.mayo.cts2.framework.service.meta.StandardModelAttributeReference;
+import edu.mayo.cts2.framework.service.profile.entitydescription.EntitiesFromAssociationsQuery;
+import edu.mayo.cts2.framework.service.profile.entitydescription.EntityDescriptionQuery;
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSetResolutionService;
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId;
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery;
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResult;
 
 /**
@@ -78,10 +89,13 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 	private IdService idService;
 	
 	@Resource
+	private BioportalRdfEntityDescriptionQueryService bioportalRdfEntityDescriptionQueryService;
+	
+	@Resource
 	private BioportalRestResolvedValueSetTransform bioportalRestResolvedValueSetTransform;
 
 	@Override
-	public ResolvedValueSetResult getResolution(
+	public ResolvedValueSetResult<EntitySynopsis> getResolution(
 			ResolvedValueSetReadId identifier,
 			Set<ResolvedFilter> filterComponent, 
 			Page page) {
@@ -122,7 +136,7 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 				results.remove(results.size() - 1);
 			}
 					
-			return new ResolvedValueSetResult(
+			return new ResolvedValueSetResult<EntitySynopsis>(
 					this.getResolvedValueSetHeader(id), 
 					results, 
 					!moreResults);
@@ -133,7 +147,7 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 			DirectoryResult<EntitySynopsis> result = 
 				this.bioportalRestResolvedValueSetTransform.successBeanToEntityEntitySynopsis(successBean);
 			
-			return new ResolvedValueSetResult(
+			return new ResolvedValueSetResult<EntitySynopsis>(
 					this.getResolvedValueSetHeader(id), 
 					result.getEntries(), 
 					result.isAtEnd());
@@ -190,6 +204,86 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 		returnSet.add(StandardModelAttributeReference.RESOURCE_SYNOPSIS.getPropertyReference());
 		
 		return returnSet;
+	}
+
+	@Override
+	public ResolvedValueSetResult<EntityDirectoryEntry> getEntities(
+			ResolvedValueSetReadId identifier,
+			final ResolvedValueSetResolutionEntityQuery query,
+			SortCriteria sortCriteria, 
+			Page page) {
+		String id = identifier.getLocalName();
+		
+		DirectoryResult<EntityDirectoryEntry> result = this.bioportalRdfEntityDescriptionQueryService.getResourceSummaries(
+				this.toEntityDescriptionQuery(query),
+				sortCriteria, 
+				page);
+		
+		return new ResolvedValueSetResult<EntityDirectoryEntry>(
+					this.getResolvedValueSetHeader(id), 
+					result.getEntries(), 
+					result.isAtEnd());
+	}
+	
+	private EntityDescriptionQuery toEntityDescriptionQuery(
+			final ResolvedValueSetResolutionEntityQuery query){
+		return new EntityDescriptionQuery(){
+
+			@Override
+			public Query getQuery() {
+				return query.getQuery();
+			}
+
+			@Override
+			public Set<ResolvedFilter> getFilterComponent() {
+				return query.getFilterComponent();
+			}
+
+			@Override
+			public ResolvedReadContext getReadContext() {
+				return null;
+			}
+
+			@Override
+			public EntitiesFromAssociationsQuery getEntitiesFromAssociationsQuery() {
+				return null;
+			}
+
+			@Override
+			public EntityDescriptionQueryServiceRestrictions getRestrictions() {
+				EntityDescriptionQueryServiceRestrictions entityRestrictions =
+					new EntityDescriptionQueryServiceRestrictions();
+				
+				if(query != null && query.getResolvedValueSetResolutionEntityRestrictions() != null){
+					ResolvedValueSetResolutionEntityRestrictions restrictions = 
+							query.getResolvedValueSetResolutionEntityRestrictions();
+					
+					entityRestrictions.setCodeSystemVersion(restrictions.getCodeSystemVersion());
+					entityRestrictions.setEntities(restrictions.getEntities());
+				}
+				
+				return entityRestrictions;
+			}
+		};
+	}
+
+	@Override
+	public DirectoryResult<EntityDescription> getEntityList(
+			ResolvedValueSetReadId identifier,
+			ResolvedValueSetResolutionEntityQuery query,
+			SortCriteria sortCriteria, 
+			Page page) {
+		String id = identifier.getLocalName();
+		
+		DirectoryResult<EntityDescription> result = this.bioportalRdfEntityDescriptionQueryService.getResourceList(
+				this.toEntityDescriptionQuery(query),
+				sortCriteria, 
+				page);
+		
+		return new ResolvedValueSetResult<EntityDescription>(
+					this.getResolvedValueSetHeader(id), 
+					result.getEntries(), 
+					result.isAtEnd());
 	}
 
 	

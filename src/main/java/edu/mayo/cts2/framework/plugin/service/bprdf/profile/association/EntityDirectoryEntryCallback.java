@@ -69,7 +69,6 @@ public class EntityDirectoryEntryCallback implements
 		String codeSystemVersion_name= (String) context.getQueryParams().get("restrictToCodeSystemVersion");
 		String id = idService.getCurrentIdForOntologyId(ontologyId);
 		bindingResult.addKnownEntityDescription(getDescriptionInCodeSystem(ontologyId, id, codeSystemVersion_name));
-		bindingResult.getName().setNamespace(codeSystemVersion_name);
 	}
 
 	protected DescriptionInCodeSystem getDescriptionInCodeSystem(String ontologyId, String id, String codeSystemVersion_name) {
