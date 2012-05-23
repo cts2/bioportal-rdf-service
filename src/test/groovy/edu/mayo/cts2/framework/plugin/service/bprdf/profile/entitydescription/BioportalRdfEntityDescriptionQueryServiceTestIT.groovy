@@ -92,6 +92,30 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	}
 	
 	@Test
+	void TestGetResourceSummariesWithCSVAndFilter(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("CHEBI-47151")
+				)
+			},
+			getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"role",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+						)] as Set
+					}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertEquals  dir.getEntries().size() > 0
+	}
+
+	@Test
 	void TestGetResourceSummariesHaveNameAndNamespace(){
 		def dir = query.getResourceSummaries(
 			[

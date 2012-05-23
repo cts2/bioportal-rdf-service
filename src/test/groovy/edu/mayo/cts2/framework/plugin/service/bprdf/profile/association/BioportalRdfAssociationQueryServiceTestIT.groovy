@@ -88,7 +88,21 @@ class BioportalRdfAssociationQueryServiceTestIT {
 
 	}
 	
-	
+	@Test
+	void testGetResourceSummariesWithCodeSystemVersionAndSourceNameRestrictionLNC(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("LNC-44774"),
+																		  sourceEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("MTHU000999", "") ))},
+				getFilterComponent:{[] as Set}
+			] as AssociationQuery,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+
+	}
+
 	
 	
 	
@@ -108,6 +122,21 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	}
 	
 	
+	@Test
+	void testGetResourceSummariesWithCodeSystemVersionAndSourceEntityUriRestrictionForLNC(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("LNC-44774"),
+																		  sourceEntity: ModelUtils.entityNameOrUriFromUri("MTHU000999") )},
+				getFilterComponent:{[] as Set}
+			] as AssociationQuery,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+
+	}
+
 	void testGetResourceSummariesWithCodeSystemVersionAndSourceOrTargetEntityNameRestriction(){
 		def dir = query.getResourceSummaries(
 			[
