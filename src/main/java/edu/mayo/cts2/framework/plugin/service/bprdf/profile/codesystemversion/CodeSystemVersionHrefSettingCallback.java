@@ -30,35 +30,47 @@ import org.springframework.stereotype.Component;
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.codesystemversion.CodeSystemVersionCatalogEntry;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.twinkql.result.callback.CallbackContext;
 
 /**
  * The Class CodeSystemHrefSettingCallback.
- *
+ * 
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
 @Component("codeSystemVersionHrefCallback")
-public class CodeSystemVersionHrefSettingCallback extends AbstractCodeSystemVersionNameSettingCallback<CodeSystemVersionCatalogEntry> {
+public class CodeSystemVersionHrefSettingCallback
+		extends
+		AbstractCodeSystemVersionNameSettingCallback<CodeSystemVersionCatalogEntry> {
 
 	@Resource
 	private UrlConstructor urlConstructor;
 
-	/* (non-Javadoc)
-	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
+	@Resource
+	private IdService idService;
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java
+	 * .lang.Object)
 	 */
 	@Override
-	public void afterBinding(
-			CodeSystemVersionCatalogEntry bindingResult, 
+	public void afterBinding(CodeSystemVersionCatalogEntry bindingResult,
 			CallbackContext context) {
 
-		CodeSystemVersionName csvName = this.getCodeSystemVersionName(context.getCallbackIds());
-		
+		CodeSystemVersionName csvName = this.getCodeSystemVersionName(context
+				.getCallbackIds());
+
 		String acronym = csvName.getAcronym();
-		
-		bindingResult.setEntityDescriptions(
-				this.urlConstructor.createEntitiesOfCodeSystemVersionUrl(
-						acronym, 
-						csvName.toString()));
+		String ontologyId = this.idService.getOntologyIdForAcronym(acronym);
+		String id = idService.getCurrentIdForOntologyId(ontologyId);
+		if (id != null && id.equalsIgnoreCase(csvName.getId())) {
+			bindingResult.setEntityDescriptions(this.urlConstructor
+					.createEntitiesOfCodeSystemVersionUrl(acronym,
+							csvName.toString()));
+		}
 	}
 
 }

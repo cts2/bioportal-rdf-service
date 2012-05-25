@@ -26,6 +26,17 @@ class BioportalRdfCodeSystemVersionReadServiceByNameTestIT extends BioportalRdfC
 	}
 
 	@Test
+	void TestReadNotCurrentCodingSchemeVersion() {
+		def csv = read.read(ModelUtils.nameOrUriFromName("LNC-44256"), null)
+		
+		assertNotNull csv
+		
+		marshaller.marshal(csv, new StreamResult(new StringWriter()))
+		marshaller.marshal(csv, new StreamResult(System.out))
+		
+	}
+
+	@Test
 	void TestReadWithNoFileNameProperty() {
 		def csv = read.read(ModelUtils.nameOrUriFromName("CBO-39336"), null)
 		
