@@ -115,6 +115,32 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 		assertEquals  dir.getEntries().size() > 0
 	}
 
+	
+	@Test
+	void TestGetResourceSummariesWithCSVAndFilterForNonCurrentCSV(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("LNC-40400")
+				)
+			},
+			getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"disease",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+						)] as Set
+					}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertTrue  dir.getEntries().size() == 0
+		
+	}
+
 	@Test
 	void TestGetResourceSummariesHaveNameAndNamespace(){
 		def dir = query.getResourceSummaries(

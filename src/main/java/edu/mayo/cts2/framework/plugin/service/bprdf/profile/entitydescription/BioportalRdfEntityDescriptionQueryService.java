@@ -23,6 +23,7 @@
  */
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -127,7 +128,16 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 			id = csvName.getId();
 			acronym = csvName.getAcronym();
 			
+			
 			ontologyId = this.idService.getOntologyIdForId(id);
+			String currentId= idService.getCurrentIdForOntologyId(ontologyId);
+			//The BioPortal rdf sparql end point doesn't contain non current csv data. So
+			// we return an empty list 
+			if (id != null && ! id.equals(currentId)) {
+				List<EntityDirectoryEntry> returnList = new ArrayList<EntityDirectoryEntry>();
+				DirectoryResult<EntityDirectoryEntry> result = new DirectoryResult<EntityDirectoryEntry>(returnList, true);
+                return result;
+			}
 		} 
 		
 		if(CollectionUtils.isEmpty(query.getFilterComponent())){
