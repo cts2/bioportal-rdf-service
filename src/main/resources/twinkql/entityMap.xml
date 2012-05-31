@@ -5,7 +5,8 @@
 	xsi:schemaLocation="http://mayo.edu/twinkql https://raw.github.com/cts2/twinkql/master/src/main/castor/twinkql.xsd">
 	
 	<perRowResultMap id="entityDirectoryEntryResultMap" 
-		resultClass="edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry">
+		resultClass="edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry"
+		afterMap="spring:entityDirectoryEntryCallback">
 		<rowMap var="s" varType="uri"  beanProperty="about"/>
 		<rowMap var="s" varType="localName" beanProperty="name.name"/>
 		<rowMap var="s" varType="namespace" beanProperty="name.namespace" modifier="spring:namespaceModifier" />

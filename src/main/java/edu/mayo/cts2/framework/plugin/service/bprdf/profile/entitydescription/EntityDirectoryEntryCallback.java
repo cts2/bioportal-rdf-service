@@ -26,12 +26,14 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
+import edu.mayo.cts2.framework.core.constants.URIHelperInterface;
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
-import edu.mayo.cts2.framework.core.util.EncodingUtils;
-import edu.mayo.cts2.framework.model.core.URIAndEntityName;
-import edu.mayo.cts2.framework.model.entity.EntityDescription;
-import edu.mayo.cts2.framework.model.entity.EntityDescriptionBase;
+import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
+import edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem;
+import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
+import edu.mayo.cts2.framework.plugin.service.bprdf.common.CodeSystemVersionReferenceFactory;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.twinkql.result.callback.AfterResultBinding;
 import edu.mayo.twinkql.result.callback.CallbackContext;
@@ -41,55 +43,52 @@ import edu.mayo.twinkql.result.callback.CallbackContext;
  *
  * @author <a href="mailto:kevin.peterson@mayo.edu">Kevin Peterson</a>
  */
-@Component("entityDescriptionCallback")
-public class EntityDescriptionCallback implements AfterResultBinding<EntityDescription> {
-	
-	@Resource
-	private BioportalRestEntityDescriptionTransform bioportalRestEntityDescriptionTransform;
+@Component("entityDirectoryEntryCallback")
+public class EntityDirectoryEntryCallback implements AfterResultBinding<EntityDirectoryEntry> {
 	
 	@Resource
 	private UrlConstructor urlConstructor;
 	
 	@Resource
+	private CodeSystemVersionReferenceFactory codeSystemVersionReferenceFactory;
+	
+	@Resource
 	private IdService idService;
-
+	
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
 	@Override
 	public void afterBinding(
-			EntityDescription bindingResult, 
+			EntityDirectoryEntry bindingResult, 
 			CallbackContext context) {	
 		
-		String acronym = (String) context.getCallbackIds().get("graph");
-		String ontologyId = this.idService.getOntologyIdForAcronym(acronym);
-		String id = idService.getCurrentIdForOntologyId(ontologyId);
+		String acronym = 
+				(String) context.getQueryParams().get("acronym");	
 		
-		EntityDescriptionBase base = (EntityDescriptionBase) bindingResult.getChoiceValue();
-		
-		base.setDescribingCodeSystemVersion(
-				this.bioportalRestEntityDescriptionTransform.getCodeSystemVersionReference(ontologyId, id));
-		
-		String codeSystemName = base.getDescribingCodeSystemVersion().getCodeSystem().getContent();
-		String codeSystemVersionName = base.getDescribingCodeSystemVersion().getVersion().getContent();
-		
-		for(URIAndEntityName parent : base.getParent()){
-			parent.setHref(
-					this.urlConstructor.createEntityUrl(
-							codeSystemName,
-							codeSystemVersionName,
-							parent.getName()));
+		if(acronym == null){
+			acronym = (String) context.getQueryParams().get("restrictToGraph");
 		}
 		
-		base.setSubjectOf(this.urlConstructor.createSubjectOfUrl(
-				codeSystemName,
-				codeSystemVersionName,
-				EncodingUtils.encodeScopedEntityName(base.getEntityID())));
+		Assert.notNull(acronym);
 		
-		base.setChildren(this.urlConstructor.createChildrenUrl(
-				codeSystemName,
-				codeSystemVersionName,
-				EncodingUtils.encodeScopedEntityName(base.getEntityID())));
+		String ontologyId = this.idService.getOntologyIdForAcronym(acronym);
+		String id = this.idService.getCurrentIdForOntologyId(ontologyId);
+		
+		//TODO: this method needs to be in the UrlConstructor
+		bindingResult.setHref(
+			this.urlConstructor.getServerRootWithAppName() + "/" + URIHelperInterface.ENTITY + "/" + bindingResult.getName());
+		
+		for(DescriptionInCodeSystem description : bindingResult.getKnownEntityDescription()){
+			CodeSystemVersionReference ref = this.codeSystemVersionReferenceFactory.getCodeSystemVersionReferenceFor(id);
+			description.setHref(
+					this.urlConstructor.createEntityUrl(
+							ref.getCodeSystem().getContent(), 
+							ref.getVersion().getContent(),
+							bindingResult.getName()));
+			
+			description.setDescribingCodeSystemVersion(ref);
+		}
 	}
 
 }

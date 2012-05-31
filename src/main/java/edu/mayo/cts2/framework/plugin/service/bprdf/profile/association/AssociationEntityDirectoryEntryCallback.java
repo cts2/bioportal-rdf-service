@@ -43,8 +43,8 @@ import edu.mayo.twinkql.result.callback.CallbackContext;
  * 
  * @author <a href="mailto:kanjamala.pradip@mayo.edu">Pradip Kanjamala</a>
  */
-@Component("entityDirectoryEntryCallback")
-public class EntityDirectoryEntryCallback implements
+@Component("associationEntityDirectoryEntryCallback")
+public class AssociationEntityDirectoryEntryCallback implements
 		AfterResultBinding<EntityDirectoryEntry> {
 
 

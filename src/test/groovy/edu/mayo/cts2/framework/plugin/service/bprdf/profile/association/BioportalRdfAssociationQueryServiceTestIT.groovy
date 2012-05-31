@@ -5,7 +5,6 @@ import static org.junit.Assert.*
 import javax.annotation.Resource
 import javax.xml.transform.stream.StreamResult
 
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.test.context.ContextConfiguration
@@ -13,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
 import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.command.Page
+import edu.mayo.cts2.framework.model.core.ScopedEntityName
 import edu.mayo.cts2.framework.model.util.ModelUtils
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.association.BioportalRdfAssociationQueryService
 import edu.mayo.cts2.framework.service.command.restriction.AssociationQueryServiceRestrictions
@@ -77,8 +77,8 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	void testGetResourceSummariesWithCodeSystemVersionAndSourceNameRestriction(){
 		def dir = query.getResourceSummaries(
 			[
-				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928"), 
-					                                                      sourceEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("GO:0000001", "") ))},
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("LNC-44774"), 
+					                                                      sourceEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("LP7119-3", "") ))},
 				getFilterComponent:{[] as Set}
 			] as AssociationQuery,null,new Page())
 		
@@ -127,7 +127,7 @@ class BioportalRdfAssociationQueryServiceTestIT {
 		def dir = query.getResourceSummaries(
 			[
 				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("LNC-44774"),
-																		  sourceEntity: ModelUtils.entityNameOrUriFromUri("MTHU000999") )},
+																		  sourceEntity: ModelUtils.entityNameOrUriFromName(new ScopedEntityName(name:"LP7119-3")) )},
 				getFilterComponent:{[] as Set}
 			] as AssociationQuery,null,new Page())
 		

@@ -16,7 +16,7 @@ class BioportalRdfCodeSystemReadVersionServiceByVersionIdTestIT extends Bioporta
 	
 	@Override
 	public CodeSystemVersionCatalogEntry doRead() {
-		def cs = read.getCodeSystemByVersionId(ModelUtils.nameOrUriFromName("LNC"), "229", null)
+		def cs = read.getCodeSystemByVersionId(ModelUtils.nameOrUriFromName("LNC"), "232", null)
 		
 		cs
 	}

@@ -69,6 +69,19 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	}
 	
 	@Test
+	void TestReadByNameSnomedCTValid() {
+	
+		def name = new ScopedEntityName(name:"167902000")
+		def csv = ModelUtils.nameOrUriFromName("SNOMEDCT-44777")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertNotNull ed
+	
+		marshaller.marshal(ed, new StreamResult(new StringWriter()))
+		
+	}
+	
+	@Test
 	void TestReadByNameValidDescribingCodeSystemVersion() {
 	
 		def name = new ScopedEntityName(name:"Hospital")
@@ -118,6 +131,26 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
 		
 		assert 1 <= ed.namedEntity.parent.length
+	}
+	
+	@Test
+	void TestReadByNameHasChildrenHref() {
+	
+		def name = new ScopedEntityName(name:"LP7119-3")
+		def csv = ModelUtils.nameOrUriFromName("LNC-44774")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertNotNull ed.choiceValue.children
+	}
+	
+	@Test
+	void TestReadByNameHasSubjectOfHref() {
+	
+		def name = new ScopedEntityName(name:"LP7119-3")
+		def csv = ModelUtils.nameOrUriFromName("LNC-44774")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertNotNull ed.choiceValue.subjectOf
 	}
 	
 	@Test
@@ -214,6 +247,16 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 
 		ed.knownEntityDescription.each {
 			assertNotNull it.designation
+		}
+	}
+	
+	@Test
+	void TestAvailableDescriptionsHaveHrefs() {
+		def ed = read.availableDescriptions(
+			new EntityNameOrURI(uri:"http://www.ifomis.org/bfo/1.1/span#Occurrent"), null)
+
+		ed.knownEntityDescription.each {
+			assertNotNull it.href
 		}
 	}
 	

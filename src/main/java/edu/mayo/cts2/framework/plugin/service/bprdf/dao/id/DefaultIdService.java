@@ -266,8 +266,11 @@ public class DefaultIdService implements IdService, InitializingBean {
 		}
 
 		if (uri.startsWith(BIOPORTAL_PURL_URI)) {
+			uri = StringUtils.removeStart(uri, BIOPORTAL_PURL_URI);
 			uri = StringUtils.removeEnd(uri, "/");
-			return StringUtils.substringAfterLast(uri, "/");
+			uri = StringUtils.substringBefore(uri, "/");
+			
+			return uri;
 		} else {
 			return null;
 		}

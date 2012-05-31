@@ -27,7 +27,7 @@
 	
 	<perRowResultMap id="entityDirectoryEntryResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry"
-		afterMap="spring:entityDirectoryEntryCallback">
+		afterMap="spring:associationEntityDirectoryEntryCallback,spring:entityDirectoryEntryCallback">
 		<rowMap var="s" varType="uri"  beanProperty="about" />	
 		<rowMap var="s" varType="localName" beanProperty="name.name"/>
 		<rowMap var="s" varType="localName" beanProperty="resourceName"/>	

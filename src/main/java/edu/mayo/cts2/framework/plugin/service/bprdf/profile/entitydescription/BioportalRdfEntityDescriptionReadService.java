@@ -37,6 +37,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
 import edu.mayo.cts2.framework.model.core.CodeSystemReference;
@@ -88,6 +89,9 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 	
 	@Resource
 	private RdfDao rdfDao;
+	
+	@Resource
+	private UrlConstructor urlConstructor;
 
 	@Resource
 	private IdService idService;
@@ -143,7 +147,7 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 		long start = System.currentTimeMillis();
 		EntityDescription entity = this.rdfDao.selectForObject(ENTITY_NAMESPACE, GET_ENTITY_BY_URI,
 				parameters, EntityDescription.class);
-		System.out.println("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
+		log.info("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
 
 		return entity;
 	}
@@ -196,16 +200,14 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 				GET_AVAILABLE_DESCRIPTIONS,
 				parameters, Result.class);
 		
-		System.out.println("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
-		
-		EntityReference ref = null;
-		
+		log.info("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
+	
 		if(CollectionUtils.isNotEmpty(ids)){
-			ref = new EntityReference();
+			final EntityReference ref = new EntityReference();
 
 			String[] names = UriUtils.getNamespaceNameTuple(entityUri);
 			
-			String name = names[0];
+			final String name = names[0];
 			String namespaceUri = names[1];
 			String namespaceName = this.namespaceModifier.getNamespace(namespaceUri);
 		
@@ -253,6 +255,13 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 							description.setDesignation(designation.getDesignation());
 						}
 						
+						CodeSystemVersionReference csvRef = description.getDescribingCodeSystemVersion();
+						description.setHref(
+							urlConstructor.createEntityUrl(
+								csvRef.getCodeSystem().getContent(), 
+								csvRef.getVersion().getContent(), 
+								ref.getName()));
+							
 						return null;
 					}
 					
@@ -263,12 +272,14 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 			
 			try {
 				this.executorService.invokeAll(callables);
+				
+				return ref;
 			} catch (InterruptedException e) {
 				throw new IllegalStateException();
 			}
+		} else {
+			return null;
 		}
-
-		return ref;
 	}
 
 	@Override
@@ -286,19 +297,16 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 
 	@Override
 	public List<CodeSystemReference> getKnownCodeSystems() {
-		// TODO
 		return null;
 	}
 
 	@Override
 	public List<CodeSystemVersionReference> getKnownCodeSystemVersions() {
-		// TODO
 		return null;
 	}
 
 	@Override
 	public List<VersionTagReference> getSupportedVersionTags() {
-		// TODO
 		return null;
 	}
 

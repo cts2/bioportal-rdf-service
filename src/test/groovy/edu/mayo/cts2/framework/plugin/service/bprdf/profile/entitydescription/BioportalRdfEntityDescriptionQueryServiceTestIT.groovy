@@ -98,7 +98,7 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 			getEntitiesFromAssociationsQuery:{null},
 			getRestrictions:{
 				new EntityDescriptionQueryServiceRestrictions(
-					codeSystemVersion: ModelUtils.nameOrUriFromName("CHEBI-47151")
+					codeSystemVersion: ModelUtils.nameOrUriFromName("SNOMEDCT-46896")
 				)
 			},
 			getFilterComponent:{
@@ -112,7 +112,7 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 		new Page(maxToReturn:10))
 		
 		assertNotNull dir
-		assertEquals  dir.getEntries().size() > 0
+		assertTrue  dir.getEntries().size() > 0
 	}
 
 	
@@ -207,6 +207,59 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 		
 		assertNotNull dir.entries.each {
 			assertNotNull it.href
+		}
+	}
+	
+	@Test
+	void TestGetResourceSummariesOfCodeSystemVersionNoFilterHaveHrefs(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getFilterComponent:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion:ModelUtils.nameOrUriFromName("SNOMEDCT-46896")
+				)
+			}
+			
+			] as EntityDescriptionQuery,
+		null,
+		new Page())
+		
+		assertNotNull dir.entries.each {
+			assertNotNull it.href
+			
+			assertTrue it.knownEntityDescription.size() > 0
+			
+			it.knownEntityDescription.each {inner->
+				assertNotNull inner.href
+			}
+		}
+	}
+	
+	@Test
+	void TestGetResourceSummariesOfCodeSystemVersionNoFilterHaveDescribingCodeSystemVersion(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getFilterComponent:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion:ModelUtils.nameOrUriFromName("SNOMEDCT-46896")
+				)
+			}
+			
+			] as EntityDescriptionQuery,
+		null,
+		new Page())
+		
+		assertNotNull dir.entries.each {
+			
+			assertTrue it.knownEntityDescription.size() > 0
+			
+			it.knownEntityDescription.each {inner->
+				assertNotNull inner.describingCodeSystemVersion
+			}
 		}
 	}
 }

@@ -13,7 +13,7 @@ class BioportalRdfCodeSystemVersionReadServiceByUriTestIT extends BioportalRdfCo
 	BioportalRdfCodeSystemVersionReadService read
 	
 	def doRead() {
-		read.read(ModelUtils.nameOrUriFromUri("http://bioportal.bioontology.org/ontologies/LNC/version/44256"), null)
+		read.read(ModelUtils.nameOrUriFromUri("http://bioportal.bioontology.org/ontologies/LNC/version/44774"), null)
 	}
 	
 	@Test
