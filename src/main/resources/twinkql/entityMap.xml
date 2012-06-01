@@ -33,7 +33,7 @@
 		<if function="spring:isLiteral" param="o">
 			<nestedResultMap resultMap="common:propertyResultMap" beanProperty="namedEntity.propertyAsReference[]" />	
 		</if>
-		<tripleMap var="o" varType="localName" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityID.name"/>
+		<tripleMap var="s" varType="localName" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityID.name"/>
 		<tripleMap var="s" varType="namespace" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityID.namespace" modifier="spring:namespaceModifier" />
 		<tripleMap var="s" varType="uri" predicateUri="rdfs1999:type" beanProperty="namedEntity.about"/>
 		<tripleMap var="graph" varType="localName" predicateUri="rdfs1999:type" callbackId="graph"/>	

@@ -4,6 +4,8 @@ import javax.annotation.Resource;
 import javax.xml.transform.stream.StreamResult
 
 import static org.junit.Assert.*
+
+import org.apache.commons.lang.StringUtils
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration
@@ -153,6 +155,28 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
 		
 		assertNotNull ed.choiceValue.children
+	}
+	
+	@Test
+	void TestReadByNameHasChildrenHrefCorrect() {
+	
+		def name = new ScopedEntityName(name:"E008.2")
+		def csv = ModelUtils.nameOrUriFromName("ICD9CM-47178")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertFalse StringUtils.endsWith(
+			ed.choiceValue.children, "ICD9CM:Class/children")
+	}
+	
+	@Test
+	void TestReadByNameHasCorrectNameAndNamespace() {
+	
+		def name = new ScopedEntityName(name:"E008.2")
+		def csv = ModelUtils.nameOrUriFromName("ICD9CM-47178")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertEquals "E008.2", ed.choiceValue.entityID.name
+		assertEquals "ICD9CM", ed.choiceValue.entityID.namespace
 	}
 	
 	@Test
