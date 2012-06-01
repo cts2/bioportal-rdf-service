@@ -109,7 +109,7 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 		if(! acronym.equals(expectedAcronym)){
 			return null;
 		}
-		
+
 		if(CollectionUtils.isEmpty(filterComponent)){
 			
 			Map<String,Object> parameters = new HashMap<String,Object>();

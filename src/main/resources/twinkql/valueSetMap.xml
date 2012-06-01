@@ -10,8 +10,8 @@
 		afterMap="spring:valueSetSummaryHrefCallback">
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
 		<rowMap var="ontologyId" varType="uri" beanProperty="about" />
-		<rowMap var="valueSetName" varType="literalValue" beanProperty="resourceName" />
-		<rowMap var="valueSetName" varType="literalValue" beanProperty="valueSetName" />
+		<rowMap var="valueSetName" varType="literalValue" beanProperty="resourceName" modifier="spring:nameSanitizingModifier" />
+		<rowMap var="valueSetName" varType="literalValue" beanProperty="valueSetName" modifier="spring:nameSanitizingModifier" />
 		<rowMap var="id" varType="literalValue" callbackId="id" />
 		<rowMap var="virtualId" varType="literalValue" callbackId="virtualId"/>
 	</perRowResultMap>
@@ -19,11 +19,9 @@
 	
 	<compositeResultMap id="valueSetCatalogEntryResultMap"
 	 	extends="common:resourceDescriptionResultMap" 
-		resultClass="edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry"
-		afterMap="spring:valueSetNameCallback">
+		resultClass="edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry" >
 		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
-		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" callbackId="acronym"/>
-		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="valueSetName" modifier="spring:nameSanitizingModifier" />
 	</compositeResultMap>
 	
 	<select id="getValueSetCatalogSummaries" resultMap="valueSetCatalogEntrySummaryResultMap">
@@ -35,7 +33,7 @@
           ?description
           ?id
           ?ontologyId
-          ( CONCAT( ?acronym, "-", ?virtualId ) as ?valueSetName )
+          ( ?acronym as ?valueSetName )
     
 	   WHERE {
 	   ?s a bpMetadata:OntologyView;

@@ -30,7 +30,7 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolution(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),null),null,new Page())
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
@@ -41,7 +41,7 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolutionWrongValueSetName(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO-WRONG"),null),null,new Page())
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO-WRONG"),ModelUtils.nameOrUriFromName("BRO-41011")),null,new Page())
 		
 		assertNull dir
 
@@ -52,7 +52,7 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolutionHasHrefs(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),null),null,new Page())
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),null,new Page())
 		
 		assertNotNull dir
 		assertTrue dir.getEntries().size() > 0
@@ -69,7 +69,7 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolutionWithFilter(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),null),
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
 			[new ResolvedFilter(
 						matchValue:"software",
 						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
@@ -85,7 +85,20 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolutionWithNoFilter(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),null),
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
+			[] as Set
+			,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 4
+
+	}
+	
+	@Test
+	void TestGetResolutionWithNoFilterHasEntities(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("41016",ModelUtils.nameOrUriFromName("NIF-RTH"),ModelUtils.nameOrUriFromName("NIF-RTH-41016")),
 			[] as Set
 			,new Page())
 		
@@ -98,7 +111,7 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolutionWithFilterHasHrefs(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),null),
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
 			[new ResolvedFilter(
 						matchValue:"software",
 						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
@@ -120,7 +133,7 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	void TestGetResolutionValidXML(){
 
 		def dir = resolution.getResolution(
-			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),null),
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
 			[new ResolvedFilter(
 						matchValue:"software",
 						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,

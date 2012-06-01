@@ -104,7 +104,7 @@
         SELECT DISTINCT ?s ?p ?o
         WHERE { 
                 
-				GRAPH <#{uri}/metadata> {
+				GRAPH <http://bioportal.bioontology.org/ontologies/#{ontologyId}/metadata> {
 	
                        ?s a omv:Ontology ;
                           bpMetadata:id #{id} ;

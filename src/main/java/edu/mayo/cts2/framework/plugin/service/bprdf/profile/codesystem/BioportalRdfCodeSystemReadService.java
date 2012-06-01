@@ -100,7 +100,7 @@ public class BioportalRdfCodeSystemReadService extends AbstractService
 			}
 			
 			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("uri", uri);
+			parameters.put("ontologyId", ontologyId);
 			parameters.put("id", id);
 
 			return this.rdfDao.selectForObject(
@@ -118,7 +118,9 @@ public class BioportalRdfCodeSystemReadService extends AbstractService
 	 * @return the ontology id from uri
 	 */
 	private String getOntologyIdFromUri(String uri){
-		return StringUtils.substringAfterLast(uri, "/");
+		String acronym = StringUtils.substringAfterLast(uri, "/");
+		
+		return this.idService.getOntologyIdForAcronym(acronym);
 	}
 
 	/* (non-Javadoc)

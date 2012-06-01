@@ -145,5 +145,16 @@ class BioportalRdfValueSetQueryServiceTestIT {
 			
 		}
 	}
+	
+	@Test
+	void TestGetResourceSummariesHaveCorrectHrefs(){
+		def dir = query.getResourceSummaries(null as ValueSetQuery,null,new Page())
+		
+		dir.entries.each {
+			
+			assertEquals it.valueSetName, StringUtils.substringAfterLast(it.href, "/");
+			
+		}
+	}
 
 }

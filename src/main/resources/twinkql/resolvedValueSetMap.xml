@@ -124,10 +124,15 @@
 				         bpMetadata:id ?codeSystemVersionId ;
 				         bpMetadata:isVersionOfVirtualOntology ?definitionOfCodeSystem .
 				     ?definitionOfCodeSystem bpMetadata:id ?codeSystemId .
-			     }
 			     
-		    	 ?s a owl:Class ;
-		        	 rdfs:label ?label .
+		    	 	
+		    	 }
+		    	 
+		    	 GRAPH <http://bioportal.bioontology.org/ontologies/#{acronym}> {
+		    	 	?s a owl:Class .
+		    	 }
+		         
+		         ?s rdfs:label ?label .
                          
         	}
         LIMIT  #{limit}

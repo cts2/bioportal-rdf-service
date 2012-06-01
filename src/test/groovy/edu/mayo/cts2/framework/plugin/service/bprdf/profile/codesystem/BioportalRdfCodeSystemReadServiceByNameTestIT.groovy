@@ -16,7 +16,7 @@ class BioportalRdfCodeSystemReadServiceByNameTestIT extends BioportalRdfCodeSyst
 	
 	@Override
 	public CodeSystemCatalogEntry doRead() {
-		def cs = read.read(ModelUtils.nameOrUriFromName("GO"), null)
+		def cs = read.read(ModelUtils.nameOrUriFromName("LNC"), null)
 		
 		cs
 	}
