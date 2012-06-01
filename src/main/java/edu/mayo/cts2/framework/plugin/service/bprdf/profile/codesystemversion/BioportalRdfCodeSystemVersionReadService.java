@@ -79,6 +79,16 @@ public class BioportalRdfCodeSystemVersionReadService extends AbstractService
 				return null;
 			}
 			
+			//check that the acronym part is valid
+			CodeSystemVersionName csvCheck = 
+				this.idService.getCodeSystemVersionNameForId(name.getId());
+			if(csvCheck == null || !name.equals(csvCheck)){
+				//mismatch. this can happen if the user passes in
+				//SOMECS__INVALID__-90090, as the first CodeSystemVersionName
+				//is initially queried only by the id part
+				return null;
+			}
+			
 			Map<String,Object> parameters = new HashMap<String,Object>();
 			parameters.put("id", name.getId());
 			parameters.put("ontologyId", ontologyId);

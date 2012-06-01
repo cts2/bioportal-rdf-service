@@ -6,21 +6,21 @@
 	
 	<perRowResultMap id="associationDirectoryEntryResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.association.AssociationDirectoryEntry"
-		afterMap="spring:associationEntityNamespaceCallback,spring:associationEntityHrefCallback,spring:associationAssertedByCallback">
+		afterMap="spring:associationEntityHrefCallback,spring:associationAssertedByCallback">
 		<rowMap var="s" varType="uri"  beanProperty="subject.uri"/>	
 		<rowMap var="s" varType="uri"  beanProperty="subject.href" />	
 		<rowMap var="s" varType="localName" beanProperty="subject.name"/>	
-		<rowMap var="s" varType="namespace"  beanProperty="subject.namespace"/>	
+		<rowMap var="s" varType="namespace"  beanProperty="subject.namespace" modifier="spring:namespaceModifier" />
 
 		<rowMap var="p" varType="uri"  beanProperty="predicate.uri"/>	
 		<rowMap var="p" varType="uri"  beanProperty="predicate.href"/>	
 		<rowMap var="p" varType="localName" beanProperty="predicate.name"/>	
-		<rowMap var="p" varType="namespace"  beanProperty="predicate.namespace"/>	
+		<rowMap var="p" varType="namespace"  beanProperty="predicate.namespace" modifier="spring:namespaceModifier" />	
 
 		<rowMap var="o" varType="uri"  beanProperty="target.entity.uri"/>	
 		<rowMap var="o" varType="uri"  beanProperty="target.entity.href"/>	
 		<rowMap var="o" varType="localName" beanProperty="target.entity.name"/>	
-		<rowMap var="o" varType="namespace"  beanProperty="target.entity.namespace"/>	
+		<rowMap var="o" varType="namespace"  beanProperty="target.entity.namespace" modifier="spring:namespaceModifier" />	
 
 	</perRowResultMap>	
 	

@@ -35,7 +35,21 @@ class BioportalRdfCodeSystemVersionReadServiceByNameTestIT extends BioportalRdfC
 		marshaller.marshal(csv, new StreamResult(System.out))
 		
 	}
+	
+	@Test
+	void TestReadReadByNameInvalidAcronym() {
+		def csv = read.read(ModelUtils.nameOrUriFromName("__INVALID__-44774"), null)
+		
+		assertNull csv
+	}
 
+	@Test
+	void TestReadReadByNameInvalidId() {
+		def csv = read.read(ModelUtils.nameOrUriFromName("LNC-__INVALID__"), null)
+		
+		assertNull csv
+	}
+	
 	@Test
 	void TestReadWithNoFileNameProperty() {
 		def csv = read.read(ModelUtils.nameOrUriFromName("CBO-39336"), null)

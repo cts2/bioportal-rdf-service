@@ -125,6 +125,11 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 					this.idService.getCodeSystemVersionNameForName(
 							query.getRestrictions().getCodeSystemVersion().getName());
 			
+			//Invalid CodeSystemVersion -- return null
+			if(csvName == null){
+				return null;
+			}
+			
 			id = csvName.getId();
 			acronym = csvName.getAcronym();
 			

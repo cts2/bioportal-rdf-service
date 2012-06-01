@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -100,21 +101,22 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService
 			parameterizeAssociationRestriction(query.getRestrictions(), parameters );
 		}
 
-		List<AssociationDirectoryEntry> results;
-
-		results = rdfDao.selectForList(ASSOCIATION_NAMESPACE,
+		List<AssociationDirectoryEntry> results = rdfDao.selectForList(ASSOCIATION_NAMESPACE,
 				GET_ASSOCIATION_SUMMARIES, parameters,
 				AssociationDirectoryEntry.class);
-
-		boolean moreResults = results.size() > page.getMaxToReturn();
-
-		if (moreResults) {
-			results.remove(results.size() - 1);
+		
+		if(CollectionUtils.isEmpty(results)){
+			return null;
+		} else {
+			boolean moreResults = results.size() > page.getMaxToReturn();
+	
+			if (moreResults) {
+				results.remove(results.size() - 1);
+			}
+	
+			return new DirectoryResult<AssociationDirectoryEntry>(results,
+					!moreResults);
 		}
-
-		return new DirectoryResult<AssociationDirectoryEntry>(results,
-				!moreResults);
-
 	}
 
 	private void addRestriction(String ontologyId, String restrictionType,

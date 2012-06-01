@@ -19,6 +19,9 @@ public class AssociationEntityHrefSettingCallback implements AfterResultBinding<
 	@Resource
 	private UrlConstructor urlConstructor;
 	
+	private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+	private static final String OWL_NS = "http://www.w3.org/2002/07/owl#";
+	
 	/* (non-Javadoc)
 	 * @see edu.mayo.twinkql.result.callback.AfterResultBinding#afterBinding(java.lang.Object)
 	 */
@@ -35,10 +38,17 @@ public class AssociationEntityHrefSettingCallback implements AfterResultBinding<
 			String codeSystemName= csvn.getAcronym();
 			URIAndEntityName entity;
 			entity= bindingResult.getSubject();
-			entity.setHref(urlConstructor.createEntityUrl(codeSystemName, codeSystemVersion, entity.getName()));
+			this.setHref(entity, codeSystemName, codeSystemVersion);
 			entity= bindingResult.getTarget().getEntity();
-			entity.setHref(urlConstructor.createEntityUrl(codeSystemName, codeSystemVersion, entity.getName()));
+			this.setHref(entity, codeSystemName, codeSystemVersion);
 		    
+		}
+	}
+	
+	private void setHref(URIAndEntityName entity, String codeSystemName, String codeSystemVersion) {
+		if(! StringUtils.equals(entity.getNamespace(), RDF_NS) && 
+				! StringUtils.equals(entity.getNamespace(), OWL_NS)) {
+			entity.setHref(urlConstructor.createEntityUrl(codeSystemName, codeSystemVersion, entity.getName()));
 		}
 	}
 

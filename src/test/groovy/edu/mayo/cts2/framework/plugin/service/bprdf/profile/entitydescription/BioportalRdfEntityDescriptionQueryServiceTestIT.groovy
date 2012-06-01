@@ -92,6 +92,66 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	}
 	
 	@Test
+	void TestGetResourceSummariesWithCSVNoFilterInvalidCSV(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("__INVALID__")
+				)
+			},
+			getFilterComponent:{}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNull dir
+	}
+	
+	@Test
+	void TestGetResourceSummariesWithCSVNoFilterAndNoLabels(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("POL-40653")
+				)
+			},
+			getFilterComponent:{}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertEquals 10, dir.getEntries().size()
+	}
+	
+	@Test
+	void TestGetResourceSummariesWithCSVNoFilterAndNoLabelsValidXML(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("POL-40653")
+				)
+			},
+			getFilterComponent:{}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertEquals 10, dir.getEntries().size()
+		
+		assertNotNull dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
+	}
+	
+	@Test
 	void TestGetResourceSummariesWithCSVAndFilter(){
 		def dir = query.getResourceSummaries(
 			[
@@ -183,6 +243,9 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 			] as EntityDescriptionQuery,
 		null,
 		new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
 		
 		assertNotNull dir.entries.each {
 			marshaller.marshal(it, new StreamResult(new StringWriter()))

@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
 
 import edu.mayo.cts2.framework.core.constants.URIHelperInterface;
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.core.util.EncodingUtils;
 import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
 import edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
@@ -77,7 +78,8 @@ public class EntityDirectoryEntryCallback implements AfterResultBinding<EntityDi
 		
 		//TODO: this method needs to be in the UrlConstructor
 		bindingResult.setHref(
-			this.urlConstructor.getServerRootWithAppName() + "/" + URIHelperInterface.ENTITY + "/" + bindingResult.getName());
+			this.urlConstructor.getServerRootWithAppName() + "/" + URIHelperInterface.ENTITY + "/" + 
+					EncodingUtils.encodeScopedEntityName(bindingResult.getName()));
 		
 		for(DescriptionInCodeSystem description : bindingResult.getKnownEntityDescription()){
 			CodeSystemVersionReference ref = this.codeSystemVersionReferenceFactory.getCodeSystemVersionReferenceFor(id);

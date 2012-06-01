@@ -121,6 +121,44 @@ class BioportalRdfAssociationQueryServiceTestIT {
 
 	}
 	
+	@Test
+	void testGetResourceSummariesWithCodeSystemVersionAndSourceEntityNameRestrictionCheckNamespaces(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("ICD9CM-47178"),
+																		  sourceEntity: ModelUtils.entityNameOrUriFromName(new ScopedEntityName(name:"E008.0")) )},
+				getFilterComponent:{[] as Set}
+			] as AssociationQuery,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			assertNotNull it.subject.namespace
+			assertFalse "ICD9CM-47178".equals( it.subject.namespace )
+			assertFalse it.subject.namespace.startsWith("ns")
+			
+			assertNotNull it.predicate.namespace
+			assertFalse "ICD9CM-47178".equals( it.predicate.namespace )
+			assertFalse it.predicate.namespace.startsWith("ns")
+			
+			assertNotNull it.target.entity.namespace
+			assertFalse "ICD9CM-47178".equals( it.target.entity.namespace )
+			assertFalse it.target.entity.namespace.startsWith("ns")
+		}
+	}
+	
+	@Test
+	void testGetResourceSummariesWithCodeSystemVersionAndSourceEntityNameInvalidCSV(){
+		def dir = query.getResourceSummaries(
+			[
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("__INVALID__"),
+																		  sourceEntity: ModelUtils.entityNameOrUriFromName(new ScopedEntityName(name:"E008.0")) )},
+				getFilterComponent:{[] as Set}
+			] as AssociationQuery,null,new Page())
+		
+		assertNull dir
+	}
 	
 	@Test
 	void testGetResourceSummariesWithCodeSystemVersionAndSourceEntityUriRestrictionForLNC(){

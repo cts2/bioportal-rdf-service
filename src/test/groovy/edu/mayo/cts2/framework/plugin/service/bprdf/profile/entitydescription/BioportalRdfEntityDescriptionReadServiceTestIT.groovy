@@ -56,6 +56,18 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	}
 	
 	@Test
+	void TestReadByNameLNC() {
+	
+		def name = new ScopedEntityName(name:"LP97322-9", namespace:"LNC")
+		def csv = ModelUtils.nameOrUriFromName("LNC-44774")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+	
+		assertNotNull ed
+		
+	}
+	
+	
+	@Test
 	void TestReadByNameValid() {
 	
 		def name = new ScopedEntityName(name:"Hospital")

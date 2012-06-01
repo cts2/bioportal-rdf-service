@@ -126,8 +126,8 @@
           	FROM bpOntologies:#{acronym}
 
             WHERE { 
-		    	?s a owl:Class ;
-		        	skos:prefLabel ?label .
+		    	?s a owl:Class .
+		        OPTIONAL { ?s skos:prefLabel ?label . }
         	}
         	
         LIMIT  #{limit}
