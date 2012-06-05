@@ -23,12 +23,12 @@
 	</perRowResultMap>
 	
 	<perRowResultMap id="valueSetDefinitionReferenceResultMap" resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
-		<rowMap varType="literalValue" var="valueSetDefinitionName" beanProperty="content" callbackId="valueSetDefinitionName"/>
+		<rowMap varType="literalValue" var="valueSetDefinitionName" beanProperty="content" callbackId="valueSetDefinitionName"  modifier="spring:upperCaseModifier" />
 		<rowMap varType="uri" var="resolvedValueSet" beanProperty="uri"/>
 	</perRowResultMap>
 	
 	<perRowResultMap id="valueSetReferenceResultMap" resultClass="edu.mayo.cts2.framework.model.core.ValueSetReference">
-		<rowMap varType="literalValue" var="valueSetName" beanProperty="content" callbackId="valueSetName"/>
+		<rowMap varType="literalValue" var="valueSetName" beanProperty="content" callbackId="valueSetName" modifier="spring:upperCaseModifier" />
 		<rowMap varType="uri" var="valueSet" beanProperty="uri"/>
 	</perRowResultMap>
 	

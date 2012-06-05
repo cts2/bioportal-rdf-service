@@ -108,6 +108,19 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	}
 	
 	@Test
+	void TestGetResolutionWithNoFilterLowerCase(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("43061",ModelUtils.nameOrUriFromName("HOM-UCSF_UCAREDISPOSTION"),ModelUtils.nameOrUriFromName("HOM-UCSF_UCAREDISPOSTION-43061")),
+			[] as Set
+			,new Page())
+		
+		assertNotNull dir
+		assertEquals 1, dir.getEntries().size()
+
+	}
+	
+	@Test
 	void TestGetResolutionWithFilterHasHrefs(){
 
 		def dir = resolution.getResolution(

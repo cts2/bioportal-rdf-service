@@ -74,7 +74,7 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService
 	@Override
 	public DirectoryResult<AssociationDirectoryEntry> getResourceSummaries(
 			AssociationQuery query, SortCriteria sortCriteria, Page page) {
-        String ontologyId= null;
+
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put(LIMIT, page.getMaxToReturn() + 1);
 		parameters.put(OFFSET, page.getStart());
@@ -180,6 +180,8 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService
 
 		NameOrURI codeSystemVersion = entity.getCodeSystemVersion();
 
+		String ontologyId = null;
+		
 		if (codeSystemVersion != null) {
 			if (StringUtils.isNotBlank(codeSystemVersion.getName())) {
 				CodeSystemVersionName name = CodeSystemVersionName
@@ -188,14 +190,18 @@ public class BioportalRdfAssociationQueryService extends AbstractQueryService
 				parameters.put("restrictToGraph", name.getAcronym());
 				parameters.put("restrictToCodeSystemVersion",
 						codeSystemVersion.getName());
-
+				
+				ontologyId = this.idService.getOntologyIdForAcronym(name.getAcronym());
 			}
+		} else {
+			//I don't think this is allowed...
+			throw new UnsupportedOperationException("Cannot lookup Entity Children without constraining to CodeSystemVersion");
 		}
-		if (entity.getEntityName() != null) {
-			String entityName = entity.getEntityName().getName();
-			if (StringUtils.isNotBlank(entityName)) {
-				parameters.put("restrictToEntityName", entityName);
-			}
+		
+		if (entity.getEntityName() != null) {	
+			String uri = 
+				this.entityUriLookupService.getUriFromScopedEntityName(ontologyId, entity.getEntityName());
+			parameters.put("uri", uri);
 		}
 
 		List<EntityDirectoryEntry> results;

@@ -88,21 +88,13 @@
 	
 	<select id="getChildrenAssociationsOfEntity" resultMap="entityDirectoryEntryResultMap">
 		<![CDATA[
-		SELECT ?s ?p ?o	
+		SELECT ?s
 		<isNotNull property="restrictToGraph">
 		    FROM  bpOntologies:#{restrictToGraph} 
 		</isNotNull>
 		WHERE {	
-		    ?s ?p ?o .
-      		FILTER (isIRI(?s))
-      		FILTER (?p= rdfs:subClassOf)
-      		FILTER (isIRI(?o))
-      	<isNotNull property="restrictToEntityName">
-      		FILTER (CONTAINS( UCASE(str(?o)), UCASE( '#{restrictToEntityName}')))
-		</isNotNull>	
-      	<isNotNull property="restrictToEntityUri">
-      		FILTER (?o = <#{restrictToEntityUri}>)
-		</isNotNull>					
+		    ?s rdfs:subClassOf <#{uri}> .
+      		FILTER (isIRI(?s))		
 		} 
 		LIMIT  #{limit}
 	    OFFSET #{offset} 		

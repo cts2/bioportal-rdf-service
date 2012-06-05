@@ -6,6 +6,8 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ncbo.stanford.bean.response.SuccessBean;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,8 @@ import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 @Component("entityUriLookupService")
 public class EntityUriLookupService {
 
+	protected final Log log = LogFactory.getLog(getClass().getName());
+	
 	@Resource
 	private BioportalRestClient bioportalRestClient;
 
@@ -35,7 +39,7 @@ public class EntityUriLookupService {
 		long start = System.currentTimeMillis();
 		SuccessBean success = bioportalRestClient.searchEntities(ontologyId,
 				filters, new Page());
-		System.out.println("Query REST time: "
+		log.info("Query REST time: "
 				+ (System.currentTimeMillis() - start));
 
 		return this.bioportalRestTransform.successBeanToEntityUri(success);
@@ -53,6 +57,14 @@ public class EntityUriLookupService {
 
 			if (StringUtils.isBlank(uri)) {
 				uri = this.getUriFromCode(ontologyId, namespace + ":" + name);
+			}
+	
+			//For the underscore case "GO_12345" - Lucene will split these on index
+			if (StringUtils.isBlank(uri)) {
+				String[] parts = StringUtils.split(name, '_');
+				if(parts.length == 2){
+					uri = this.getUriFromCode(ontologyId, StringUtils.join(parts, ':'));
+				}
 			}
 
 			if (StringUtils.isBlank(uri)) {

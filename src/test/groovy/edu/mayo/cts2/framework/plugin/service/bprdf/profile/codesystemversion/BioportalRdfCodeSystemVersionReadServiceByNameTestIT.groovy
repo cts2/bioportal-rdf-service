@@ -61,7 +61,7 @@ class BioportalRdfCodeSystemVersionReadServiceByNameTestIT extends BioportalRdfC
 	
 	@Test
 	void TestReadByNameWithHyphen() {
-		def csv = read.read(ModelUtils.nameOrUriFromName("GFO-Bio-42453"), null)
+		def csv = read.read(ModelUtils.nameOrUriFromName("GFO-BIO-42453"), null)
 		
 		assertNotNull csv
 	}

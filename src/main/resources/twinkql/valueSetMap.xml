@@ -8,7 +8,7 @@
 		extends="common:resourceDescriptionDirectoryEntryResultMap"
 		resultClass="edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntrySummary"
 		afterMap="spring:valueSetSummaryHrefCallback">
-		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
+		<rowMap var="acronym" varType="literalValue" callbackId="acronym" modifier="spring:upperCaseModifier" />
 		<rowMap var="ontologyId" varType="uri" beanProperty="about" />
 		<rowMap var="valueSetName" varType="literalValue" beanProperty="resourceName" modifier="spring:nameSanitizingModifier" />
 		<rowMap var="valueSetName" varType="literalValue" beanProperty="valueSetName" modifier="spring:nameSanitizingModifier" />

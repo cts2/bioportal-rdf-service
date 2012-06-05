@@ -14,7 +14,7 @@ public class NameSanitizingModifier implements Modifier<String> {
 			string = StringUtils.replace(string, "/", "-");
 		}
 		
-		return string;
+		return StringUtils.upperCase(string);
 	}
 
 }

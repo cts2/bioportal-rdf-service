@@ -48,7 +48,7 @@
 	</distributionManagement>
 
 	<properties>
-		<twinkqlVersion>0.3.1-SNAPSHOT</twinkqlVersion>
+		<twinkqlVersion>0.3.3-SNAPSHOT</twinkqlVersion>
 		<webapp.port>1999</webapp.port>
 	</properties>
 

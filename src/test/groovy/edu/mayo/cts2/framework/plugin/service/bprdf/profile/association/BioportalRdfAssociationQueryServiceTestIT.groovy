@@ -48,8 +48,8 @@ class BioportalRdfAssociationQueryServiceTestIT {
 	void testGetResourceSummariesValid(){
 		def dir = query.getResourceSummaries(
 			[
-				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("GO-46928"), 
-					                                                      sourceEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("GO_0000001", "") ))},
+				getRestrictions:{ new  AssociationQueryServiceRestrictions(codeSystemVersion: ModelUtils.nameOrUriFromName("LNC-44774"), 
+					                                                      sourceEntity: ModelUtils.entityNameOrUriFromName(ModelUtils.createScopedEntityName("18265-9", "") ))},
 				getFilterComponent:{[] as Set}
 			] as AssociationQuery,null,new Page())
 		

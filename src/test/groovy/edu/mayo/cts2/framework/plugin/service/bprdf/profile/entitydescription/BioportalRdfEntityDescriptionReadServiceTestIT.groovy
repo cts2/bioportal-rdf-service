@@ -68,6 +68,19 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 		
 	}
 	
+	@Test
+	void TestReadByNameBAO() {
+	
+		def name = new ScopedEntityName(name:"IAO_0000030", namespace:"obo")
+		def csv = ModelUtils.nameOrUriFromName("BAO-47219")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+	
+		assertNotNull ed
+		
+		ed.choiceValue.property.each {
+			assertTrue ! it.predicate.name.equals("label")
+		}
+	}
 	
 	@Test
 	void TestReadByNameValid() {
@@ -235,6 +248,7 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 		assert ed instanceof EntityReference
 	}
 	
+
 	@Test
 	void TestAvailableDescriptionsHaveDescriptions() {
 		def name = new ScopedEntityName(name:"285487006", namespace:"SNOMEDCT")

@@ -7,7 +7,7 @@
 	<perRowResultMap id="idsResultMap" resultClass="edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdResult">
 		<rowMap var="id" varType="literalValue" beanProperty="id"/>
 		<rowMap var="ontologyId" varType="literalValue" beanProperty="ontologyId"/>
-		<rowMap var="acronym" varType="literalValue" beanProperty="acronym"/>
+		<rowMap var="acronym" varType="literalValue" beanProperty="acronym" modifier="spring:upperCaseModifier"/>
 	</perRowResultMap>
 	
 	<perRowResultMap id="getDistinctNamespacesResultMap" resultClass="edu.mayo.cts2.framework.plugin.service.bprdf.dao.namespace.DistinctNamespaceResult">

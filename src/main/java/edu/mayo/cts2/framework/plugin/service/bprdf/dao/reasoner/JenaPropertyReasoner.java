@@ -13,10 +13,12 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.reasoner.transitiveReasoner.TransitiveReasoner;
@@ -57,24 +59,38 @@ public class JenaPropertyReasoner implements InitializingBean, PropertyReasoner 
 
 	public Set<String> reason(String uri) {
 		if(! this.cache.containsKey(uri)){
-			Set<String> returnSet = new HashSet<String>();
-	
-			Property subPropertyOf = ResourceFactory
-					.createProperty(TransitiveReasoner.subPropertyOf.getURI());
-	
-			Property object = ResourceFactory.createProperty(uri);
-	
-			StmtIterator i = this.infModel.listStatements(null, subPropertyOf, object);
-			while (i.hasNext()) {
-				Statement s = i.nextStatement();
-	
-				returnSet.add(s.getSubject().getURI());
-			}
-			
+			Set<String> returnSet = this.getSubPropertiesOf(uri);
+
+			returnSet.add(uri);
+
 			this.cache.put(uri, returnSet);
 		}
 
 		return this.cache.get(uri);
+	}
+	
+	public Set<String> getSubPropertiesOf(String uri){
+		Set<String> returnSet = new HashSet<String>();
+		
+		Property subPropertyOf = ResourceFactory
+				.createProperty(TransitiveReasoner.subPropertyOf.getURI());
+
+		Property object = ResourceFactory.createProperty(uri);
+
+		ResIterator i = this.infModel.listSubjectsWithProperty(subPropertyOf, object);
+		while (i.hasNext()) {
+			Resource r = i.next();
+			
+			returnSet.add(r.getURI());
+		}
+		NodeIterator nodeItr = this.infModel.listObjectsOfProperty(object, subPropertyOf);
+		while (nodeItr.hasNext()) {
+			RDFNode r = nodeItr.next();
+			
+			returnSet.add(r.asNode().getURI());
+		}
+	
+		return returnSet;
 	}
 
 	public TwinkqlTemplate getTwinkqlTemplate() {

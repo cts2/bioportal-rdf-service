@@ -92,6 +92,44 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	}
 	
 	@Test
+	void TestGetResourceSummariesWithCSVNoFilterLowerCase(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("OBOE-SBC-44257")
+				)
+			},
+			getFilterComponent:{}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertEquals 10, dir.getEntries().size()
+	}
+	
+	@Test
+	void TestGetResourceSummariesWithCSV_ONTOLOGIA(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("ONTOLOGIA-47267")
+				)
+			},
+			getFilterComponent:{}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertEquals 10, dir.getEntries().size()
+	}
+	
+	@Test
 	void TestGetResourceSummariesWithCSVNoFilterInvalidCSV(){
 		def dir = query.getResourceSummaries(
 			[

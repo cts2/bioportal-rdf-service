@@ -2,6 +2,7 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.callback.common;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
@@ -15,7 +16,7 @@ public class CodeSystemAboutModifier implements Modifier<String> {
 	
 	@Override
 	public String beforeSetting(String acronym) {
-		return idService.getUriForAcronym(acronym);
+		return idService.getUriForAcronym(StringUtils.upperCase(acronym));
 	}
 
 	

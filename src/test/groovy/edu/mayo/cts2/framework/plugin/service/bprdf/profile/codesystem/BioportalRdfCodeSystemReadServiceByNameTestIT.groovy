@@ -23,11 +23,11 @@ class BioportalRdfCodeSystemReadServiceByNameTestIT extends BioportalRdfCodeSyst
 	
 	@Test
 	void TestCodeSystemWithHyhpenName() {
-		def cs = read.read(ModelUtils.nameOrUriFromName("FDA-MedDevice"), null)
+		def cs = read.read(ModelUtils.nameOrUriFromName("FDA-MEDDEVICE"), null)
 		
 		assertNotNull cs
 		
-		assertEquals cs.codeSystemName, "FDA-MedDevice"
+		assertEquals cs.codeSystemName, "FDA-MEDDEVICE"
 	}
 
 	@Test

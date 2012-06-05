@@ -10,8 +10,8 @@
 		afterMap="spring:codeSystemSummaryHrefCallback,spring:currentCodeSystemReferenceCallback">
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym"/>
 		<rowMap var="acronym" varType="literalValue" beanProperty="about" modifier="spring:codeSystemAboutModifier" />
-		<rowMap var="codeSystemName" varType="literalValue" beanProperty="codeSystemName" />
-		<rowMap var="codeSystemName" varType="literalValue" beanProperty="resourceName"/>
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="codeSystemName" modifier="spring:upperCaseModifier" />
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="resourceName" modifier="spring:upperCaseModifier" />
 		<rowMap var="id" varType="literalValue" callbackId="id" />
 		<rowMap var="virtualId" varType="literalValue" callbackId="virtualId"/>
 	</perRowResultMap>
@@ -26,13 +26,13 @@
 	<perRowResultMap id="currentVersionCodeSystemNameAndMeaningReferenceResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.CodeSystemReference">
 		<rowMap var="codeSystem" varType="uri" beanProperty="uri"/>
-		<rowMap var="codeSystemName" varType="literalValue" beanProperty="content"/>
+		<rowMap var="codeSystemName" varType="literalValue" beanProperty="content" modifier="spring:upperCaseModifier" />
 	</perRowResultMap>
 	
 	<perRowResultMap id="currentVersionVersionNameAndMeaningReferenceResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.core.NameAndMeaningReference">
 		<rowMap var="codeSystemVersion" varType="uri" beanProperty="uri"/>
-		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="content"/>
+		<rowMap var="codeSystemVersionName" varType="literalValue" beanProperty="content" modifier="spring:upperCaseModifier" />
 	</perRowResultMap>
 	
 	<compositeResultMap id="codeSystemCatalogEntryResultMap"
@@ -40,7 +40,7 @@
 		resultClass="edu.mayo.cts2.framework.model.codesystem.CodeSystemCatalogEntry"
 		afterMap="spring:codeSystemHrefCallback">
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="about" modifier="spring:codeSystemAboutModifier"/>
-		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="codeSystemName"/>
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="codeSystemName" modifier="spring:upperCaseModifier" />
 		<tripleMap var="o" varType="literalValue" predicateUri="bpMetadata:id" callbackId="id"/>
 	</compositeResultMap>
 	

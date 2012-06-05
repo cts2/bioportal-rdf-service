@@ -44,6 +44,7 @@ import edu.mayo.cts2.framework.model.core.CodeSystemReference;
 import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
 import edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem;
 import edu.mayo.cts2.framework.model.core.EntityReference;
+import edu.mayo.cts2.framework.model.core.Property;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
 import edu.mayo.cts2.framework.model.core.VersionTagReference;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
@@ -149,9 +150,33 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 				parameters, EntityDescription.class);
 		log.info("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
 
-		return entity;
+		return this.stripExtraLabelProperties(entity);
 	}
 	
+
+
+	/**
+	 * Strip extra label properties. This is here because Twinkql will add a 
+	 * generic Property for things like skos:prefLabel, etc -- things that are
+	 * put into the Designation/AltDEsignation slots.
+	 *
+	 * @param entity the entity
+	 * @return the entity description
+	 */
+	protected EntityDescription stripExtraLabelProperties(EntityDescription entity) {
+		if(entity == null){
+			return null;
+		}
+		
+		List<Property> newProps = new ArrayList<Property>();
+		
+		for(Property property : ModelUtils.getEntity(entity).getProperty()){
+			
+		}
+		
+		return entity;
+	}
+
 
 
 	protected CodeSystemVersionName getCodeSystemVersionNameFromCodeSystemVersionNameOrUri(

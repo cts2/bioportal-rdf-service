@@ -124,10 +124,13 @@
           	?label
           	
           	FROM bpOntologies:#{acronym}
+          	FROM bpOntologies:globals
 
             WHERE { 
-		    	?s a owl:Class .
-		        OPTIONAL { ?s skos:prefLabel ?label . }
+            	GRAPH bpOntologies:#{acronym} {
+		    		?s a owl:Class ;
+		    	}
+		        ?s skos:prefLabel ?label .
         	}
         	
         LIMIT  #{limit}
