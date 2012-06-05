@@ -13,9 +13,7 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -83,13 +81,9 @@ public class JenaPropertyReasoner implements InitializingBean, PropertyReasoner 
 			
 			returnSet.add(r.getURI());
 		}
-		NodeIterator nodeItr = this.infModel.listObjectsOfProperty(object, subPropertyOf);
-		while (nodeItr.hasNext()) {
-			RDFNode r = nodeItr.next();
-			
-			returnSet.add(r.asNode().getURI());
-		}
-	
+		
+		returnSet.add(uri);
+		
 		return returnSet;
 	}
 

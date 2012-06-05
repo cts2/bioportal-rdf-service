@@ -150,34 +150,8 @@ public class BioportalRdfEntityDescriptionReadService extends AbstractService
 				parameters, EntityDescription.class);
 		log.info("Query TripleStore time: " + ( System.currentTimeMillis() - start ));
 
-		return this.stripExtraLabelProperties(entity);
-	}
-	
-
-
-	/**
-	 * Strip extra label properties. This is here because Twinkql will add a 
-	 * generic Property for things like skos:prefLabel, etc -- things that are
-	 * put into the Designation/AltDEsignation slots.
-	 *
-	 * @param entity the entity
-	 * @return the entity description
-	 */
-	protected EntityDescription stripExtraLabelProperties(EntityDescription entity) {
-		if(entity == null){
-			return null;
-		}
-		
-		List<Property> newProps = new ArrayList<Property>();
-		
-		for(Property property : ModelUtils.getEntity(entity).getProperty()){
-			
-		}
-		
 		return entity;
 	}
-
-
 
 	protected CodeSystemVersionName getCodeSystemVersionNameFromCodeSystemVersionNameOrUri(
 			NameOrURI codeSystemVersion) {

@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import edu.mayo.cts2.framework.core.xml.Cts2Marshaller;
 import edu.mayo.cts2.framework.model.core.EntityReference
 import edu.mayo.cts2.framework.model.core.ScopedEntityName
+import edu.mayo.cts2.framework.model.entity.types.DesignationRole
 import edu.mayo.cts2.framework.model.service.core.EntityNameOrURI
 import edu.mayo.cts2.framework.model.util.ModelUtils
 import edu.mayo.cts2.framework.service.profile.entitydescription.name.EntityDescriptionReadId
@@ -80,6 +81,35 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 		ed.choiceValue.property.each {
 			assertTrue ! it.predicate.name.equals("label")
 		}
+	}
+	
+	@Test
+	void TestReadByNameWBPHENOTYPE() {
+	
+		def name = new ScopedEntityName(name:"WBPhenotype_0000349", namespace:"obo")
+		def csv = ModelUtils.nameOrUriFromName("WBPHENOTYPE-47253")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+	
+		assertNotNull ed
+	}
+
+	@Test
+	void TestReadByNameNotDuplicatePresentations() {
+	
+		def name = new ScopedEntityName(name:"D001914")
+		def csv = ModelUtils.nameOrUriFromName("MESH-OWL-47112")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+	
+		assertNotNull ed
+		
+		def pref = 0;
+		ed.choiceValue.designation.each {
+			if(it.designationRole == DesignationRole.PREFERRED){
+				pref++
+			}
+		}
+		
+		assertEquals 1, pref
 	}
 	
 	@Test

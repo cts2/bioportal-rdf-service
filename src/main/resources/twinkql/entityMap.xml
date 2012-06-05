@@ -26,6 +26,7 @@
 	<compositeResultMap id="entityDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.entity.EntityDescription"
 		afterMap="spring:entityDescriptionCallback">
+		<nestedResultMap resultMap="entity:designationResultMapRDFSLabel" beanProperty="namedEntity.designationAsReference[]"/>
 		<nestedResultMap resultMap="entity:designationResultMap1" beanProperty="namedEntity.designationAsReference[]"/>
 		<nestedResultMap resultMap="entity:designationResultMap2" beanProperty="namedEntity.designationAsReference[]"/>
 		<nestedResultMap resultMap="entity:definitionResultMap" beanProperty="namedEntity.definitionAsReference[]"/>
@@ -71,6 +72,12 @@
 		<tripleMap var="o" varType="literalValue" predicateUri="skos:altLabel" beanProperty="value.content">
 			<reasoner id="jena" />
 		</tripleMap>
+	</compositeResultMap>
+	
+	<compositeResultMap id="designationResultMapRDFSLabel" 
+		resultClass="edu.mayo.cts2.framework.model.entity.Designation"
+		afterMap="spring:alternateDesignationCallback">
+		<tripleMap var="o" varType="literalValue" predicateUri="rdfs:label" beanProperty="value.content"/>
 	</compositeResultMap>
 	
 	<select id="getEntityDescriptionByUri" resultMap="entityDescriptionResultMap">
