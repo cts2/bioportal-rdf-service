@@ -25,6 +25,7 @@ package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -71,7 +72,13 @@ public class EntityDirectoryEntryCallback implements AfterResultBinding<EntityDi
 			acronym = (String) context.getQueryParams().get("restrictToGraph");
 		}
 		
+		if(acronym == null){
+			acronym = (String) context.getCallbackIds().get("acronym");
+		}
+		
 		Assert.notNull(acronym);
+		
+		acronym = StringUtils.upperCase(acronym);
 		
 		String ontologyId = this.idService.getOntologyIdForAcronym(acronym);
 		String id = this.idService.getCurrentIdForOntologyId(ontologyId);

@@ -7,6 +7,7 @@
 	<perRowResultMap id="entityDirectoryEntryResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry"
 		afterMap="spring:entityDirectoryEntryCallback">
+		<rowMap var="acronym" varType="localName"  callbackId="acronym"/>
 		<rowMap var="s" varType="uri"  beanProperty="about"/>
 		<rowMap var="s" varType="localName" beanProperty="name.name"/>
 		<rowMap var="s" varType="namespace" beanProperty="name.namespace" modifier="spring:namespaceModifier" />
@@ -138,6 +139,26 @@
 		    		?s a owl:Class ;
 		    	}
 		        ?s skos:prefLabel ?label .
+        	}
+        	
+        LIMIT  #{limit}
+	    OFFSET #{offset}
+        
+        ]]>
+	</select>
+	
+	<select id="getAllEntityDescriptionsNoAcronym" resultMap="entityDirectoryEntryResultMap">
+        <![CDATA[
+        SELECT DISTINCT
+        	?s
+          	?label
+          	?acronym
+
+            WHERE { 
+            	GRAPH ?acronym {
+		    	?s a owl:Class ;
+		           skos:prefLabel ?label .
+		        }
         	}
         	
         LIMIT  #{limit}

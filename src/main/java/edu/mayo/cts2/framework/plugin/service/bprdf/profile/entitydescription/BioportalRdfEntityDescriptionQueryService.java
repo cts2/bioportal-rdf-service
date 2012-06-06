@@ -80,6 +80,7 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 	
 	private final static String ENTITY_NAMESPACE = "entity";
 	private final static String GET_ALL_ENTITY_DESCRIPTIONS = "getAllEntityDescriptions";
+	private final static String GET_ALL_ENTITY_DESCRIPTIONS_NO_ACRONYM = "getAllEntityDescriptionsNoAcronym";
 
 	@Resource
 	private BioportalRestClient bioportalRestClient;
@@ -146,7 +147,13 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 		} 
 		
 		if(CollectionUtils.isEmpty(query.getFilterComponent())){
-			return this.handleAllEntitiesOfCodeSystemVersion(id, acronym, page);
+			if(query != null && 
+					query.getRestrictions() != null && 
+					query.getRestrictions().getCodeSystemVersion() != null){
+				return this.handleAllEntitiesOfCodeSystemVersion(id, acronym, page);
+			} else {
+				return this.handleAllEntities(page);
+			}
 		} else {
 			return this.bioportalRestTransform.successBeanToEntitySummaries(
 					this.bioportalRestClient.searchEntities(ontologyId, query.getFilterComponent(), page));
@@ -169,6 +176,28 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 				EntityDirectoryEntry.class);
 		
 		this.setCodesSystemVersionRefs(id, results);
+	
+		boolean moreResults = results.size() > page.getMaxToReturn();
+		
+		if(moreResults){
+			results.remove(results.size() - 1);
+		}
+		
+		return new DirectoryResult<EntityDirectoryEntry>(results,!moreResults);
+	}
+	
+	private DirectoryResult<EntityDirectoryEntry> handleAllEntities(Page page){	
+		
+		Map<String,Object> parameters = new HashMap<String,Object>();
+		SparqlUtils.setLimitOffsetParams(parameters, page);
+		
+		List<EntityDirectoryEntry> results = rdfDao.selectForList(
+				ENTITY_NAMESPACE, 
+				GET_ALL_ENTITY_DESCRIPTIONS_NO_ACRONYM,
+				parameters,
+				EntityDirectoryEntry.class);
+		
+		//this.setCodesSystemVersionRefs(id, results);
 	
 		boolean moreResults = results.size() > page.getMaxToReturn();
 		

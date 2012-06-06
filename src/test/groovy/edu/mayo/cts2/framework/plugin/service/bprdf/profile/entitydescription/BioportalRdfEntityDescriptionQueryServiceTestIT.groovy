@@ -73,6 +73,40 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	}
 	
 	@Test
+	void TestGetResourceSummariesNoFilterNoCSV(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{null},
+			getFilterComponent:{null}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+	}
+	
+	@Test
+	void TestGetResourceSummariesNoFilterNoCSVIsValid(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{null},
+			getFilterComponent:{null}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+		assertNotNull dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
+	}
+	
+	@Test
 	void TestGetResourceSummariesWithCSVNoFilter(){
 		def dir = query.getResourceSummaries(
 			[

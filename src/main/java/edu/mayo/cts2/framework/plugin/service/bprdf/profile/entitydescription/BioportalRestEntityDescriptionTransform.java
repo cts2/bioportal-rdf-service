@@ -16,7 +16,9 @@ import org.ncbo.stanford.util.paginator.impl.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import edu.mayo.cts2.framework.core.constants.URIHelperInterface;
 import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.core.util.EncodingUtils;
 import edu.mayo.cts2.framework.model.core.CodeSystemReference;
 import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
 import edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem;
@@ -80,16 +82,22 @@ public class BioportalRestEntityDescriptionTransform {
 				}
 				
 				description.setDescribingCodeSystemVersion(ref);
-				entry.addKnownEntityDescription(description);
-				entry.getKnownEntityDescription(0).setDesignation(searchBean.getPreferredName());
 				
 				String codeSystemName = description.getDescribingCodeSystemVersion().getCodeSystem().getContent();
 				
 				ScopedEntityName scopedEntityName = this.buildScopedEntityName(shortId, codeSystemName);
-				
-				entry.setHref(this.getEntityHref(ontologyId, id, scopedEntityName.getName()));
-				
 				entry.setName(scopedEntityName);
+		
+				entry.addKnownEntityDescription(description);
+				entry.getKnownEntityDescription(0).setDesignation(searchBean.getPreferredName());
+				entry.getKnownEntityDescription(0).setHref(
+						this.getEntityHref(ontologyId, id, EncodingUtils.encodeScopedEntityName(scopedEntityName)));
+
+				//TODO: this method needs to be in the UrlConstructor
+				entry.setHref(
+					this.urlConstructor.getServerRootWithAppName() + "/" + URIHelperInterface.ENTITY + "/" + 
+							EncodingUtils.encodeScopedEntityName(entry.getName()));
+			
 				
 				returnList.add(entry);
 			}
