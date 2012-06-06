@@ -106,7 +106,7 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 			SortCriteria sortCriteria, 
 			Page page) {
 		
-		if(query.getEntitiesFromAssociationsQuery() != null){
+		if(query != null && query.getEntitiesFromAssociationsQuery() != null){
 			return this.handleAssociationsQuery(query, sortCriteria, page);
 		}
 
