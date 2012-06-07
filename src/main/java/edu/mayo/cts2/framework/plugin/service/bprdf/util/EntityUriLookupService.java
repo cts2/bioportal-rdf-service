@@ -23,6 +23,8 @@ import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference;
 @Component("entityUriLookupService")
 public class EntityUriLookupService {
 
+	private final static String BIOPORTAL_PURL_URI = "http://purl.bioontology.org/ontology/";
+	
 	protected final Log log = LogFactory.getLog(getClass().getName());
 	
 	@Resource
@@ -36,7 +38,7 @@ public class EntityUriLookupService {
 	@Resource
 	private BioportalRestEntityDescriptionTransform bioportalRestTransform;
 
-	public String getUriFromCode(String ontologyId, String code) {
+	private String getUriFromCode(String ontologyId, String code) {
 		Set<ResolvedFilter> filters = new HashSet<ResolvedFilter>();
 		ResolvedFilter filter = new ResolvedFilter();
 		filter.setMatchAlgorithmReference(StandardMatchAlgorithmReference.EXACT_MATCH
@@ -81,6 +83,11 @@ public class EntityUriLookupService {
 
 			if (StringUtils.isBlank(uri)) {
 				uri = this.getUriFromCode(ontologyId, namespace + "_" + name);
+			}
+			
+			//last ditch effort - set it to the PURL URI
+			if (StringUtils.isBlank(uri)) {
+				uri = BIOPORTAL_PURL_URI + namespace + "/" + name;
 			}
 		}
 

@@ -288,6 +288,14 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	}
 	
 	@Test
+	void TestAvailableDescriptionsHaveDescriptionRCD() {
+		def name = new ScopedEntityName(name:"7K6ax", namespace:"RCD")
+		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
+		
+		assertNotNull ed
+	}
+	
+	@Test
 	void TestAvailableDescriptionsHaveDescriptionsNone() {
 		def name = new ScopedEntityName(name:"___INVALID___", namespace:"SNOMEDCT")
 		def ed = read.availableDescriptions( new EntityNameOrURI(entityName:name), null)
