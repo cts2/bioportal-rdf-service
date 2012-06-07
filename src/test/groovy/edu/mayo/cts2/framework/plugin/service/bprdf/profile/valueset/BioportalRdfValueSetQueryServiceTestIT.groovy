@@ -56,6 +56,18 @@ class BioportalRdfValueSetQueryServiceTestIT {
 		}
 	}
 	
+	@Test
+	void TestGetResourceSummariesHasCorrectAbout(){
+		def dir = query.getResourceSummaries(
+			null as ValueSetQuery,null,new Page())
+		
+		
+		dir.entries.each {
+			def localName = StringUtils.substringAfterLast(it.about, "/")
+
+			assertTrue ! StringUtils.isNumeric(localName)
+		}
+	}
 	
 	@Test
 	void TestGetResourceSummariesFilteredContains(){

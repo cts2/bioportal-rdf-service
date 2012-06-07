@@ -42,6 +42,15 @@ abstract class BioportalRdfValueSetReadServiceTestITBase {
 	}
 	
 	@Test
+	void TestReadHasCorrectAbout(){
+		def resource = doRead()
+
+		def localName = StringUtils.substringAfterLast(resource.about, "/")
+		
+		assertEquals localName, resource.valueSetName
+	}
+	
+	@Test
 	void TestReadByNameHasProperties(){
 		def resource = doRead()
 		

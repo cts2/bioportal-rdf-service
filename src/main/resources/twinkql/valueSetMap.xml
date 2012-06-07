@@ -9,7 +9,7 @@
 		resultClass="edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntrySummary"
 		afterMap="spring:valueSetSummaryHrefCallback">
 		<rowMap var="acronym" varType="literalValue" callbackId="acronym" modifier="spring:upperCaseModifier" />
-		<rowMap var="ontologyId" varType="uri" beanProperty="about" />
+		<rowMap var="acronym" varType="literalValue" beanProperty="about" modifier="spring:codeSystemAboutModifier" />
 		<rowMap var="valueSetName" varType="literalValue" beanProperty="resourceName" modifier="spring:nameSanitizingModifier" />
 		<rowMap var="valueSetName" varType="literalValue" beanProperty="valueSetName" modifier="spring:nameSanitizingModifier" />
 		<rowMap var="id" varType="literalValue" callbackId="id" />
@@ -20,6 +20,7 @@
 	<compositeResultMap id="valueSetCatalogEntryResultMap"
 	 	extends="common:resourceDescriptionResultMap" 
 		resultClass="edu.mayo.cts2.framework.model.valueset.ValueSetCatalogEntry" >
+		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="about" modifier="spring:codeSystemAboutModifier"/>
 		<tripleMap var="o" varType="uri" predicateUri="bpMetadata:isVersionOfVirtualOntology" beanProperty="about"/>
 		<tripleMap var="o" varType="literalValue" predicateUri="omv:acronym" beanProperty="valueSetName" modifier="spring:nameSanitizingModifier" />
 	</compositeResultMap>
