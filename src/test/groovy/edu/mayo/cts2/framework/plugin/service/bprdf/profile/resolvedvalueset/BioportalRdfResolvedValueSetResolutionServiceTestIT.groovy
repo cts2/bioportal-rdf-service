@@ -4,6 +4,9 @@ import javax.annotation.Resource;
 import javax.xml.transform.stream.StreamResult
 
 import static org.junit.Assert.*
+
+import org.apache.commons.lang.StringUtils
+import org.junit.Ignore
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration
@@ -15,6 +18,7 @@ import edu.mayo.cts2.framework.model.command.ResolvedFilter
 import edu.mayo.cts2.framework.model.util.ModelUtils
 import edu.mayo.cts2.framework.service.meta.StandardMatchAlgorithmReference
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId
+import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(value="classpath:/bioportal-rdf-service-test-context.xml")
@@ -48,6 +52,54 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	}
 	
 	
+	@Test
+	@Ignore("Known Bioportal bug -- planned fix JUN 2012")
+	void TestGetResolutionICECINSTRUMENT_OBJECT_SUBSTANCE(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("43008",ModelUtils.nameOrUriFromName("ICECI-INSTRUMENT_OBJECT_SUBSTANCE"),ModelUtils.nameOrUriFromName("ICECI-INSTRUMENT_OBJECT_SUBSTANCE-43008")),null,new Page())
+		
+		assertNull dir
+		
+		assertTrue dir.getEntries().size() > 1
+	}
+	
+	@Test
+	void TestGetResolutionSNMD_BDY(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("48006",ModelUtils.nameOrUriFromName("SNMD_BDY"),ModelUtils.nameOrUriFromName("SNMD_BDY-48006")),null,new Page())
+		
+		assertNotNull dir
+		
+		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			assertTrue StringUtils.endsWith(it.href, "/"+it.name)
+		}
+	}
+	
+	@Test
+	void TestGetResolutionNoFilterAreFromCorrectCSVSnomedCT(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("43049",ModelUtils.nameOrUriFromName("SNOMEDCT-TF"),ModelUtils.nameOrUriFromName("SNOMEDCT-TF-43049")),null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.entries.size() > 0
+		
+				assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			
+			assertNotNull it.href
+			assertTrue it.href.contains('SNOMEDCT')
+			
+		}
+
+	}
+
 	@Test
 	void TestGetResolutionHasHrefs(){
 
@@ -163,4 +215,108 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 		assertNotNull header
 	}
 	
+	@Test
+	void TestGetResolutionEntitiesNoFilter(){
+
+		def dir = resolution.getEntities(
+			new ResolvedValueSetReadId("43099",ModelUtils.nameOrUriFromName("NDF-RT"),ModelUtils.nameOrUriFromName("NDF-RT-43099")),null,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 0
+
+	}
+	
+	@Test
+	void TestGetResolutionEntitiesNoFilterAreFromCorrectCSV(){
+
+		def dir = resolution.getEntities(
+			new ResolvedValueSetReadId("43099",ModelUtils.nameOrUriFromName("NDF-RT"),ModelUtils.nameOrUriFromName("NDF-RT-43099")),null,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.entries.size() > 0
+		
+		dir.entries.each {
+			assertNotNull dir.entries.each {
+			
+			assertTrue it.knownEntityDescription.size() > 0
+			
+			it.knownEntityDescription.each {inner->
+				assertNotNull inner.describingCodeSystemVersion
+				assertNotNull inner.describingCodeSystemVersion.version
+				assertNotNull inner.describingCodeSystemVersion.codeSystem
+				
+				assertEquals "NDFRT", inner.describingCodeSystemVersion.codeSystem.content
+				assertEquals "NDFRT-40402", inner.describingCodeSystemVersion.version.content
+				
+				}
+			}
+		}
+
+	}
+	
+	@Test
+	void TestGetResolutionEntitiesNoFilterAreFromCorrectCSVSnomedCT(){
+
+		def dir = resolution.getEntities(
+			new ResolvedValueSetReadId("43049",ModelUtils.nameOrUriFromName("SNOMEDCT-TF"),ModelUtils.nameOrUriFromName("SNOMEDCT-TF-43049")),null,null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.entries.size() > 0
+		
+		dir.entries.each {
+			assertNotNull dir.entries.each {
+			
+			assertTrue it.knownEntityDescription.size() > 0
+			
+			it.knownEntityDescription.each {inner->
+				assertNotNull inner.describingCodeSystemVersion
+				assertNotNull inner.describingCodeSystemVersion.version
+				assertNotNull inner.describingCodeSystemVersion.codeSystem
+				
+				assertEquals "SNOMEDCT", inner.describingCodeSystemVersion.codeSystem.content
+				assertEquals "SNOMEDCT-40403", inner.describingCodeSystemVersion.version.content
+				
+				}
+			}
+		}
+
+	}
+	
+	@Test
+	void TestGetResolutionEntitiesWithFilterAreFromCorrectCSVSnomedCT(){
+
+		def dir = resolution.getEntities(
+			new ResolvedValueSetReadId("43049",ModelUtils.nameOrUriFromName("SNOMEDCT-TF"),
+				ModelUtils.nameOrUriFromName("SNOMEDCT-TF-43049")),
+			[
+				getResolvedValueSetResolutionEntityRestrictions:{null},
+				getFilterComponent:{[new ResolvedFilter(	
+						matchValue:"test",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+					)] as Set}
+			] as ResolvedValueSetResolutionEntityQuery,
+			null,
+			new Page())
+		
+		assertNotNull dir
+		assertTrue dir.entries.size() > 0
+		
+		dir.entries.each {
+			assertNotNull dir.entries.each {
+			
+			assertTrue it.knownEntityDescription.size() > 0
+			
+			it.knownEntityDescription.each {inner->
+				assertNotNull inner.describingCodeSystemVersion
+				assertNotNull inner.describingCodeSystemVersion.version
+				assertNotNull inner.describingCodeSystemVersion.codeSystem
+				
+				assertEquals "SNOMEDCT", inner.describingCodeSystemVersion.codeSystem.content
+				assertEquals "SNOMEDCT-40403", inner.describingCodeSystemVersion.version.content
+				
+				}
+			}
+		}
+
+	}
 }

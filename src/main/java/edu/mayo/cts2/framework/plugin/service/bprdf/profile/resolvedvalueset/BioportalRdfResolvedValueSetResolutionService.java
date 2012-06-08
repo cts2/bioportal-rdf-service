@@ -36,9 +36,14 @@ import org.ncbo.stanford.bean.response.SuccessBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import edu.mayo.cts2.framework.core.constants.URIHelperInterface;
+import edu.mayo.cts2.framework.core.url.UrlConstructor;
+import edu.mayo.cts2.framework.core.util.EncodingUtils;
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.command.ResolvedReadContext;
+import edu.mayo.cts2.framework.model.core.CodeSystemVersionReference;
+import edu.mayo.cts2.framework.model.core.DescriptionInCodeSystem;
 import edu.mayo.cts2.framework.model.core.EntitySynopsis;
 import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
@@ -48,6 +53,7 @@ import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDescription;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.model.service.core.Query;
+import edu.mayo.cts2.framework.model.util.ModelUtils;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSet;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
@@ -89,6 +95,9 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 	private IdService idService;
 	
 	@Resource
+	private UrlConstructor urlConstructor;
+	
+	@Resource
 	private BioportalRdfEntityDescriptionQueryService bioportalRdfEntityDescriptionQueryService;
 	
 	@Resource
@@ -109,6 +118,8 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 		if(! acronym.equals(expectedAcronym)){
 			return null;
 		}
+		
+		ResolvedValueSetResult<EntitySynopsis> result;
 
 		if(CollectionUtils.isEmpty(filterComponent)){
 			
@@ -136,7 +147,7 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 				results.remove(results.size() - 1);
 			}
 					
-			return new ResolvedValueSetResult<EntitySynopsis>(
+			result = new ResolvedValueSetResult<EntitySynopsis>(
 					this.getResolvedValueSetHeader(id), 
 					results, 
 					!moreResults);
@@ -144,14 +155,16 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 			SuccessBean successBean = 
 				this.bioportalRestClient.searchEntities(ontologyId, filterComponent, page);
 			
-			DirectoryResult<EntitySynopsis> result = 
+			DirectoryResult<EntitySynopsis> resultsFromRest = 
 				this.bioportalRestResolvedValueSetTransform.successBeanToEntityEntitySynopsis(successBean);
 			
-			return new ResolvedValueSetResult<EntitySynopsis>(
+			result = new ResolvedValueSetResult<EntitySynopsis>(
 					this.getResolvedValueSetHeader(id), 
-					result.getEntries(), 
-					result.isAtEnd());
+					resultsFromRest.getEntries(), 
+					resultsFromRest.isAtEnd());
 		}
+		
+		return this.addInHrefs(result);
 	}
 	
 	protected ResolvedValueSetHeader getResolvedValueSetHeader(String id){
@@ -212,31 +225,104 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 			final ResolvedValueSetResolutionEntityQuery query,
 			SortCriteria sortCriteria, 
 			Page page) {
+
 		String id = identifier.getLocalName();
-		
+
 		DirectoryResult<EntityDirectoryEntry> result = this.bioportalRdfEntityDescriptionQueryService.getResourceSummaries(
-				this.toEntityDescriptionQuery(query),
+				this.toEntityDescriptionQuery(identifier, query),
 				sortCriteria, 
 				page);
 		
-		return new ResolvedValueSetResult<EntityDirectoryEntry>(
+		return this.addInEntitiesHrefs(
+				new ResolvedValueSetResult<EntityDirectoryEntry>(
 					this.getResolvedValueSetHeader(id), 
 					result.getEntries(), 
-					result.isAtEnd());
+					result.isAtEnd()));
 	}
 	
+	private ResolvedValueSetResult<EntityDirectoryEntry> addInEntitiesHrefs(
+			ResolvedValueSetResult<EntityDirectoryEntry> result) {
+		if(result == null || result.getEntries() == null){
+			return null;
+		}
+		
+		CodeSystemVersionReference ref = 
+				result.getResolvedValueSetHeader().getResolvedUsingCodeSystem(0);
+		
+		for(EntityDirectoryEntry entry : result.getEntries()){
+			entry.setHref(
+					this.urlConstructor.getServerRootWithAppName() + "/" + URIHelperInterface.ENTITY + "/" + 
+							EncodingUtils.encodeScopedEntityName(entry.getName()));
+			
+			for(DescriptionInCodeSystem description : entry.getKnownEntityDescription()){
+				description.setHref(this.urlConstructor.createEntityUrl(
+						ref.getCodeSystem().getContent(),
+						ref.getVersion().getContent(),
+						entry.getName()));
+				
+				description.setDescribingCodeSystemVersion(ref);
+			}
+			
+		}
+		
+		return result;
+	}
+
+	private ResolvedValueSetResult<EntitySynopsis> addInHrefs(
+			ResolvedValueSetResult<EntitySynopsis> result) {
+		if(result == null || result.getEntries() == null){
+			return null;
+		}
+		
+		for(EntitySynopsis entry : result.getEntries()){
+			//this will always be one for Bioportal
+			CodeSystemVersionReference ref = 
+					result.getResolvedValueSetHeader().getResolvedUsingCodeSystem(0);
+			
+			entry.setHref(this.urlConstructor.createEntityUrl(
+				ref.getCodeSystem().getContent(),
+				ref.getVersion().getContent(),
+				entry.getName()));
+		}
+		
+		return result;
+	}
+
 	private EntityDescriptionQuery toEntityDescriptionQuery(
-			final ResolvedValueSetResolutionEntityQuery query){
+			ResolvedValueSetReadId identifier, final ResolvedValueSetResolutionEntityQuery query){
+		
+			final EntityDescriptionQueryServiceRestrictions entityRestrictions =
+				new EntityDescriptionQueryServiceRestrictions();
+			
+			if(query != null && query.getResolvedValueSetResolutionEntityRestrictions() != null){
+				ResolvedValueSetResolutionEntityRestrictions restrictions = 
+						query.getResolvedValueSetResolutionEntityRestrictions();
+				
+				entityRestrictions.setCodeSystemVersion(restrictions.getCodeSystemVersion());
+				entityRestrictions.setEntities(restrictions.getEntities());
+			}
+			
+			entityRestrictions.setCodeSystemVersion(
+				ModelUtils.nameOrUriFromName(identifier.getValueSetDefinition().getName()));
+		
 		return new EntityDescriptionQuery(){
 
 			@Override
 			public Query getQuery() {
-				return query.getQuery();
+				if(query == null){
+					return null;
+				} else {
+					return query.getQuery();
+				}
 			}
 
 			@Override
 			public Set<ResolvedFilter> getFilterComponent() {
-				return query.getFilterComponent();
+				if(query == null){
+					return null;
+				} else {
+					return query.getFilterComponent();
+				}
 			}
 
 			@Override
@@ -251,17 +337,6 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 
 			@Override
 			public EntityDescriptionQueryServiceRestrictions getRestrictions() {
-				EntityDescriptionQueryServiceRestrictions entityRestrictions =
-					new EntityDescriptionQueryServiceRestrictions();
-				
-				if(query != null && query.getResolvedValueSetResolutionEntityRestrictions() != null){
-					ResolvedValueSetResolutionEntityRestrictions restrictions = 
-							query.getResolvedValueSetResolutionEntityRestrictions();
-					
-					entityRestrictions.setCodeSystemVersion(restrictions.getCodeSystemVersion());
-					entityRestrictions.setEntities(restrictions.getEntities());
-				}
-				
 				return entityRestrictions;
 			}
 		};
@@ -276,7 +351,7 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 		String id = identifier.getLocalName();
 		
 		DirectoryResult<EntityDescription> result = this.bioportalRdfEntityDescriptionQueryService.getResourceList(
-				this.toEntityDescriptionQuery(query),
+				this.toEntityDescriptionQuery(identifier, query),
 				sortCriteria, 
 				page);
 		

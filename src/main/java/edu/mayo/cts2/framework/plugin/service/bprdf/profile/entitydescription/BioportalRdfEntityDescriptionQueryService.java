@@ -146,7 +146,7 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 			}
 		} 
 		
-		if(CollectionUtils.isEmpty(query.getFilterComponent())){
+		if(query == null || CollectionUtils.isEmpty(query.getFilterComponent())){
 			if(query != null && 
 					query.getRestrictions() != null && 
 					query.getRestrictions().getCodeSystemVersion() != null){

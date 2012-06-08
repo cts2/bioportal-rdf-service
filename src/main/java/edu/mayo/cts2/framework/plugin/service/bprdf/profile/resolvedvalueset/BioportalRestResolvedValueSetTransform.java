@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.ncbo.stanford.bean.response.SuccessBean;
 import org.ncbo.stanford.bean.search.OntologyHitBean;
 import org.ncbo.stanford.bean.search.SearchBean;
@@ -19,9 +17,6 @@ import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 
 @Component
 public class BioportalRestResolvedValueSetTransform {
-	
-	@Resource
-	private EntitySynopsisHrefBuilder entitySynopsisHrefBuilder;
 
 	@SuppressWarnings({"unchecked","rawtypes"})
 	public DirectoryResult<EntitySynopsis> successBeanToEntityEntitySynopsis(SuccessBean successBean){
@@ -44,9 +39,7 @@ public class BioportalRestResolvedValueSetTransform {
 				if(searchBean == null || searchBean instanceof OntologyHitBean){
 					continue;
 				}
-				
-				String ontologyId = Integer.toString(searchBean.getOntologyId());
-				String id = Integer.toString(searchBean.getOntologyVersionId());
+
 				String entityName = searchBean.getConceptIdShort();
 				
 				String about = searchBean.getConceptId();
@@ -58,12 +51,6 @@ public class BioportalRestResolvedValueSetTransform {
 				entry.setNamespace("ns");
 				
 				entry.setDesignation(searchBean.getPreferredName());
-				
-				entry.setHref(
-						this.entitySynopsisHrefBuilder.buildHref(
-								ontologyId, 
-								id, 
-								entityName));
 				
 				returnList.add(entry);
 
