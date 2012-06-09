@@ -28,6 +28,8 @@ import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.CodeSystemVersionName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier;
+import edu.mayo.twinkql.result.UriParser;
 
 
 @Component
@@ -37,10 +39,16 @@ public class BioportalRestEntityDescriptionTransform {
 	private IdService idService;
 	
 	@Resource
+	private NamespaceModifier namespaceModifier;
+	
+	@Resource
 	private UrlConstructor urlConstructor;
+	
+	private UriParser uriParser = new UriParser();
 
 	@SuppressWarnings({"unchecked","rawtypes"})
-	public DirectoryResult<EntityDirectoryEntry> successBeanToEntitySummaries(SuccessBean successBean){
+	public DirectoryResult<EntityDirectoryEntry> successBeanToEntitySummaries(
+			SuccessBean successBean, int expectedSize){
 
 		List<EntityDirectoryEntry> returnList = new ArrayList<EntityDirectoryEntry>();
 		
@@ -63,8 +71,7 @@ public class BioportalRestEntityDescriptionTransform {
 				
 				String ontologyId = Integer.toString(searchBean.getOntologyId());
 				String id = Integer.toString(searchBean.getOntologyVersionId());
-				String shortId = searchBean.getConceptIdShort();
-				
+			
 				String about = searchBean.getConceptId();
 				
 				Assert.hasText(about, "Entity:" + searchBean.getConceptIdShort() + " has no URI.");
@@ -83,9 +90,15 @@ public class BioportalRestEntityDescriptionTransform {
 				
 				description.setDescribingCodeSystemVersion(ref);
 				
-				String codeSystemName = description.getDescribingCodeSystemVersion().getCodeSystem().getContent();
+				//String codeSystemName = description.getDescribingCodeSystemVersion().getCodeSystem().getContent();
 				
-				ScopedEntityName scopedEntityName = this.buildScopedEntityName(shortId, codeSystemName);
+				//ScopedEntityName scopedEntityName = this.buildScopedEntityName(shortId, codeSystemName);
+				ScopedEntityName scopedEntityName = new ScopedEntityName();
+				scopedEntityName.setName(this.uriParser.getLocalPart(about));
+				scopedEntityName.setNamespace(
+					this.namespaceModifier.getNamespace(
+						this.uriParser.getNamespace(about)));
+				
 				entry.setName(scopedEntityName);
 		
 				entry.addKnownEntityDescription(description);
@@ -103,7 +116,13 @@ public class BioportalRestEntityDescriptionTransform {
 			}
 		}
 		
-		DirectoryResult<EntityDirectoryEntry> result = new DirectoryResult<EntityDirectoryEntry>(returnList, true);
+		boolean isComplete = returnList.size() < expectedSize;
+		
+		if(!isComplete){
+			returnList.remove(returnList.size() - 1);
+		}
+		
+		DirectoryResult<EntityDirectoryEntry> result = new DirectoryResult<EntityDirectoryEntry>(returnList, isComplete);
 		
 		return result;
 	}

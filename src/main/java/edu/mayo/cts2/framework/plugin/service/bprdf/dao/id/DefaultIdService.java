@@ -54,7 +54,9 @@ public class DefaultIdService implements IdService, InitializingBean {
 
 	private final static String BIOPORTAL_PURL_URI = "http://purl.bioontology.org/ontology/";
 	private final static String VERSION_SUBRESOURCE = "version";
+	
 	private final static String BIOPORTAL_ONTOLOGIES_URI = "http://bioportal.bioontology.org/ontologies/";
+	private final static String PURL_OBO_OWL_URI = "http://purl.org/obo/owl/";
 
 	private final static String UTILITY_NAMESPACE = "util";
 	private final static String GET_IDS = "getIds";
@@ -269,6 +271,18 @@ public class DefaultIdService implements IdService, InitializingBean {
 			uri = StringUtils.removeStart(uri, BIOPORTAL_PURL_URI);
 			uri = StringUtils.removeEnd(uri, "/");
 			uri = StringUtils.substringBefore(uri, "/");
+			
+			uri = StringUtils.removeEnd(uri, ":");
+			uri = StringUtils.removeEnd(uri, "#");
+			
+			return uri;
+		} if (uri.startsWith(PURL_OBO_OWL_URI)) {
+			uri = StringUtils.removeStart(uri, PURL_OBO_OWL_URI);
+			uri = StringUtils.removeEnd(uri, "/");
+			uri = StringUtils.substringBefore(uri, "/");
+			
+			uri = StringUtils.removeEnd(uri, ":");
+			uri = StringUtils.removeEnd(uri, "#");
 			
 			return uri;
 		} else {

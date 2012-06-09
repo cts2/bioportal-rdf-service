@@ -232,7 +232,23 @@ class BioportalRdfAssociationQueryServiceTestIT {
 		}
 	}
 	
-	
+	@Test
+	void testGetChildrenAssociationOfEntityHaveCorrectDesignations(){
+		def dir = query.getChildrenAssociationsOfEntity(
+			new EntityDescriptionReadId(ModelUtils.createScopedEntityName("XM0Kp", "RCD"),
+				 ModelUtils.nameOrUriFromName("RCD-42295"))
+				, null, null,new Page())
+		
+		assertNotNull dir
+		assertTrue dir.entries.size() > 0
+		
+		dir.entries.each {
+		
+			assertTrue ! it.knownEntityDescription[0].designation.equals(
+				it.knownEntityDescription[0].describingCodeSystemVersion.version.content)
+			
+		}
+	}
 	
 	@Test
 	void testGetSourceEntitiesValidate(){

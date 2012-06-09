@@ -6,6 +6,7 @@ import javax.xml.transform.stream.StreamResult
 import static org.junit.Assert.*
 
 import org.apache.commons.lang.StringUtils
+import org.junit.Ignore
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration
@@ -139,6 +140,37 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 	}
 	
 	@Test
+	void TestReadByNameSnomedCT_TestFinding() {
+	
+		def name = new ScopedEntityName(name:"278152006")
+		def csv = ModelUtils.nameOrUriFromName("SNOMEDCT-40403")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertNotNull ed
+	}
+	
+	@Test
+	void TestReadByNameSnomedFindFMASubsetWithNamespace() {
+	
+		def name = new ScopedEntityName(namespace:"obo", name:"FMA_8350")
+		def csv = ModelUtils.nameOrUriFromName("FMA_SUBSET-39991")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertNotNull ed
+	}
+	
+	@Test
+	@Ignore("when the bioportal rest service is updated, this should work")
+	void TestReadByNameSnomedFindFMASubsetNoNamespace() {
+	
+		def name = new ScopedEntityName(name:"FMA_8350")
+		def csv = ModelUtils.nameOrUriFromName("FMA_SUBSET-39991")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assertNotNull ed
+	}
+	
+	@Test
 	void TestReadByNameValidDescribingCodeSystemVersion() {
 	
 		def name = new ScopedEntityName(name:"Hospital")
@@ -246,6 +278,25 @@ class BioportalRdfEntityDescriptionReadServiceTestIT {
 			assertNotNull it.namespace
 			assertNotNull it.href	
 		}
+	}
+	
+	@Test
+	void TestReadByNameParentValidView() {
+	
+		def name = new ScopedEntityName(
+			namespace:"SNOMED-Ethnic-Group", name:"275586009")
+		def csv = ModelUtils.nameOrUriFromName("SNOMED-ETHNIC-GROUP-43057")
+		def ed = read.read(new EntityDescriptionReadId(name, csv), null)
+		
+		assert 1 <= ed.namedEntity.parent.length
+		
+		ed.namedEntity.parent.each {
+			assertNotNull it.name
+			assertNotNull it.namespace
+			assertNotNull it.href
+		}
+		
+		marshaller.marshal(ed, new StreamResult(new StringWriter()))
 	}
 	
 	@Test

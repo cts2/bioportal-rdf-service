@@ -78,24 +78,4 @@
         ]]>
 	</select>
 	
-	<select id="getValueSetByUri" resultMap="valueSetCatalogEntryResultMap">
-        <![CDATA[
-        SELECT DISTINCT ?s ?p ?o
-        WHERE { 
-                
-				GRAPH <#{uri}/metadata> {
-	
-                       ?s a bpMetadata:OntologyView ;
-                          bpMetadata:id #{id} ;
-                          ?p ?o  
-                          
-                       FILTER ( 
-			              ?p != metrics:classesWithSingleSubclass
-			              &&
-			              ?p != metrics:classesWithMoreThanXSubclasses
-		               )       
-                 }
-        }
-        ]]>
-	</select>
 </sparqlMap>

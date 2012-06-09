@@ -44,7 +44,7 @@
 		<tripleMap var="o" varType="namespace" predicateUri="rdfs1999:type" beanProperty="namedEntity.entityTypeAsReference[0].namespace" modifier="spring:namespaceModifier" />
 		<tripleMap var="o" varType="localName" predicateUri="rdfs:subClassOf" beanProperty="namedEntity.parentAsReference[].name" />
 		<tripleMap var="o" varType="uri" predicateUri="rdfs:subClassOf" beanProperty="namedEntity.parentAsReference[].uri" />
-		<tripleMap var="o" varType="uri" predicateUri="rdfs:subClassOf" beanProperty="namedEntity.parentAsReference[].namespace" modifier="spring:namespaceModifier" />
+		<tripleMap var="o" varType="namespace" predicateUri="rdfs:subClassOf" beanProperty="namedEntity.parentAsReference[].namespace" modifier="spring:namespaceModifier" />
 	</compositeResultMap>
 	
 	<compositeResultMap id="definitionResultMap" 

@@ -49,7 +49,7 @@ public class BioportalRdfValueSetReadService extends AbstractService
 	implements ValueSetReadService {
 
 	private final static String VALUESET_NAMESPACE = "valueSet";
-	private final static String GET_VALUESET_BY_URI = "getValueSetByUri";
+
 	private final static String GET_VALUESET_BY_NAME = "getValueSetByName";
 
 	@Resource
@@ -65,50 +65,34 @@ public class BioportalRdfValueSetReadService extends AbstractService
 	public ValueSetCatalogEntry read(NameOrURI identifier,
 			ResolvedReadContext readContext) {
 		
+		String ontologyId;
+		
 		if(StringUtils.isNotBlank(identifier.getName())){
 			String name = identifier.getName();
 			
-			String ontologyId = this.idService.getOntologyIdForAcronym(name);
-			String id = this.idService.getCurrentIdForOntologyId(ontologyId);
-			
-			if(StringUtils.isBlank(id)){
-				//not found
-				return null;
-			}
-			
-			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("id", id);
-			parameters.put("ontologyId", ontologyId);
+			ontologyId = this.idService.getOntologyIdForAcronym(name);
 
-			return this.rdfDao.selectForObject(
-					VALUESET_NAMESPACE, 
-					GET_VALUESET_BY_NAME, 
-					parameters, 
-					ValueSetCatalogEntry.class);
 		} else {
 			String uri = identifier.getUri();
-			String ontologyId = this.getOntologyIdFromUri(uri);
 			
-			if(StringUtils.isBlank(ontologyId)){
-				return null;
-			}
-
-			String id = this.idService.getCurrentIdForOntologyId(ontologyId);
-			
-			if(StringUtils.isBlank(id)){
-				return null;
-			}
-			
-			Map<String,Object> parameters = new HashMap<String,Object>();
-			parameters.put("uri", uri);
-			parameters.put("id", id);
-
-			return this.rdfDao.selectForObject(
-					VALUESET_NAMESPACE, 
-					GET_VALUESET_BY_URI, 
-					parameters, 
-					ValueSetCatalogEntry.class);
+			ontologyId = this.getOntologyIdFromUri(uri);
 		}
+		
+		String id = this.idService.getCurrentIdForOntologyId(ontologyId);
+		if(StringUtils.isBlank(id)){
+			//not found
+			return null;
+		}
+			
+		Map<String,Object> parameters = new HashMap<String,Object>();
+		parameters.put("id", id);
+		parameters.put("ontologyId", ontologyId);
+
+		return this.rdfDao.selectForObject(
+				VALUESET_NAMESPACE, 
+				GET_VALUESET_BY_NAME, 
+				parameters, 
+				ValueSetCatalogEntry.class);
 	}
 	
 	/**
@@ -118,7 +102,9 @@ public class BioportalRdfValueSetReadService extends AbstractService
 	 * @return the ontology id from uri
 	 */
 	private String getOntologyIdFromUri(String uri){
-		return StringUtils.substringAfterLast(uri, "/");
+		String acronym = StringUtils.substringAfterLast(uri, "/");
+		
+		return this.idService.getOntologyIdForAcronym(acronym);
 	}
 
 	/* (non-Javadoc)

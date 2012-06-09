@@ -32,6 +32,7 @@
 		<rowMap var="s" varType="localName" beanProperty="name.name"/>
 		<rowMap var="s" varType="localName" beanProperty="resourceName"/>	
 		<rowMap var="s" varType="namespace"  beanProperty="name.namespace" modifier="spring:namespaceModifier" />	
+		<rowMap var="designation" varType="literalValue"  callbackId="designation" />	
 	</perRowResultMap>	
 	
 		<select id="getAssociationDirectoryEntrySummaries" resultMap="associationDirectoryEntryResultMap">
@@ -88,12 +89,14 @@
 	
 	<select id="getChildrenAssociationsOfEntity" resultMap="entityDirectoryEntryResultMap">
 		<![CDATA[
-		SELECT ?s
+		SELECT ?s ?designation
 		<isNotNull property="restrictToGraph">
+			FROM  bpOntologies:globals
 		    FROM  bpOntologies:#{restrictToGraph} 
 		</isNotNull>
 		WHERE {	
-		    ?s rdfs:subClassOf <#{uri}> .
+		    ?s rdfs:subClassOf <#{uri}> ;
+		    	skos:prefLabel ?designation .
       		FILTER (isIRI(?s))		
 		} 
 		LIMIT  #{limit}

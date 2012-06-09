@@ -155,8 +155,20 @@ public class BioportalRdfEntityDescriptionQueryService extends AbstractService
 				return this.handleAllEntities(page);
 			}
 		} else {
+			Page pagePlusOne;
+			try {
+				pagePlusOne = page.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new IllegalStateException();
+			}
+			pagePlusOne.setMaxToReturn(pagePlusOne.getMaxToReturn() + 1);
+			
 			return this.bioportalRestTransform.successBeanToEntitySummaries(
-					this.bioportalRestClient.searchEntities(ontologyId, query.getFilterComponent(), page));
+					this.bioportalRestClient.searchEntities(
+							ontologyId, 
+							query.getFilterComponent(), 
+							pagePlusOne),
+					pagePlusOne.getMaxToReturn());
 		}
 	}
 	

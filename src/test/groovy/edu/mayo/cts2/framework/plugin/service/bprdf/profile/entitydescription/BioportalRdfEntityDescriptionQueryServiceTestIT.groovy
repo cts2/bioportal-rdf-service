@@ -246,6 +246,82 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 		assertNotNull dir
 		assertTrue  dir.getEntries().size() > 0
 	}
+	
+	@Test
+	void TestGetResourceSummariesWithCSVAndFilterPagingUnder(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("SNOMEDCT-46896")
+				)
+			},
+			getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"role",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+						)] as Set
+					}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		assertEquals 10, dir.getEntries().size()
+		assertFalse dir.atEnd
+	}
+	
+	@Test
+	void TestGetResourceSummariesWithCSVAndFilterPagingNoResultsAtEnd(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("SNOMEDCT-46896")
+				)
+			},
+			getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"INVALIDQUERYSTRING",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+						)] as Set
+					}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:100))
+		
+		assertNotNull dir
+		assertEquals 0, dir.getEntries().size()
+		assertTrue dir.atEnd
+	}
+	
+	@Test
+	void TestGetResourceSummariesWithCSVAndFilterPagingAtEnd(){
+		def dir = query.getResourceSummaries(
+			[
+			getEntitiesFromAssociationsQuery:{null},
+			getRestrictions:{
+				new EntityDescriptionQueryServiceRestrictions(
+					codeSystemVersion: ModelUtils.nameOrUriFromName("SNOMEDCT-46896")
+				)
+			},
+			getFilterComponent:{
+					[new ResolvedFilter(
+						matchValue:"boxing",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+						)] as Set
+					}
+			] as EntityDescriptionQuery,
+		null,
+		new Page(maxToReturn:100))
+		
+		assertNotNull dir
+		assertTrue dir.getEntries().size() > 1
+		assertTrue dir.getEntries().size() < 100
+		assertTrue dir.atEnd
+	}
 
 	
 	@Test

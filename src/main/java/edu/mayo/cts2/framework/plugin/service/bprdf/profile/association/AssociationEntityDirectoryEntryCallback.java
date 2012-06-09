@@ -67,14 +67,15 @@ public class AssociationEntityDirectoryEntryCallback implements
 		String acronym = (String) context.getQueryParams().get("restrictToGraph");
 		String ontologyId = idService.getOntologyIdForAcronym(acronym);
 		String codeSystemVersion_name= (String) context.getQueryParams().get("restrictToCodeSystemVersion");
+		String designation = (String) context.getCallbackIds().get("designation");
 		String id = idService.getCurrentIdForOntologyId(ontologyId);
-		bindingResult.addKnownEntityDescription(getDescriptionInCodeSystem(ontologyId, id, codeSystemVersion_name));
+		bindingResult.addKnownEntityDescription(getDescriptionInCodeSystem(ontologyId, id, codeSystemVersion_name, designation));
 	}
 
-	protected DescriptionInCodeSystem getDescriptionInCodeSystem(String ontologyId, String id, String codeSystemVersion_name) {
+	protected DescriptionInCodeSystem getDescriptionInCodeSystem(String ontologyId, String id, String codeSystemVersion_name, String designation) {
 		DescriptionInCodeSystem descCS= new DescriptionInCodeSystem();
 		descCS.setDescribingCodeSystemVersion(getCodeSystemVersionReference(ontologyId, id));
-		descCS.setDesignation(codeSystemVersion_name);
+		descCS.setDesignation(designation);
 		return descCS;	
 	}
 	

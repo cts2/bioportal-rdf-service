@@ -13,7 +13,7 @@ class BioportalRdfValueSetReadServiceByUriTestIT extends BioportalRdfValueSetRea
 	BioportalRdfValueSetReadService read
 	
 	def doRead() {
-		read.read(ModelUtils.nameOrUriFromUri("http://bioportal.bioontology.org/ontologies/2021"), null)
+		read.read(ModelUtils.nameOrUriFromUri("http://bioportal.bioontology.org/ontologies/BRO-ACTIVITY"), null)
 	}
 	
 	@Test

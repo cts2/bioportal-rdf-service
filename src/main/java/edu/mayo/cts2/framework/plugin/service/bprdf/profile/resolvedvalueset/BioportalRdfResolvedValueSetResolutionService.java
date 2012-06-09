@@ -49,6 +49,7 @@ import edu.mayo.cts2.framework.model.core.MatchAlgorithmReference;
 import edu.mayo.cts2.framework.model.core.PredicateReference;
 import edu.mayo.cts2.framework.model.core.PropertyReference;
 import edu.mayo.cts2.framework.model.core.SortCriteria;
+import edu.mayo.cts2.framework.model.core.ValueSetDefinitionReference;
 import edu.mayo.cts2.framework.model.directory.DirectoryResult;
 import edu.mayo.cts2.framework.model.entity.EntityDescription;
 import edu.mayo.cts2.framework.model.entity.EntityDirectoryEntry;
@@ -58,7 +59,9 @@ import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSet;
 import edu.mayo.cts2.framework.model.valuesetdefinition.ResolvedValueSetHeader;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.RdfDao;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.ValueSetName;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
+import edu.mayo.cts2.framework.plugin.service.bprdf.model.modifier.NamespaceModifier;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.AbstractService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription.BioportalRdfEntityDescriptionQueryService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.util.SparqlUtils;
@@ -72,6 +75,7 @@ import edu.mayo.cts2.framework.service.profile.resolvedvalueset.ResolvedValueSet
 import edu.mayo.cts2.framework.service.profile.resolvedvalueset.name.ResolvedValueSetReadId;
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResolutionEntityQuery;
 import edu.mayo.cts2.framework.service.profile.valuesetdefinition.ResolvedValueSetResult;
+import edu.mayo.twinkql.result.UriParser;
 
 /**
  * The Class BioportalRdfResolvedValueSetResolutionService.
@@ -85,6 +89,12 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 	private final static String RESOLVEDVALUESET_NAMESPACE = "resolvedValueSet";
 	private final static String GET_RESOLVEDVALUESET_ENTITYSYNOPSIS = "getAllEntitySynonpsisOfValueSet";
 	private final static String GET_RESOLVEDVALUESET_HEADER = "getResolvedValueSetHeader";
+	
+	@Resource
+	private NamespaceModifier namespaceModifier;
+	
+	private UriParser uriParser = new UriParser();
+	
 	@Resource
 	private RdfDao rdfDao;
 	
@@ -152,11 +162,19 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 					results, 
 					!moreResults);
 		} else {
+			Page pagePlusOne;
+			try {
+				pagePlusOne = page.clone();
+			} catch (CloneNotSupportedException e) {
+				throw new IllegalStateException();
+			}
+			pagePlusOne.setMaxToReturn(pagePlusOne.getMaxToReturn() + 1);
+			
 			SuccessBean successBean = 
-				this.bioportalRestClient.searchEntities(ontologyId, filterComponent, page);
+				this.bioportalRestClient.searchEntities(ontologyId, filterComponent, pagePlusOne);
 			
 			DirectoryResult<EntitySynopsis> resultsFromRest = 
-				this.bioportalRestResolvedValueSetTransform.successBeanToEntityEntitySynopsis(successBean);
+				this.bioportalRestResolvedValueSetTransform.successBeanToEntityEntitySynopsis(successBean, pagePlusOne.getMaxToReturn());
 			
 			result = new ResolvedValueSetResult<EntitySynopsis>(
 					this.getResolvedValueSetHeader(id), 
@@ -237,11 +255,16 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 				new ResolvedValueSetResult<EntityDirectoryEntry>(
 					this.getResolvedValueSetHeader(id), 
 					result.getEntries(), 
-					result.isAtEnd()));
+					result.isAtEnd()),
+				this.isSearch(query));
+	}
+	
+	private boolean isSearch(ResolvedValueSetResolutionEntityQuery query){
+		return query != null && CollectionUtils.isNotEmpty(query.getFilterComponent());
 	}
 	
 	private ResolvedValueSetResult<EntityDirectoryEntry> addInEntitiesHrefs(
-			ResolvedValueSetResult<EntityDirectoryEntry> result) {
+			ResolvedValueSetResult<EntityDirectoryEntry> result, boolean isSearch) {
 		if(result == null || result.getEntries() == null){
 			return null;
 		}
@@ -250,14 +273,25 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 				result.getResolvedValueSetHeader().getResolvedUsingCodeSystem(0);
 		
 		for(EntityDirectoryEntry entry : result.getEntries()){
+			
+			//if this is a search, we'll need to scrub the namespaces
+			if(isSearch){
+				entry.getName().setNamespace(
+						this.namespaceModifier.getNamespace(
+								this.uriParser.getNamespace(
+										entry.getAbout())));
+			}
+		
 			entry.setHref(
 					this.urlConstructor.getServerRootWithAppName() + "/" + URIHelperInterface.ENTITY + "/" + 
 							EncodingUtils.encodeScopedEntityName(entry.getName()));
 			
+			ValueSetDefinitionReference resolutionOf = result.getResolvedValueSetHeader().getResolutionOf();
+			
 			for(DescriptionInCodeSystem description : entry.getKnownEntityDescription()){
 				description.setHref(this.urlConstructor.createEntityUrl(
-						ref.getCodeSystem().getContent(),
-						ref.getVersion().getContent(),
+						ValueSetName.parse(resolutionOf.getValueSet().getContent()).getAcronym(),
+						resolutionOf.getValueSetDefinition().getContent(),
 						entry.getName()));
 				
 				description.setDescribingCodeSystemVersion(ref);
@@ -275,14 +309,13 @@ public class BioportalRdfResolvedValueSetResolutionService extends AbstractServi
 		}
 		
 		for(EntitySynopsis entry : result.getEntries()){
-			//this will always be one for Bioportal
-			CodeSystemVersionReference ref = 
-					result.getResolvedValueSetHeader().getResolvedUsingCodeSystem(0);
+	
+			ValueSetDefinitionReference resolutionOf = result.getResolvedValueSetHeader().getResolutionOf();
 			
 			entry.setHref(this.urlConstructor.createEntityUrl(
-				ref.getCodeSystem().getContent(),
-				ref.getVersion().getContent(),
-				entry.getName()));
+				ValueSetName.parse(resolutionOf.getValueSet().getContent()).getAcronym(),
+				resolutionOf.getValueSetDefinition().getContent(),
+				EncodingUtils.encodeScopedEntityName(entry)));
 		}
 		
 		return result;

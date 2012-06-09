@@ -75,7 +75,45 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 		assertTrue dir.getEntries().size() > 0
 		
 		dir.entries.each {
-			assertTrue StringUtils.endsWith(it.href, "/"+it.name)
+			assertTrue StringUtils.endsWith(it.href, it.name)
+		}
+	}
+	
+	@Test
+	void TestGetResolutionSnomedEthnicGroup(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("43057",ModelUtils.nameOrUriFromName("SNOMED-ETHNIC-GROUP"),
+				ModelUtils.nameOrUriFromName("SNOMED-ETHNIC-GROUP-43057")),null,new Page())
+		
+		assertNotNull dir
+		
+		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
+	}
+	
+	
+	@Test
+	void TestGetResolutionSnomedEthnicGroupWithFilter(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("43057",ModelUtils.nameOrUriFromName("SNOMED-ETHNIC-GROUP"),
+				ModelUtils.nameOrUriFromName("SNOMED-ETHNIC-GROUP-43057")),
+				[new ResolvedFilter(
+					matchValue:"north",
+					matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+				)] as Set
+			,new Page())
+		
+		assertNotNull dir
+		
+		assertTrue dir.getEntries().size() > 0
+		
+		dir.entries.each {
+			assertTrue ! it.name.contains("http")
 		}
 	}
 	
@@ -195,6 +233,102 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 	}
 	
 	@Test
+	void TestGetResolutionWithFilterHasCorrectNamespaces(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
+			[new ResolvedFilter(
+						matchValue:"software",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+			)] as Set
+			,new Page())
+		
+		assertNotNull dir
+		println dir.getEntries().size()
+		assertTrue dir.getEntries().size() > 0
+
+		dir.entries.each {
+			
+			assertNotNull it.namespace
+			assertFalse it.namespace.equals("ns")
+			assertFalse StringUtils.startsWith(it.namespace, "ns")
+			
+		}
+	}
+	
+	@Test
+	void TestGetResolutionWithFilterIsCompleteFalse(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
+			[new ResolvedFilter(
+						matchValue:"software",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+			)] as Set
+			,new Page())
+		
+		assertNotNull dir
+		
+		assertTrue dir.atEnd
+		assertEquals 10, dir.entries.size
+
+	}
+	
+	@Test
+	void TestGetResolutionWithFilterIsCompleteTrueEqualsSize(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
+			[new ResolvedFilter(
+						matchValue:"software",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+			)] as Set
+			,new Page(maxToReturn:10))
+		
+		assertNotNull dir
+		
+		assertTrue dir.atEnd
+		assertEquals 10, dir.entries.size
+
+	}
+	
+	@Test
+	void TestGetResolutionWithFilterIsCompleteFalseSize(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
+			[new ResolvedFilter(
+						matchValue:"software",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+			)] as Set
+			,new Page(maxToReturn:5))
+		
+		assertNotNull dir
+		
+		assertFalse dir.atEnd
+		assertEquals 5, dir.entries.size
+
+	}
+	
+	@Test
+	void TestGetResolutionWithFilterIsCompleteTrueInvalidSearch(){
+
+		def dir = resolution.getResolution(
+			new ResolvedValueSetReadId("41011",ModelUtils.nameOrUriFromName("BRO"),ModelUtils.nameOrUriFromName("BRO-41011")),
+			[new ResolvedFilter(
+						matchValue:"THISISNOTGOINGTOMATCHANYTHING",
+						matchAlgorithmReference: StandardMatchAlgorithmReference.CONTAINS.matchAlgorithmReference,
+			)] as Set
+			,new Page(maxToReturn:50))
+		
+		assertNotNull dir
+		
+		assertTrue dir.atEnd
+		assertEquals 0, dir.entries.size
+
+	}
+	
+	@Test
 	void TestGetResolutionValidXML(){
 
 		def dir = resolution.getResolution(
@@ -205,7 +339,9 @@ class BioportalRdfResolvedValueSetResolutionServiceTestIT {
 			)] as Set
 			,new Page())
 		
-		marshaller.marshal(dir, new StreamResult(new StringWriter()))
+		dir.entries.each {
+			marshaller.marshal(it, new StreamResult(new StringWriter()))
+		}
 	}
 	
 	@Test
