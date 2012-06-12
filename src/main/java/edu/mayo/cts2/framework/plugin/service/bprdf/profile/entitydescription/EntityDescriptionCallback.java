@@ -78,7 +78,7 @@ public class EntityDescriptionCallback implements AfterResultBinding<EntityDescr
 					this.urlConstructor.createEntityUrl(
 							codeSystemName,
 							codeSystemVersionName,
-							parent.getName()));
+							EncodingUtils.encodeScopedEntityName(parent)));
 		}
 		
 		base.setSubjectOf(this.urlConstructor.createSubjectOfUrl(

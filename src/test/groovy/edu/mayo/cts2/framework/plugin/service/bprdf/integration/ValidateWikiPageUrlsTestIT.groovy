@@ -25,23 +25,15 @@ class ValidateWikiPageUrlsTestIT  {
 		html.depthFirst().collect { it }.findAll { it.name() == "a" }.each {
 		    if(StringUtils.startsWith(it.@href.text(), prefix)){
 				def url = it.@href.text()
-				if(url.contains('?')){
-					url += "&format=json"
-				} else {
-					url += "?format=json"
-				}
-			
+							
 				println "Checking: " + url
 				
-				HttpHeaders headers = new HttpHeaders()
-				headers.set( "Accept", "application/json" )
-			 
 				def response = template.exchange( 
 						  new URI(url),
 						  HttpMethod.GET,
-						  new HttpEntity( headers ),
+						  null,
 						  String ).getBody();
-	
+				
 				assertTrue StringUtils.isNotBlank(response)
 			}
 		}
