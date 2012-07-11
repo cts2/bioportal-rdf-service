@@ -256,6 +256,10 @@ public class DefaultIdService implements IdService, InitializingBean {
 	public String getUriForOntologyId(String ontologyId) {
 		return this.getFromCache(this.ontologyIdToUri, ontologyId);
 	}
+	
+	public boolean isAcronym(String acronym) {
+		return this.getFromCache(this.acronymToUri, acronym) != null;
+	}
 
 	@Override
 	public String getAcronymForUri(String uri) {

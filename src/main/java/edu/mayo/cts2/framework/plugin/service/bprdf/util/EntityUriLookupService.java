@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import edu.mayo.cts2.framework.model.command.Page;
 import edu.mayo.cts2.framework.model.command.ResolvedFilter;
 import edu.mayo.cts2.framework.model.core.ScopedEntityName;
+import edu.mayo.cts2.framework.plugin.service.bprdf.dao.id.IdService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.namespace.NamespaceLookupService;
 import edu.mayo.cts2.framework.plugin.service.bprdf.dao.rest.BioportalRestClient;
 import edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription.BioportalRestEntityDescriptionTransform;
@@ -29,6 +30,9 @@ public class EntityUriLookupService {
 	
 	@Resource
 	private BioportalRestClient bioportalRestClient;
+	
+	@Resource
+	private IdService idService;
 	
 	@Resource
 	private NamespaceLookupService namespaceLookupService;
@@ -97,10 +101,20 @@ public class EntityUriLookupService {
 	private String getUriFromNamespace(ScopedEntityName name){
 		String uri = null;
 		String namespace = name.getNamespace();
+		
 		if(StringUtils.isNotBlank(namespace)){
 			
 			if(! this.knownNamespaces.containsKey(namespace)){
-				uri = this.namespaceLookupService.getUriForNamespace(namespace);
+				//check to see if it is an acronym
+				boolean isAcronym = this.idService.isAcronym(namespace);
+				if(isAcronym){
+					uri = BIOPORTAL_PURL_URI + namespace + "/";
+				}
+				
+				//if not, look it up
+				if(StringUtils.isBlank(uri)){
+					uri = this.namespaceLookupService.getUriForNamespace(namespace);
+				}
 				
 				if(StringUtils.isNotBlank(uri)){
 					this.knownNamespaces.put(namespace, uri);
