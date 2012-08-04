@@ -1,2 +1,6 @@
 /target
 .settings
+.cache
+.project
+.classpath
+.DS_Store
