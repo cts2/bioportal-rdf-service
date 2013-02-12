@@ -66,14 +66,14 @@ abstract class BioportalRdfCodeSystemVersionReadServiceTestITBase {
 	void TestReadByNameHasName(){
 		CodeSystemVersionCatalogEntry cs = doRead()
 		
-		assertEquals "LNC-44774", cs.codeSystemVersionName
+		assertEquals "LNC-47637", cs.codeSystemVersionName
 	}
 	
 	@Test
 	void TestReadByNameHasVersion(){
 		CodeSystemVersionCatalogEntry cs = doRead()
 		
-		assertEquals "232", cs.officialResourceVersionId
+		assertEquals "236", cs.officialResourceVersionId
 	}
 	
 	@Test

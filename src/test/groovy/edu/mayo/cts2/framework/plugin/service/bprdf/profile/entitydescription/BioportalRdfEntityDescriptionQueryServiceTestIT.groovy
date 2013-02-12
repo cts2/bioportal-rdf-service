@@ -1,5 +1,7 @@
 package edu.mayo.cts2.framework.plugin.service.bprdf.profile.entitydescription
 
+import org.junit.Ignore
+
 import javax.annotation.Resource;
 import javax.xml.transform.stream.StreamResult
 
@@ -145,6 +147,7 @@ class BioportalRdfEntityDescriptionQueryServiceTestIT {
 	}
 	
 	@Test
+    @Ignore
 	void TestGetResourceSummariesWithCSV_ONTOLOGIA(){
 		def dir = query.getResourceSummaries(
 			[

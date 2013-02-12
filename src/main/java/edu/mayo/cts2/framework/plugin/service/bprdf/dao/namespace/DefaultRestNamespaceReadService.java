@@ -17,7 +17,7 @@ public class DefaultRestNamespaceReadService implements NamespaceReadService {
 
 	public DefaultRestNamespaceReadService(Cts2Marshaller cts2Marshaller)
 			throws Exception {
-		this.cts2RestClient = new Cts2RestClient(cts2Marshaller);
+		this.cts2RestClient = new Cts2RestClient(cts2Marshaller, true);
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class DefaultRestNamespaceReadService implements NamespaceReadService {
 					public DocumentedNamespaceReference function() {
 						String url = serviceUri + "/namespacebyuri?uri={uri}";
 
-						return cts2RestClient.getCts2Resource(url,
+						return cts2RestClient.getCts2Resource(url, null, null,
 								DocumentedNamespaceReference.class, uri);
 					}
 				});

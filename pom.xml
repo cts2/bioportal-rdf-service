@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>edu.mayo.cts2.framework</groupId>
 		<artifactId>base-service-plugin</artifactId>
-		<version>0.7.2</version>
+		<version>0.8.1</version>
 	</parent>
 
 	<artifactId>bioportal-rdf-service</artifactId>
-	<version>0.3.6-SNAPSHOT</version>
+	<version>0.4.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<developers>
@@ -160,7 +160,6 @@
 			<groupId>edu.mayo.cts2.framework</groupId>
 			<artifactId>plugin-util</artifactId>
 			<version>${develpment.framework.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>

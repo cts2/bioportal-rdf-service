@@ -15,7 +15,7 @@ class BioportalRdfCodeSystemVersionReadServiceByNameTestIT extends BioportalRdfC
 	
 	@Override
 	public Object doRead() {
-		read.read(ModelUtils.nameOrUriFromName("LNC-44774"), null)
+		read.read(ModelUtils.nameOrUriFromName("LNC-47637"), null)
 	}
 
 	@Test
@@ -27,7 +27,7 @@ class BioportalRdfCodeSystemVersionReadServiceByNameTestIT extends BioportalRdfC
 
 	@Test
 	void TestReadNotCurrentCodingSchemeVersion() {
-		def csv = read.read(ModelUtils.nameOrUriFromName("LNC-44774"), null)
+		def csv = read.read(ModelUtils.nameOrUriFromName("LNC-47637"), null)
 		
 		assertNotNull csv
 		

@@ -17,7 +17,7 @@ public class DefaultRestNamespaceMaintenanceService implements NamespaceMaintena
 	private String serviceUri = "http://informatics.mayo.edu/cts2/services/bioportal-rdf";
 
 	public DefaultRestNamespaceMaintenanceService(Cts2Marshaller cts2Marshaller) throws Exception {
-		this.cts2RestClient = new Cts2RestClient(cts2Marshaller);
+		this.cts2RestClient = new Cts2RestClient(cts2Marshaller, true);
 	}
 
 	@Override
