@@ -1,15 +1,14 @@
-NCBO Bioportal RDF CTS2 Plugin
-==
+## NCBO Bioportal RDF CTS2 Plugin
+
 A CTS2 implementation based on the [NCBO BioPortal SPARQL endpoint]( http://sparql.bioontology.org/ ). 
 
-Installation
-===
+## Installation
 Download the CTS2 Framework - ([download page]( http://informatics.mayo.edu/cts2/framework/download/ ))
 
-You can download either a stand-alone server or a war.
+You can download either as a stand-alone server or a war.
 
-Starting the Stand-alone Server
-===
+### Starting the Stand-alone Server
+
     java -jar cts2framework-standalone.jar
 
 The server should start and open up a browser window.
@@ -22,15 +21,13 @@ Click the 'Admin Console' button or navigate to
    
 __NOTE:__ Default username/password is ```admin/admin```
 
-Getting the Plugin
-===
+### Getting the Plugin
+A pre-build plugin can be downloaded, or can be build from source code.
 
-Download
-=====
+#### Download
 [Download]( http://informatics.mayo.edu/maven/content/repositories/releases/edu/mayo/cts2/framework/bioportal-rdf-service/0.4.0/bioportal-rdf-service-0.4.0.jar) the plugin from the Maven repository.
 
-Build From Source
-=====
+#### Build From Source
 Ensure 'MAVEN_OPTS' envirnoment variables are set. For example:
     
     export MAVEN_OPTS="-Xmx500m -XX:MaxPermSize=500m"
@@ -44,8 +41,7 @@ Building/Compiling:
 __NOTE:__ ```-Dmaven.test.skip=true``` will optionally skip the tests and only assemble the plugin. To run the tests, remove this parameter. If you choose to run the tests, you must specify your Bioportal API Key as a command line parameter: ```-DapiKey=xxxxxx```
 
 
-Installing the Plugin
-===
+### Installing the Plugin
 In the 'Admin Console,' click the 'Install/Update...' button. In the dialog, browse to the bioportal-rdf-service plugin jar. Once selected, click 'Install Or Update.' Ensure that the 'Start Bundle' checkbox is unchecked. Next, click the 'Configuration Manager' tab: 
 
     http://localhost:8080/system/console/configMgr
