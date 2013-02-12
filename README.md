@@ -47,6 +47,7 @@ __NOTE:__ ```-Dmaven.test.skip=true``` will optionally skip the tests and only a
 Installing the Plugin
 ===
 In the 'Admin Console,' click the 'Install/Update...' button. In the dialog, browse to the bioportal-rdf-service plugin jar. Once selected, click 'Install Or Update.' Ensure that the 'Start Bundle' checkbox is unchecked. Next, click the 'Configuration Manager' tab: 
+
     http://localhost:8080/system/console/configMgr
 Click the 'Bioportal RDF Service' row. Specify your Bioportal API Key and click 'Save.'
 
