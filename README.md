@@ -22,7 +22,7 @@ Click the 'Admin Console' button or navigate to
 __NOTE:__ Default username/password is ```admin/admin```
 
 ### Getting the Plugin
-A pre-build plugin can be downloaded, or can be build from source code.
+A pre-built plugin can be downloaded, or can be build from source code.
 
 #### Download
 [Download]( http://informatics.mayo.edu/maven/content/repositories/releases/edu/mayo/cts2/framework/bioportal-rdf-service/0.4.0/bioportal-rdf-service-0.4.0.jar) the plugin from the Maven repository.
