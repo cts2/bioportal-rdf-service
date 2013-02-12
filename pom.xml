@@ -8,7 +8,7 @@
 	</parent>
 
 	<artifactId>bioportal-rdf-service</artifactId>
-	<version>0.4.0</version>
+	<version>0.4.1-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<developers>
@@ -29,7 +29,7 @@
 
 	<scm>
 		<developerConnection>scm:git:git@github.com:cts2/bioportal-rdf-service.git</developerConnection>
-	  <tag>bioportal-rdf-service-0.4.0</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<distributionManagement>
