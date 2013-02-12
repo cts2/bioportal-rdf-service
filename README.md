@@ -4,11 +4,11 @@ A CTS2 implementation based on the [NCBO BioPortal SPARQL endpoint]( http://spar
 
 Installation
 ===
-Download the CTS2 Framework (download page -http://informatics.mayo.edu/cts2/framework/download/)
+Download the CTS2 Framework - ([download page]( http://informatics.mayo.edu/cts2/framework/download/ ))
 
 You can download either a stand-alone server or a war.
 
-Starting the Stand-alone server
+Starting the Stand-alone Server
 ===
     java -jar cts2framework-standalone.jar
 
