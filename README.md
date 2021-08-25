@@ -1,8 +1,8 @@
+## This service implementation has been archived.
+
 ## NCBO Bioportal RDF CTS2 Plugin
 
 A CTS2 implementation based on the [NCBO BioPortal SPARQL endpoint]( http://sparql.bioontology.org/ ). 
-
-## This service implementation has been archived.
 
 
 ## Installation
