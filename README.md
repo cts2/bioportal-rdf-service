@@ -2,6 +2,9 @@
 
 A CTS2 implementation based on the [NCBO BioPortal SPARQL endpoint]( http://sparql.bioontology.org/ ). 
 
+## This service implementation has been archived.
+
+
 ## Installation
 Download the CTS2 Framework - ([download page]( http://informatics.mayo.edu/cts2/framework/download/ ))
 
